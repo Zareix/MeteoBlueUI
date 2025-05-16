@@ -39,6 +39,38 @@
     "Error: %@" : {
 
     },
+    "favorites.add-current" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Add current"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ajouter actuel"
+          }
+        }
+      }
+    },
+    "favorites.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favorites"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Favoris"
+          }
+        }
+      }
+    },
     "hour-by-hour.now" : {
       "extractionState" : "manual",
       "localizations" : {

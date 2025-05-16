@@ -9,6 +9,9 @@ import SwiftUI
 struct HourByHourView: View {
     let hourByHour: [MeteoData1H]
 
+    @State private var showAlert = false
+    @State private var selectedDescription = ""
+
     private func formattedHour(from date: Date) -> String {
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "HH' h'"
@@ -43,8 +46,17 @@ struct HourByHourView: View {
                         .font(.body)
                         .foregroundColor(.primary)
                     }
+                    .onTapGesture {
+                        selectedDescription = item.description
+                        showAlert = true
+                    }
                 }
             }
+        }
+        .alert("Description", isPresented: $showAlert) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(selectedDescription)
         }
         .frame(maxWidth: .infinity)
         .padding(16)
@@ -56,7 +68,7 @@ struct HourByHourView: View {
 // MARK: - Preview
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
-    
+
     @Previewable @StateObject var locationManager = LocationManager()
 
     if let city = locationManager.city {

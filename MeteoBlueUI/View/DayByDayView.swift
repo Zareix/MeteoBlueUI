@@ -8,7 +8,7 @@ import SwiftUI
 
 struct DayByDayView: View {
     let dayByDay: [MeteoDataDay]
-    
+
     @State private var showAlert = false
     @State private var selectedDescription = ""
 
@@ -98,7 +98,7 @@ struct DayByDayView: View {
                 }
             }
             .alert("Description", isPresented: $showAlert) {
-                Button("OK", role: .cancel) { }
+                Button("OK", role: .cancel) {}
             } message: {
                 Text(selectedDescription)
             }

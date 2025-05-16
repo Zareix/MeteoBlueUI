@@ -14,7 +14,10 @@ struct ContentView: View {
 
     @State private var displayedTemperature: Int = 0
 
-    func areMapItemsEqual(_ item1: MKMapItem, _ item2: MKMapItem) -> Bool {
+    func areMapItemsEqual(_ item1: MKMapItem?, _ item2: MKMapItem?) -> Bool {
+        guard let item1 = item1, let item2 = item2 else {
+            return false
+        }
         return item1.placemark.locality == item2.placemark.locality
             && item1.placemark.country == item2.placemark.country
     }
@@ -29,13 +32,6 @@ struct ContentView: View {
                         VStack {
                             if let country = city.placemark.country {
                                 HStack(spacing: 4) {
-                                    if let userCity = locationManager.city,
-                                       areMapItemsEqual(userCity, city)
-                                    {
-                                        Image(systemName: "location.fill")
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                    }
                                     Text(country)
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
@@ -90,6 +86,9 @@ struct ContentView: View {
                         .padding(.horizontal, 16)
                         .navigationTitle(city.placemark.locality ?? "Unknown")
                         .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                FavoriteCitiesView()
+                            }
                             if let currentCity = locationManager.city {
                                 ToolbarItem(placement: .navigationBarTrailing) {
                                     Button {
@@ -99,12 +98,17 @@ struct ContentView: View {
                                             )
                                         }
                                     } label: {
-                                        Image(systemName: "location.fill")
-                                            .foregroundColor(.blue)
+                                        Image(
+                                            systemName: areMapItemsEqual(
+                                                locationManager.city,
+                                                city
+                                            ) ? "location.fill" : "location"
+                                        )
+                                        .foregroundColor(.blue)
                                     }
                                 }
                             }
-                            ToolbarItem(placement: .navigationBarTrailing) {
+                            ToolbarItem(placement: .topBarTrailing) {
                                 SearchCityView()
                             }
                         }

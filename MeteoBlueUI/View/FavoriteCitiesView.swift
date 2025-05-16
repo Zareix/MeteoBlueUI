@@ -1,20 +1,19 @@
 import MapKit
 //
-//  SearchCityView.swift
+//  FavoriteCitiesView.swift
 //  MeteoBlueUI
 //
 //  Created by Raphaël Catarino on 13/05/2025.
 //
 import SwiftUI
 
-struct SearchCityView: View {
+struct FavoriteCitiesView: View {
     @EnvironmentObject private var meteoData: MeteoData
-    @ObservedObject var locationSearchService = LocationSearchService()
 
-    @StateObject private var searchHistory = SearchHistory()
+    @StateObject private var favorites = FavoriteCities()
     @State private var isSearchActive = false
 
-    func handleSave(title: String, subtitle: String) {
+    func handleClick(title: String, subtitle: String) {
         isSearchActive = false
         Task {
             let foundCity = try await MeteoBlueAPIService()
@@ -24,40 +23,65 @@ struct SearchCityView: View {
             }
             await meteoData.loadMeteoData(city: foundCity!)
 
-            searchHistory.add(
-                SearchHistoryItem(title: title, subtitle: subtitle)
+            favorites.add(
+                FavoriteCitiesItem(title: title, subtitle: subtitle)
             )
-
-            locationSearchService.searchQuery = ""
         }
     }
 
-    func deleteFromHistory(at offsets: IndexSet) {
-        searchHistory.remove(at: offsets)
+    func addCurrent() {
+        guard let city = meteoData.city
+        else {
+            return
+        }
+        favorites.add(
+            FavoriteCitiesItem(
+                title: city.placemark.locality ?? "",
+                subtitle: city.placemark.country ?? ""
+            )
+        )
+    }
+
+    func deleteFromFavorite(at offsets: IndexSet) {
+        favorites.remove(at: offsets)
+    }
+    
+    func isCurrentCityFavorite() -> Bool {
+        guard let city = meteoData.city else {
+            return false
+        }
+        return favorites.items.contains(
+            FavoriteCitiesItem(
+                title: city.placemark.locality ?? "",
+                subtitle: city.placemark.country ?? ""
+            )
+        )
     }
 
     var body: some View {
         Button {
             isSearchActive.toggle()
         } label: {
-            Image(systemName: "magnifyingglass")
-                .foregroundColor(.blue)
+            Image(
+                systemName:
+                    isCurrentCityFavorite() ? "star.fill" : "star"
+            )
+            .foregroundColor(.blue)
         }
         .sheet(
             isPresented: $isSearchActive,
             onDismiss: {
                 isSearchActive = false
-                locationSearchService.searchQuery = ""
             }
         ) {
             NavigationStack {
-                Form {
-                    if !searchHistory.items.isEmpty {
-                        Section("search.history") {
+                VStack {
+                    if !favorites.items.isEmpty {
+                        Section {
                             List {
-                                ForEach(searchHistory.items) { city in
+                                ForEach(favorites.items) { city in
                                     Button {
-                                        handleSave(
+                                        handleClick(
                                             title: city.title,
                                             subtitle: city.subtitle
                                         )
@@ -71,31 +95,19 @@ struct SearchCityView: View {
                                         }
                                     }
                                 }
-                                .onDelete(perform: deleteFromHistory)
+                                .onDelete(perform: deleteFromFavorite)
                             }
                         }
                     }
                 }
-                .navigationTitle("search.title")
+                .padding(.top, -16)
+                .navigationTitle("favorites.title")
                 .navigationBarTitleDisplayMode(.inline)
-                .searchable(
-                    text: $locationSearchService.searchQuery,
-                    prompt: String(localized: "search.prompt")
-                ) {
-                    ForEach($locationSearchService.completions, id: \.title) {
-                        $completion in
-                        Button {
-                            handleSave(
-                                title: completion.title,
-                                subtitle: completion.subtitle
-                            )
-                        } label: {
-                            VStack(alignment: .leading) {
-                                Text(completion.title)
-                                    .foregroundColor(.primary)
-                                Text(completion.subtitle)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                .toolbar {
+                    if !isCurrentCityFavorite() {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button("favorites.add-current") {
+                                addCurrent()
                             }
                         }
                     }
@@ -112,8 +124,8 @@ struct SearchCityView: View {
 
         }
         .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                SearchCityView()
+            ToolbarItem(placement: .topBarLeading) {
+                FavoriteCitiesView()
                     .environmentObject(MockMeteoData() as MeteoData)
             }
         }

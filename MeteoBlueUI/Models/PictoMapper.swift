@@ -121,7 +121,7 @@ struct PictoMapper {
         case 2: "cloud.sun"
         case 3: "cloud.sun"
         case 4: "cloud"
-        case 5: "fog"
+        case 5: "cloud.fog"
         case 6: "cloud.rain"
         case 7: "cloud.sun.rain"
         case 8: "cloud.sun.bolt"

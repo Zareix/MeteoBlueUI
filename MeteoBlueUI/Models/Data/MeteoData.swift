@@ -159,7 +159,7 @@ class MockMeteoData: MeteoData {
             )
         }
         for index in 1...5 {
-            let picto = Int.random(in: 1...35)
+            let picto = Int.random(in: 1...17)
             self.dayByDay.append(
                 MeteoDataDay(
                     time: MeteoData.convertStringToDate(
