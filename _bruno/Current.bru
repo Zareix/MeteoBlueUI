@@ -1,0 +1,17 @@
+meta {
+  name: Current
+  type: http
+  seq: 2
+}
+
+get {
+  url: https://my.meteoblue.com/packages/current?lat=48.866&lon=2.3333&apikey={{apiKey}}
+  body: none
+  auth: none
+}
+
+params:query {
+  lat: 48.866
+  lon: 2.3333
+  apikey: {{apiKey}}
+}
