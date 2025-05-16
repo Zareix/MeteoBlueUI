@@ -1,0 +1,43 @@
+{
+  "name": "MeteoBlueUI",
+  "subtitle": "A simple iOS app for MeteoBlue",
+  "description": "",
+  "iconURL": "https://i.imgur.com/pqIZoZo.jpeg",
+  "website": "",
+  "patreonURL": "",
+  "tintColor": "#6156e2",
+  "featuredApps": [],
+  "apps": [
+    {
+      "name": "MeteoBlueUI",
+      "bundleIdentifier": "com.zareix.MeteoBlueUI",
+      "marketplaceID": "",
+      "developerName": "Zareix",
+      "subtitle": "A simple iOS app for MeteoBlue",
+      "localizedDescription": "",
+      "iconURL": "https://i.imgur.com/cy22whi.jpeg",
+      "tintColor": "#6156e2",
+      "category": "lifestyle",
+      "screenshots": [],
+      "versions": [
+        {
+          "downloadURL": "https://github.com/Zareix/MeteoBlueUI/releases/download/v1.0/MeteoBlueUI.ipa",
+          "size": 200000,
+          "version": "1.0",
+          "buildVersion": null,
+          "date": "2025-05-16T17:09:00+02:00",
+          "localizedDescription": null,
+          "minOSVersion": null
+        }
+      ],
+      "appPermissions": {
+        "entitlements": [],
+        "privacy": {
+          "NSLocationWhenInUseUsageDescription": "YES"
+        }
+      },
+      "patreon": {}
+    }
+  ],
+  "news": []
+}
