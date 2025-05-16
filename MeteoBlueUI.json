@@ -1,17 +1,15 @@
 {
   "name": "MeteoBlueUI",
   "subtitle": "A simple iOS app for MeteoBlue",
-  "description": "",
+  "description": "A simple iOS app for MeteoBlue",
   "iconURL": "https://i.imgur.com/pqIZoZo.jpeg",
-  "website": "",
-  "patreonURL": "",
+  "website": "https://github.com/Zareix/MeteoBlueUI",
   "tintColor": "#6156e2",
   "featuredApps": [],
   "apps": [
     {
       "name": "MeteoBlueUI",
       "bundleIdentifier": "com.zareix.MeteoBlueUI",
-      "marketplaceID": "",
       "developerName": "Zareix",
       "subtitle": "A simple iOS app for MeteoBlue",
       "localizedDescription": "",
@@ -35,8 +33,7 @@
         "privacy": {
           "NSLocationWhenInUseUsageDescription": "YES"
         }
-      },
-      "patreon": {}
+      }
     }
   ],
   "news": []
