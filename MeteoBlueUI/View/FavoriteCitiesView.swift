@@ -45,7 +45,11 @@ struct FavoriteCitiesView: View {
     func deleteFromFavorite(at offsets: IndexSet) {
         favorites.remove(at: offsets)
     }
-    
+
+    func moveFavorite(from: IndexSet, to: Int) {
+        favorites.move(from: from, to: to)
+    }
+
     func isCurrentCityFavorite() -> Bool {
         guard let city = meteoData.city else {
             return false
@@ -96,6 +100,7 @@ struct FavoriteCitiesView: View {
                                     }
                                 }
                                 .onDelete(perform: deleteFromFavorite)
+                                .onMove(perform: moveFavorite)
                             }
                         }
                     }

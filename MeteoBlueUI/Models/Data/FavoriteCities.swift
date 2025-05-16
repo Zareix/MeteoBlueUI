@@ -39,6 +39,11 @@ class FavoriteCities: ObservableObject {
             items = items
         }
     }
+    
+    func move(from source: IndexSet, to destination: Int) {
+        items.move(fromOffsets: source, toOffset: destination)
+        save()
+    }
 
     func add(_ item: FavoriteCitiesItem) {
         if items.contains(item) {
