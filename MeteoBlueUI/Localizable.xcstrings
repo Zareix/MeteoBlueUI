@@ -4,6 +4,16 @@
     "%@ mm" : {
 
     },
+    "%@: %@" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@: %2$@"
+          }
+        }
+      }
+    },
     "%@°" : {
 
     },

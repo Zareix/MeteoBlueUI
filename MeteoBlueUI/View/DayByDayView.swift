@@ -11,6 +11,7 @@ struct DayByDayView: View {
 
     @State private var showAlert = false
     @State private var selectedDescription = ""
+    @State private var selectedItem: MeteoDataDay?
 
     private func formatPrecipitation(_ precipitation: Double) -> String {
         let formatter = NumberFormatter()
@@ -53,6 +54,8 @@ struct DayByDayView: View {
 
                     HStack(spacing: 8) {
                         Image(systemName: item.symbol)
+                            .symbolRenderingMode(.multicolor)
+                            .shadow(color: .secondary.opacity(0.3), radius: 8)
                             .font(.system(size: 20))
                             .frame(width: 20)
                         if item.precipitation > 0 {
@@ -93,18 +96,30 @@ struct DayByDayView: View {
                     }
                 }
                 .onTapGesture {
-                    selectedDescription = item.description
+                    selectedItem = item
                     showAlert = true
                 }
             }
-            .alert("Description", isPresented: $showAlert) {
-                Button("OK", role: .cancel) {}
-            } message: {
-                Text(selectedDescription)
+            .sheet(
+                isPresented: $showAlert
+            ) {
+                if let selectedItem = selectedItem {
+                    ForEach(selectedItem.hourByHour, id: \.time) { item in
+                        Text(
+                            "\(item.time.formatted(.dateTime.hour())): \(item.description)"
+                        )
+
+                    }
+                }
             }
+            //            .alert("Description", isPresented: $showAlert) {
+            //                Button("OK", role: .cancel) {}
+            //            } message: {
+            //                Text(selectedDescription)
+            //            }
         }
         .padding(16)
-        .background(.thinMaterial)
+        .background(.ultraThinMaterial)
         .cornerRadius(12)
     }
 }

@@ -11,10 +11,10 @@ struct FavoriteCitiesView: View {
     @EnvironmentObject private var meteoData: MeteoData
 
     @StateObject private var favorites = FavoriteCities()
-    @State private var isSearchActive = false
+    @State private var isSheetOpen = false
 
     func handleClick(title: String, subtitle: String) {
-        isSearchActive = false
+        isSheetOpen = false
         Task {
             let foundCity = try await MeteoBlueAPIService()
                 .getCityFromCompletion(title: title, subtitle: subtitle)
@@ -22,10 +22,6 @@ struct FavoriteCitiesView: View {
                 return
             }
             await meteoData.loadMeteoData(city: foundCity!)
-
-            favorites.add(
-                FavoriteCitiesItem(title: title, subtitle: subtitle)
-            )
         }
     }
 
@@ -64,7 +60,7 @@ struct FavoriteCitiesView: View {
 
     var body: some View {
         Button {
-            isSearchActive.toggle()
+            isSheetOpen.toggle()
         } label: {
             Image(
                 systemName:
@@ -73,9 +69,9 @@ struct FavoriteCitiesView: View {
             .foregroundColor(.blue)
         }
         .sheet(
-            isPresented: $isSearchActive,
+            isPresented: $isSheetOpen,
             onDismiss: {
-                isSearchActive = false
+                isSheetOpen = false
             }
         ) {
             NavigationStack {

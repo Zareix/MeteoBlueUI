@@ -51,41 +51,41 @@ struct PictoMapper {
     static func pictoToSFSymbol(picto: Int, isDaylight: Bool) -> String {
         let symbol =
             switch picto {
-            case 1: ("sun.max", "moon")
-            case 2: ("sun.max", "moon")
-            case 3: ("sun.max", "moon")
-            case 4: ("cloud.sun", "cloud.moon")
-            case 5: ("cloud.sun", "cloud.moon")
-            case 6: ("cloud.sun", "cloud.moon")
-            case 7: ("cloud.sun", "cloud.moon")
-            case 8: ("cloud.sun", "cloud.moon")
-            case 9: ("cloud.sun", "cloud.moon")
-            case 10: ("cloud.sun", "cloud.moon")
-            case 11: ("cloud.sun", "cloud.moon")
-            case 12: ("cloud.sun", "cloud.moon")
-            case 13: ("sun.max", "moon")
-            case 14: ("sun.max", "moon")
-            case 15: ("sun.max", "moon")
-            case 16: ("cloud.fog", "cloud.fog")
-            case 17: ("cloud.fog", "cloud.fog")
-            case 18: ("cloud.fog", "cloud.fog")
-            case 19: ("cloud.sun", "cloud.moon")
-            case 20: ("cloud.sun", "cloud.moon")
-            case 21: ("cloud.sun", "cloud.moon")
-            case 22: ("cloud", "cloud")
-            case 23: ("cloud.rain", "cloud.rain")
-            case 24: ("cloud.snow", "cloud.snow")
-            case 25: ("cloud.heavyrain", "cloud.heavyrain")
-            case 26: ("cloud.snow", "cloud.snow")
-            case 27: ("cloud.sun.bolt", "cloud.moon.bolt")
-            case 28: ("cloud.sun.bolt", "cloud.moon.bolt")
-            case 29: ("cloud.snow", "cloud.snow")
-            case 30: ("cloud.sun.bolt", "cloud.moon.bolt")
-            case 31: ("cloud.sun.rain", "cloud.moon.rain")
-            case 32: ("sun.snow", "snow")
-            case 33: ("cloud.rain", "cloud.rain")
-            case 34: ("cloud.snow", "cloud.snow")
-            case 35: ("cloud.rain", "cloud.rain")
+            case 1: ("sun.max.fill", "moon.fill")
+            case 2: ("sun.max.fill", "moon.fill")
+            case 3: ("sun.max.fill", "moon.fill")
+            case 4: ("cloud.sun.fill", "cloud.moon.fill")
+            case 5: ("cloud.sun.fill", "cloud.moon.fill")
+            case 6: ("cloud.sun.fill", "cloud.moon.fill")
+            case 7: ("cloud.sun.fill", "cloud.moon.fill")
+            case 8: ("cloud.sun.fill", "cloud.moon.fill")
+            case 9: ("cloud.sun.fill", "cloud.moon.fill")
+            case 10: ("cloud.sun.fill", "cloud.moon.fill")
+            case 11: ("cloud.sun.fill", "cloud.moon.fill")
+            case 12: ("cloud.sun.fill", "cloud.moon.fill")
+            case 13: ("sun.max.fill", "moon.fill")
+            case 14: ("sun.max.fill", "moon.fill")
+            case 15: ("sun.max.fill", "moon.fill")
+            case 16: ("cloud.fog.fill", "cloud.fog.fill")
+            case 17: ("cloud.fog.fill", "cloud.fog.fill")
+            case 18: ("cloud.fog.fill", "cloud.fog.fill")
+            case 19: ("cloud.sun.fill", "cloud.moon.fill")
+            case 20: ("cloud.sun.fill", "cloud.moon.fill")
+            case 21: ("cloud.sun.fill", "cloud.moon.fill")
+            case 22: ("cloud.fill", "cloud.fill")
+            case 23: ("cloud.rain.fill", "cloud.rain.fill")
+            case 24: ("cloud.snow.fill", "cloud.snow.fill")
+            case 25: ("cloud.heavyrain.fill", "cloud.heavyrain.fill")
+            case 26: ("cloud.snow.fill", "cloud.snow.fill")
+            case 27: ("cloud.sun.bolt.fill", "cloud.moon.bolt.fill")
+            case 28: ("cloud.sun.bolt.fill", "cloud.moon.bolt.fill")
+            case 29: ("cloud.snow.fill", "cloud.snow.fill")
+            case 30: ("cloud.sun.bolt.fill", "cloud.moon.bolt.fill")
+            case 31: ("cloud.sun.rain.fill", "cloud.moon.rain.fill")
+            case 32: ("sun.snow.fill", "snow.fill")
+            case 33: ("cloud.rain.fill", "cloud.rain.fill")
+            case 34: ("cloud.snow.fill", "cloud.snow.fill")
+            case 35: ("cloud.rain.fill", "cloud.rain.fill")
             default: ("questionmark", "questionmark")
             }
 
@@ -117,24 +117,24 @@ struct PictoMapper {
 
     static func pictoIdayToSFSymbol(picto: Int) -> String {
         return switch picto {
-        case 1: "sun.max"
-        case 2: "cloud.sun"
-        case 3: "cloud.sun"
-        case 4: "cloud"
-        case 5: "cloud.fog"
-        case 6: "cloud.rain"
-        case 7: "cloud.sun.rain"
-        case 8: "cloud.sun.bolt"
-        case 9: "cloud.snow"
-        case 10: "cloud.snow"
-        case 11: "cloud.sun.rain"
-        case 12: "cloud.rain"
-        case 13: "cloud.snow"
-        case 14: "cloud.sun.rain"
-        case 15: "cloud.snow"
-        case 16: "cloud.sun.rain"
-        case 17: "cloud.snow"
-        default: "Inconnu"
+        case 1: "sun.max.fill"
+        case 2: "cloud.sun.fill"
+        case 3: "cloud.sun.fill"
+        case 4: "cloud.fill"
+        case 5: "cloud.fog.fill"
+        case 6: "cloud.rain.fill"
+        case 7: "cloud.sun.rain.fill"
+        case 8: "cloud.sun.bolt.fill"
+        case 9: "cloud.snow.fill"
+        case 10: "cloud.snow.fill"
+        case 11: "cloud.sun.rain.fill"
+        case 12: "cloud.rain.fill"
+        case 13: "cloud.snow.fill"
+        case 14: "cloud.sun.rain.fill"
+        case 15: "cloud.snow.fill"
+        case 16: "cloud.sun.rain.fill"
+        case 17: "cloud.snow.fill"
+        default: "questionmark"
         }
     }
 }

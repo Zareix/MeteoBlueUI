@@ -37,6 +37,8 @@ struct HourByHourView: View {
                         .foregroundColor(.secondary)
 
                         Image(systemName: item.symbol)
+                            .symbolRenderingMode(.multicolor)
+                            .shadow(color: .secondary.opacity(0.3), radius: 8)
                             .font(.system(size: 22))
                             .frame(height: 22)
 
@@ -60,7 +62,7 @@ struct HourByHourView: View {
         }
         .frame(maxWidth: .infinity)
         .padding(16)
-        .background(.thinMaterial)
+        .background(.ultraThinMaterial)
         .cornerRadius(12)
     }
 }
@@ -68,17 +70,19 @@ struct HourByHourView: View {
 // MARK: - Preview
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
-
     @Previewable @StateObject var locationManager = LocationManager()
 
     if let city = locationManager.city {
-        HourByHourView(
-            hourByHour: mockData.hourByHour
-        )
-        .task {
+        VStack {
+            if let firstDay = mockData.dayByDay.first {
+                HourByHourView(
+                    hourByHour: firstDay.hourByHour
+                )
+            } else {
+                ProgressView("loading")
+            }
+        }.task {
             await mockData.loadMeteoData(city: city)
         }
-    } else {
-        ProgressView("loading")
     }
 }

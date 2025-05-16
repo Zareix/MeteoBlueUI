@@ -47,7 +47,7 @@ class FavoriteCities: ObservableObject {
 
     func add(_ item: FavoriteCitiesItem) {
         if items.contains(item) {
-            items.removeAll(where: { $0 == item })
+            return
         }
         items.insert(item, at: 0)
         save()

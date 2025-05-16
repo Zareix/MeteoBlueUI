@@ -69,6 +69,8 @@ struct DataDay: Codable {
     let temperatureMean: [Double]
     let sealevelpressureMax, relativehumidityMean, predictabilityClass: [Int]
     let windspeedMax: [Double]
+//    let sunrise: [String] // Format "HH:mm"
+//    let sunset: [String] // Format "HH:mm"
 
     enum CodingKeys: String, CodingKey {
         case time
@@ -100,5 +102,6 @@ struct DataDay: Codable {
         case relativehumidityMean = "relativehumidity_mean"
         case predictabilityClass = "predictability_class"
         case windspeedMax = "windspeed_max"
+//        case sunrise, sunset
     }
 }
