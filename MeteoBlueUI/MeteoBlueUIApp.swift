@@ -11,13 +11,14 @@ import SwiftUI
 struct MeteoBlueUIApp: App {
     @StateObject private var locationManager = LocationManager()
     @StateObject private var meteoData = MeteoData()
-    @State private var showSheet = KeychainService().getMetoBlueAPIToken() == nil
+    @State private var showSheet =
+        KeychainService().getMetoBlueAPIToken() == nil
     @State private var apiToken: String = ""
-    
+
     var body: some Scene {
         WindowGroup {
             if !showSheet {
-                if (locationManager.city != nil) {
+                if locationManager.city != nil {
                     ContentView()
                         .background(
                             .thinMaterial
@@ -25,11 +26,11 @@ struct MeteoBlueUIApp: App {
                         .environmentObject(meteoData)
                         .environmentObject(locationManager)
                 } else {
-                    ProgressView("loading")
+                    ProgressView()
                 }
             } else {
                 VStack {
-                    ProgressView("loading")
+                    ProgressView()
                 }.sheet(isPresented: $showSheet) {
                     VStack(spacing: 8) {
                         Text("Enter your MeteoBlue API token")
@@ -39,7 +40,9 @@ struct MeteoBlueUIApp: App {
                             .textFieldStyle(RoundedBorderTextFieldStyle())
                             .padding()
                         Button("Save") {
-                            KeychainService().setMetoBlueAPIToken(token: apiToken)
+                            KeychainService().setMetoBlueAPIToken(
+                                token: apiToken
+                            )
                             showSheet = false
                         }
                         .padding()

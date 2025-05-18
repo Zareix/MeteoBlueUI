@@ -7,10 +7,26 @@
 import SwiftUI
 
 struct HourByHourView: View {
-    let hourByHour: [MeteoData1H]
+    let currentDay: MeteoDataDay
+    let nextDay: MeteoDataDay
 
     @State private var showAlert = false
     @State private var selectedDescription = ""
+
+    private var hourByHour: [MeteoData1H] {
+        let currentHourByHour = currentDay.hourByHour.filter {
+            $0.time
+                >= Calendar.current.date(
+                    from: Calendar.current.dateComponents(
+                        [.year, .month, .day, .hour],
+                        from: Date()
+                    )
+                ) ?? Date()
+        }
+
+        return currentHourByHour
+            + nextDay.hourByHour.prefix(24 - currentHourByHour.count)
+    }
 
     private func formattedHour(from date: Date) -> String {
         let outputFormatter = DateFormatter()
@@ -55,7 +71,7 @@ struct HourByHourView: View {
                 }
             }
         }
-        .alert("Description", isPresented: $showAlert) {
+        .alert("hour-by-hour.description", isPresented: $showAlert) {
             Button("OK", role: .cancel) {}
         } message: {
             Text(selectedDescription)
@@ -76,7 +92,8 @@ struct HourByHourView: View {
         VStack {
             if let firstDay = mockData.dayByDay.first {
                 HourByHourView(
-                    hourByHour: firstDay.hourByHour
+                    currentDay: firstDay,
+                    nextDay: mockData.dayByDay[1]
                 )
             } else {
                 ProgressView("loading")

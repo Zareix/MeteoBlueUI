@@ -25,8 +25,8 @@ struct ContentView: View {
     var body: some View {
         VStack {
             if let city = meteoData.city,
-               let firstDay = meteoData.dayByDay.first,
-               let firstHour = firstDay.hourByHour.first
+                let firstDay = meteoData.dayByDay.first,
+                let firstHour = firstDay.hourByHour.first
             {
                 NavigationStack {
                     ZStack {
@@ -90,7 +90,8 @@ struct ContentView: View {
                                     }
 
                                     HourByHourView(
-                                        hourByHour: firstDay.hourByHour
+                                        currentDay: firstDay,
+                                        nextDay: meteoData.dayByDay[1]
                                     )
 
                                     DayByDayView(
@@ -99,37 +100,37 @@ struct ContentView: View {
                                 }
                             }
                             .padding(.horizontal, 16)
-                            .navigationTitle(
-                                city.placemark.locality ?? "Unknown"
-                            )
-                            .toolbar {
-                                ToolbarItem(placement: .topBarLeading) {
-                                    FavoriteCitiesView()
-                                }
-                                if let currentCity = locationManager.city {
-                                    ToolbarItem(
-                                        placement: .navigationBarTrailing
-                                    ) {
-                                        Button {
-                                            Task {
-                                                await meteoData.loadMeteoData(
-                                                    city: currentCity
-                                                )
-                                            }
-                                        } label: {
-                                            Image(
-                                                systemName: areMapItemsEqual(
-                                                    locationManager.city,
-                                                    city
-                                                ) ? "location.fill" : "location"
+                        }
+                        .navigationTitle(
+                            city.placemark.locality ?? "Unknown"
+                        )
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                FavoriteCitiesView()
+                            }
+                            if let currentCity = locationManager.city {
+                                ToolbarItem(
+                                    placement: .navigationBarTrailing
+                                ) {
+                                    Button {
+                                        Task {
+                                            await meteoData.loadMeteoData(
+                                                city: currentCity
                                             )
-                                            .foregroundColor(.blue)
                                         }
+                                    } label: {
+                                        Image(
+                                            systemName: areMapItemsEqual(
+                                                locationManager.city,
+                                                city
+                                            ) ? "location.fill" : "location"
+                                        )
+                                        .foregroundColor(.blue)
                                     }
                                 }
-                                ToolbarItem(placement: .topBarTrailing) {
-                                    SearchCityView()
-                                }
+                            }
+                            ToolbarItem(placement: .topBarTrailing) {
+                                SearchCityView()
                             }
                         }
                         .refreshable {
@@ -144,7 +145,7 @@ struct ContentView: View {
                 Text("Error: \(errorMessage)")
                     .foregroundColor(.red)
             } else {
-                ProgressView("loading")
+                ProgressView()
                     .padding()
             }
         }
@@ -163,6 +164,6 @@ struct ContentView: View {
             .environmentObject(MockMeteoData() as MeteoData)
             .environmentObject(locationManager)
     } else {
-        ProgressView("loading")
+        ProgressView()
     }
 }

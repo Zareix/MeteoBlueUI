@@ -9,7 +9,6 @@ import SwiftUI
 struct DayByDayView: View {
     let dayByDay: [MeteoDataDay]
 
-    @State private var showAlert = false
     @State private var selectedDescription = ""
     @State private var selectedItem: MeteoDataDay?
 
@@ -57,7 +56,7 @@ struct DayByDayView: View {
                             .symbolRenderingMode(.multicolor)
                             .shadow(color: .secondary.opacity(0.3), radius: 8)
                             .font(.system(size: 20))
-                            .frame(width: 20)
+                            .frame(width: 20, height: 20)
                         if item.precipitation > 0 {
                             Text(
                                 "\(formatPrecipitation(item.precipitation)) mm"
@@ -69,7 +68,7 @@ struct DayByDayView: View {
 
                     Spacer()
 
-                    HStack(spacing: 2) {
+                    HStack(spacing: 4) {
                         HStack(spacing: 0) {
                             Image(systemName: "arrow.down")
                                 .font(.system(size: 12))
@@ -77,9 +76,9 @@ struct DayByDayView: View {
                             Text(
                                 "\(Int(round(item.temperatureMin)))°"
                             )
-                            .font(.body)
+                            .font(.system(size: 16))
                             .foregroundColor(.secondary)
-                            .frame(width: 30)
+                            .frame(minWidth: 30)
                         }
 
                         HStack(spacing: 0) {
@@ -91,32 +90,26 @@ struct DayByDayView: View {
                             )
                             .font(.body)
                             .foregroundColor(.primary)
-                            .frame(width: 30)
+                            .frame(minWidth: 30)
                         }
                     }
                 }
+                .padding(.vertical, 4)
+                .contentShape(Rectangle())
                 .onTapGesture {
                     selectedItem = item
-                    showAlert = true
                 }
             }
             .sheet(
-                isPresented: $showAlert
-            ) {
-                if let selectedItem = selectedItem {
-                    ForEach(selectedItem.hourByHour, id: \.time) { item in
-                        Text(
-                            "\(item.time.formatted(.dateTime.hour())): \(item.description)"
-                        )
-
-                    }
+                item: $selectedItem,
+                onDismiss: {
+                    selectedItem = nil
                 }
+            ) { selectedItem in
+                DayDetailsView(
+                    day: selectedItem,
+                )
             }
-            //            .alert("Description", isPresented: $showAlert) {
-            //                Button("OK", role: .cancel) {}
-            //            } message: {
-            //                Text(selectedDescription)
-            //            }
         }
         .padding(16)
         .background(.ultraThinMaterial)
@@ -137,6 +130,6 @@ struct DayByDayView: View {
             await mockData.loadMeteoData(city: city)
         }
     } else {
-        ProgressView("loading")
+        ProgressView()
     }
 }
