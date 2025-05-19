@@ -2,7 +2,7 @@
   "name": "MeteoBlueUI",
   "subtitle": "A simple iOS app for MeteoBlue",
   "description": "A simple iOS app for MeteoBlue",
-  "iconURL": "https://i.imgur.com/pqIZoZo.jpeg",
+  "iconURL": "https://github.com/Zareix/MeteoBlueUI/blob/main/MeteoBlueUI/Assets.xcassets/AppIcon.appiconset/AppIcon.png?raw=true",
   "website": "https://github.com/Zareix/MeteoBlueUI",
   "tintColor": "#6156e2",
   "featuredApps": [
@@ -15,11 +15,20 @@
       "developerName": "Zareix",
       "subtitle": "A simple iOS app for MeteoBlue",
       "localizedDescription": "",
-      "iconURL": "https://i.imgur.com/cy22whi.jpeg",
+      "iconURL": "https://github.com/Zareix/MeteoBlueUI/blob/main/MeteoBlueUI/Assets.xcassets/AppIcon.appiconset/AppIcon.png?raw=true",
       "tintColor": "#6156e2",
       "category": "lifestyle",
       "screenshots": [],
       "versions": [
+        {
+          "downloadURL": "https://github.com/Zareix/MeteoBlueUI/releases/download/v1.4/MeteoBlueUI.ipa",
+          "size": 200000,
+          "version": "1.4",
+          "buildVersion": null,
+          "date": "2025-05-19T20:00:00+02:00",
+          "localizedDescription": null,
+          "minOSVersion": null
+        },
         {
           "downloadURL": "https://github.com/Zareix/MeteoBlueUI/releases/download/v1.3/MeteoBlueUI.ipa",
           "size": 200000,
