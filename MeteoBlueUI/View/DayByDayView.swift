@@ -106,15 +106,14 @@ struct DayByDayView: View {
                     selectedItem = nil
                 }
             ) { selectedItem in
-                DayDetailsView(
-                    day: selectedItem,
-                )
+                DayDetailsView(dayByDay: dayByDay, selectedItem: selectedItem)
             }
         }
         .padding(16)
         .background(.ultraThinMaterial)
         .cornerRadius(12)
     }
+
 }
 
 // MARK: - Preview
@@ -126,6 +125,7 @@ struct DayByDayView: View {
         DayByDayView(
             dayByDay: mockData.dayByDay
         )
+        .environmentObject(mockData as MeteoData)
         .task {
             await mockData.loadMeteoData(city: city)
         }

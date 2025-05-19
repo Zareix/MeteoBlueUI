@@ -9,7 +9,7 @@ import Foundation
 import MapKit
 
 // MARK: - Struct
-struct MeteoData1H {
+struct MeteoData1H: Hashable {
     let time: Date
     let description: String
     let symbol: String
@@ -18,8 +18,7 @@ struct MeteoData1H {
     let precipitationProbability: Int
 }
 
-struct MeteoDataDay: Identifiable, Equatable {
-    let id: String
+struct MeteoDataDay: Identifiable, Equatable, Hashable {
     var hourByHour: [MeteoData1H]
 
     let time: Date
@@ -32,6 +31,12 @@ struct MeteoDataDay: Identifiable, Equatable {
     let precipitationProbability: Int
     //    let sunrise: Date
     //    let sunset: Date
+
+    var id: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
+        return dateFormatter.string(from: time)
+    }
 
     static func == (lhs: MeteoDataDay, rhs: MeteoDataDay) -> Bool {
         return lhs.id == rhs.id
@@ -66,7 +71,6 @@ class MeteoData: ObservableObject {
                 }
                 self.dayByDay.append(
                     MeteoDataDay(
-                        id: day,
                         hourByHour: [],
                         time: date,
                         description: PictoMapper.pictoIdayToDescription(
@@ -154,7 +158,7 @@ class MockMeteoData: MeteoData {
         print("Loading meteo data for \(city.placemark.locality ?? "Unknown")")
         self.city = city
         self.dayByDay.removeAll()
-        for index in 0...5 {
+        for index in 0...7 {
             let dateFormatter = DateFormatter()
             dateFormatter.dateFormat = "yyyy-MM-dd"
             let day = dateFormatter.string(
@@ -201,7 +205,6 @@ class MockMeteoData: MeteoData {
             let picto = Int.random(in: 1...17)
             self.dayByDay.append(
                 MeteoDataDay(
-                    id: day,
                     hourByHour: hourByHour,
                     time: MeteoData.convertStringDayToDate(
                         input: day

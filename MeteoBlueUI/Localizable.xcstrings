@@ -7,6 +7,9 @@
     "%@°" : {
 
     },
+    "%lld mm" : {
+
+    },
     "%lld%%" : {
 
     },
@@ -48,6 +51,9 @@
           }
         }
       }
+    },
+    "day-details.precipitation-mm" : {
+
     },
     "day-details.precipitation-percent" : {
       "localizations" : {

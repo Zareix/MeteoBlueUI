@@ -8,7 +8,9 @@ import Charts
 import SwiftUI
 
 struct TemperatureChartView: View {
-    var day: MeteoDataDay
+    let day: MeteoDataDay
+
+    @EnvironmentObject private var meteoData: MeteoData
 
     @State private var selectedHour: MeteoData1H?
     @State private var selectedX: CGFloat?
@@ -53,7 +55,7 @@ struct TemperatureChartView: View {
 
     var body: some View {
         VStack {
-            
+
             if let selected = selectedHour, let x = selectedX {
                 HStack {
                     Spacer().frame(
@@ -66,10 +68,11 @@ struct TemperatureChartView: View {
                         alignment:
                             x < 14
                             ? .leading
-                            : .center
+                            : .center,
+                        spacing: 0
                     ) {
                         HStack {
-                            Image(systemName: day.symbol)
+                            Image(systemName: selected.symbol)
                                 .symbolRenderingMode(.multicolor)
                                 .shadow(
                                     color: .secondary.opacity(0.3),
@@ -94,65 +97,120 @@ struct TemperatureChartView: View {
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     }
+                    .padding(.top, 24)
                     Spacer()
                 }
-                .frame(height: 48)
+                .frame(height: 52)
             } else {
                 VStack {
-                    HStack {
-                        Text(
-                            "\(Int(round(day.temperatureMean)))°"
-                        )
-                        .font(.title)
-                        Image(systemName: day.symbol)
-                            .symbolRenderingMode(.multicolor)
-                            .shadow(
-                                color: .secondary.opacity(0.3),
-                                radius: 8
+                    if day == meteoData.dayByDay.first {
+                        HStack {
+                            Text(
+                                "\(Int(round(day.temperatureMean)))°"
                             )
-                            .font(.system(size: 24))
-                            .frame(width: 24)
-                        Spacer()
-                    }
-                    HStack {
-                        HStack(spacing: 0) {
-                            Image(systemName: "arrow.up")
-                                .font(.system(size: 12))
+                            .font(.title)
+                            Image(systemName: day.symbol)
+                                .symbolRenderingMode(.multicolor)
+                                .shadow(
+                                    color: .secondary.opacity(0.3),
+                                    radius: 8
+                                )
+                                .font(.system(size: 24))
+                                .frame(width: 24)
+                            Spacer()
+                        }
+                        HStack {
+                            HStack(spacing: 0) {
+                                Image(systemName: "arrow.up")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.primary)
+                                Text(
+                                    "\(Int(round(day.temperatureMax)))°"
+                                )
+                                .font(.subheadline)
                                 .foregroundColor(.primary)
-                            Text(
-                                "\(Int(round(day.temperatureMax)))°"
-                            )
-                            .font(.subheadline)
-                            .foregroundColor(.primary)
-                            .frame(width: 30)
-                        }
-                        HStack(spacing: 0) {
-                            Image(systemName: "arrow.down")
-                                .font(.system(size: 12))
+                            }
+                            HStack(spacing: 0) {
+                                Image(systemName: "arrow.down")
+                                    .font(.system(size: 12))
+                                    .foregroundColor(.secondary)
+                                Text(
+                                    "\(Int(round(day.temperatureMin)))°"
+                                )
+                                .font(.subheadline)
                                 .foregroundColor(.secondary)
-                            Text(
-                                "\(Int(round(day.temperatureMin)))°"
-                            )
-                            .font(.subheadline)
-                            .foregroundColor(.secondary)
-                            .frame(width: 30)
+                            }
+                            Spacer()
                         }
-                        Spacer()
+                    } else {
+                        HStack {
+                            HStack(spacing: 4) {
+                                Text(
+                                    "\(Int(round(day.temperatureMax)))°"
+                                )
+                                .font(.system(size: 24))
+                                .fontWeight(.semibold)
+                                .foregroundColor(.primary)
+                                Text(
+                                    "\(Int(round(day.temperatureMin)))°"
+                                )
+                                .font(.system(size: 24))
+                                .foregroundColor(.secondary)
+                                Image(systemName: day.symbol)
+                                    .symbolRenderingMode(.multicolor)
+                                    .shadow(
+                                        color: .secondary.opacity(0.3),
+                                        radius: 8
+                                    )
+                                    .font(.system(size: 24))
+                                    .frame(width: 24)
+                            }
+                            Spacer()
+                        }
                     }
                 }
-                .frame(height: 48)
+                .padding(.horizontal, 8)
+                .frame(height: 52)
             }
-            
+
             Chart {
-                RuleMark(y: .value("day-details.temperature", 0))
-                    .foregroundStyle(.blue.opacity(0.5))
-                    .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
+                if yMin < 0 && yMax > 0 {
+                    RuleMark(y: .value("day-details.temperature", 0))
+                        .foregroundStyle(.blue.opacity(0.5))
+                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
+                }
+
+                if selectedHour == nil {
+                    ForEach(
+                        day.hourByHour.enumerated().filter { $0.offset % 2 == 0 }
+                            .map { $0.element },
+                        id: \.self
+                    ) {
+                        hour in
+                        RuleMark(
+                            x: .value("hour", hour.time, unit: .hour)
+                        )
+                        .foregroundStyle(.clear)
+                        .annotation(position: .top) {
+                            Image(systemName: hour.symbol)
+                                .symbolRenderingMode(.multicolor)
+                                .shadow(
+                                    color: .secondary.opacity(0.6),
+                                    radius: 8
+                                )
+                                .font(.system(size: 12))
+                        }
+                    }
+                }
 
                 if !pastHours.isEmpty {
                     ForEach(pastHours, id: \.time) { hourData in
                         LineMark(
                             x: .value("hour", hourData.time, unit: .hour),
-                            y: .value("day-details.temperature", hourData.temperature),
+                            y: .value(
+                                "day-details.temperature",
+                                hourData.temperature
+                            ),
                             series: .value("Series", "Previous")
                         )
                         .foregroundStyle(.gray.opacity(0.8))
@@ -161,7 +219,10 @@ struct TemperatureChartView: View {
                         if hourData.temperature == day.temperatureMax {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
-                                y: .value("day-details.temperature", hourData.temperature)
+                                y: .value(
+                                    "day-details.temperature",
+                                    hourData.temperature
+                                )
                             )
                             .foregroundStyle(.orange.opacity(0.3))
                             .annotation(position: .top) {
@@ -173,7 +234,10 @@ struct TemperatureChartView: View {
                         } else if hourData.temperature == day.temperatureMin {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
-                                y: .value("day-details.temperature", hourData.temperature)
+                                y: .value(
+                                    "day-details.temperature",
+                                    hourData.temperature
+                                )
                             )
                             .foregroundStyle(.blue.opacity(0.3))
                             .annotation(position: .bottom) {
@@ -211,7 +275,10 @@ struct TemperatureChartView: View {
                         if hourData.temperature == day.temperatureMax {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
-                                y: .value("day-details.temperature", hourData.temperature)
+                                y: .value(
+                                    "day-details.temperature",
+                                    hourData.temperature
+                                )
                             )
                             .foregroundStyle(.orange)
                             .annotation(position: .top) {
@@ -223,7 +290,10 @@ struct TemperatureChartView: View {
                         } else if hourData.temperature == day.temperatureMin {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
-                                y: .value("day-details.temperature", hourData.temperature)
+                                y: .value(
+                                    "day-details.temperature",
+                                    hourData.temperature
+                                )
                             )
                             .foregroundStyle(.blue)
                             .annotation(position: .bottom) {
@@ -310,8 +380,7 @@ struct TemperatureChartView: View {
                         )
                 }
             }
-            .frame(height: 250)
-            .clipped()
+            .frame(height: 200)
             .padding()
         }
     }
@@ -326,11 +395,12 @@ struct TemperatureChartView: View {
 
     if let city = locationManager.city {
         ZStack {
-            if let firstDay = mockData.dayByDay.first {
+            if mockData.dayByDay.count > 1 {
                 VStack {
                     TemperatureChartView(
-                        day: firstDay
+                        day: mockData.dayByDay[1]
                     )
+                    .environmentObject(mockData as MeteoData)
                 }
                 .padding(.horizontal, 16)
             }
