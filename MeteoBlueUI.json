@@ -21,6 +21,15 @@
       "screenshots": [],
       "versions": [
         {
+          "downloadURL": "https://github.com/Zareix/MeteoBlueUI/releases/download/v1.4.1/MeteoBlueUI.ipa",
+          "size": 200000,
+          "version": "1.4.1",
+          "buildVersion": null,
+          "date": "2025-05-20T12:00:00+02:00",
+          "localizedDescription": null,
+          "minOSVersion": null
+        },
+        {
           "downloadURL": "https://github.com/Zareix/MeteoBlueUI/releases/download/v1.4/MeteoBlueUI.ipa",
           "size": 200000,
           "version": "1.4",

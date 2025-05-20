@@ -7,30 +7,19 @@
 import SwiftUI
 
 struct DayByDayView: View {
-    let dayByDay: [MeteoDataDay]
+    @EnvironmentObject private var meteoData: MeteoData
 
     @State private var selectedDescription = ""
     @State private var selectedItem: MeteoDataDay?
 
-    private func formatPrecipitation(_ precipitation: Double) -> String {
-        let formatter = NumberFormatter()
-        formatter.numberStyle = .decimal
-        formatter.minimumFractionDigits = 2
-        formatter.maximumFractionDigits = 2
-        formatter.locale = Locale.current
-        if let formattedString = formatter.string(
-            from: NSNumber(value: precipitation)
-        ) {
-            return formattedString
-        } else {
-            return "\(precipitation)"
-        }
+    private func roundToNearest5(_ value: Int) -> Int {
+        return 5 * Int(round(Double(value) / 5.0))
     }
 
     var body: some View {
         VStack(spacing: 8) {
             ForEach(
-                Array(dayByDay.enumerated()),
+                Array(meteoData.dayByDay.enumerated()),
                 id: \.element.time
             ) {
                 index,
@@ -57,9 +46,9 @@ struct DayByDayView: View {
                             .shadow(color: .secondary.opacity(0.3), radius: 8)
                             .font(.system(size: 20))
                             .frame(width: 20, height: 20)
-                        if item.precipitation > 0 {
+                        if item.precipitationProbability > 30 {
                             Text(
-                                "\(formatPrecipitation(item.precipitation)) mm"
+                                "\(roundToNearest5(item.precipitationProbability)) %"
                             )
                             .font(.caption)
                             .foregroundColor(.secondary)
@@ -106,7 +95,9 @@ struct DayByDayView: View {
                     selectedItem = nil
                 }
             ) { selectedItem in
-                DayDetailsView(dayByDay: dayByDay, selectedItem: selectedItem)
+                DayDetailsView(
+                    selectedItem: selectedItem
+                )
             }
         }
         .padding(16)
@@ -122,13 +113,11 @@ struct DayByDayView: View {
     @Previewable @StateObject var locationManager = LocationManager()
 
     if let city = locationManager.city {
-        DayByDayView(
-            dayByDay: mockData.dayByDay
-        )
-        .environmentObject(mockData as MeteoData)
-        .task {
-            await mockData.loadMeteoData(city: city)
-        }
+        DayByDayView()
+            .environmentObject(mockData as MeteoData)
+            .task {
+                await mockData.loadMeteoData(city: city)
+            }
     } else {
         ProgressView()
     }

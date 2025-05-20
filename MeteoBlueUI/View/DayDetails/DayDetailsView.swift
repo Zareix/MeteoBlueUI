@@ -9,7 +9,8 @@ import Charts
 import SwiftUI
 
 struct DayDetailsView: View {
-    let dayByDay: [MeteoDataDay]
+    @EnvironmentObject var meteoData: MeteoData
+
     let selectedItem: MeteoDataDay
 
     @State var activeItem: MeteoDataDay?
@@ -20,7 +21,7 @@ struct DayDetailsView: View {
                 if let activeDay = activeItem {
                     VStack(spacing: 8) {
                         HStack {
-                            ForEach(dayByDay) { day in
+                            ForEach(meteoData.dayByDay) { day in
                                 VStack {
                                     Text(
                                         day.time.formatted(
@@ -49,7 +50,8 @@ struct DayDetailsView: View {
                                     .frame(maxWidth: .infinity)
                                     .padding(8)
                                     .foregroundColor(
-                                        dayByDay.first == day ? .cyan : .primary
+                                        meteoData.dayByDay.first == day
+                                            ? .cyan : .primary
                                     )
                                     .font(.body)
                                     .background(
@@ -60,8 +62,8 @@ struct DayDetailsView: View {
                                     )
                                     .shadow(
                                         color: .secondary.opacity(0.4),
-                                        radius:  activeDay == day
-                                        ? 2 : 0
+                                        radius: activeDay == day
+                                            ? 2 : 0
                                     )
                                     .transition(.opacity)
                                     .animation(.easeInOut, value: activeDay)
@@ -89,8 +91,8 @@ struct DayDetailsView: View {
                 }
 
                 ScrollView(.horizontal) {
-                    HStack {
-                        ForEach(dayByDay, id: \.self) { day in
+                    LazyHStack {
+                        ForEach(meteoData.dayByDay, id: \.self) { day in
                             ScrollView {
                                 TemperatureChartView(day: day)
 
@@ -133,31 +135,31 @@ struct DayDetailsView: View {
     }
 }
 
-//// MARK: - Preview
-//#Preview {
-//    @Previewable @StateObject var mockData = MockMeteoData()
-//    @Previewable @StateObject var locationManager = LocationManager()
-//
-//    @Previewable @State var open: Bool = true
-//
-//    if let city = locationManager.city {
-//        ZStack {
-//            if let firstDay = mockData.dayByDay.first {
-//                VStack {
-//                    Button("Preview") {
-//                        open.toggle()
-//                    }
-//                }.sheet(isPresented: $open) {
-//                    DayDetailsView(
-//                        day: firstDay
-//                    )
-//                    .environmentObject(mockData as MeteoData)
-//                }
-//            }
-//        }.task {
-//            await mockData.loadMeteoData(city: city)
-//        }
-//    } else {
-//        ProgressView()
-//    }
-//}
+// MARK: - Preview
+#Preview {
+    @Previewable @StateObject var mockData = MockMeteoData()
+    @Previewable @StateObject var locationManager = LocationManager()
+
+    @Previewable @State var open: Bool = true
+
+    if let city = locationManager.city {
+        ZStack {
+            if let firstDay = mockData.dayByDay.first {
+                VStack {
+                    Button("Preview") {
+                        open.toggle()
+                    }
+                }.sheet(isPresented: $open) {
+                    DayDetailsView(
+                        selectedItem: firstDay
+                    )
+                    .environmentObject(mockData as MeteoData)
+                }
+            }
+        }.task {
+            await mockData.loadMeteoData(city: city)
+        }
+    } else {
+        ProgressView()
+    }
+}

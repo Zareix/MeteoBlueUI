@@ -7,13 +7,12 @@
 import SwiftUI
 
 struct HourByHourView: View {
-    let currentDay: MeteoDataDay
-    let nextDay: MeteoDataDay
-
-    @State private var showAlert = false
-    @State private var selectedDescription = ""
+    @EnvironmentObject private var meteoData: MeteoData
 
     private var hourByHour: [MeteoData1H] {
+        let currentDay = meteoData.dayByDay[0]
+        let nextDay = meteoData.dayByDay[1]
+
         let currentHourByHour = currentDay.hourByHour.filter {
             $0.time
                 >= Calendar.current.date(
@@ -37,15 +36,10 @@ struct HourByHourView: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .top, spacing: 24) {
-                ForEach(
-                    Array(hourByHour.enumerated()),
-                    id: \.element.time
-                ) {
-                    index,
-                    item in
+                ForEach(hourByHour) { item in
                     VStack(spacing: 10) {
                         Text(
-                            index == 0
+                            item == hourByHour.first
                                 ? String(localized: "hour-by-hour.now")
                                 : formattedHour(from: item.time)
                         )
@@ -64,17 +58,8 @@ struct HourByHourView: View {
                         .font(.body)
                         .foregroundColor(.primary)
                     }
-                    .onTapGesture {
-                        selectedDescription = item.description
-                        showAlert = true
-                    }
                 }
             }
-        }
-        .alert("hour-by-hour.description", isPresented: $showAlert) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(selectedDescription)
         }
         .frame(maxWidth: .infinity)
         .padding(16)
@@ -90,13 +75,16 @@ struct HourByHourView: View {
 
     if let city = locationManager.city {
         VStack {
-            if let firstDay = mockData.dayByDay.first {
-                HourByHourView(
-                    currentDay: firstDay,
-                    nextDay: mockData.dayByDay[1]
-                )
+            if mockData.dayByDay.first != nil {
+                HourByHourView()
+                    .environmentObject(mockData as MeteoData)
+                Button("Refresh") {
+                    Task {
+                        await mockData.loadMeteoData(force: true, city: city)
+                    }
+                }
             } else {
-                ProgressView("loading")
+                ProgressView()
             }
         }.task {
             await mockData.loadMeteoData(city: city)

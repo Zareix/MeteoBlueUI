@@ -26,121 +26,119 @@ struct ContentView: View {
         VStack {
             if let city = meteoData.city,
                 let firstDay = meteoData.dayByDay.first,
-                let firstHour = firstDay.hourByHour.first
+                let currentHour = firstDay.hourByHour.first(where: {
+                    $0.time
+                        == Calendar.current.date(
+                            from: Calendar.current.dateComponents(
+                                [.year, .month, .day, .hour],
+                                from: Date()
+                            )
+                        ) ?? Date()
+                })
             {
                 NavigationStack {
-                    ZStack {
-                        //                        LinearGradient(
-                        //                            colors: [.blue.opacity(0.5), .blue.opacity(0.8)],
-                        //                            startPoint: .top,
-                        //                            endPoint: .bottom
-                        //                        )
-                        //                        .ignoresSafeArea()
-                        ScrollView {
-                            VStack {
-                                if let country = city.placemark.country {
-                                    HStack(spacing: 4) {
-                                        Text(country)
-                                            .font(.subheadline)
-                                            .foregroundColor(.secondary)
-                                        Spacer()
-                                    }
-                                }
-                                VStack(spacing: 16) {
-                                    VStack {
-                                        HStack {
-                                            Image(systemName: firstHour.symbol)
-                                                .font(.system(size: 50))
-                                                .symbolRenderingMode(
-                                                    .multicolor
-                                                )
-                                                .frame(height: 54)
-                                                .id("symbol")
-                                                .transition(.opacity)
-                                                .animation(
-                                                    .easeOut,
-                                                    value: firstHour.symbol
-                                                )
-                                            Text(
-                                                "\(Int(round(firstHour.temperature)))°"
-                                            )
-                                            .font(.system(size: 54))
-                                            .id("temperature")
-                                            .contentTransition(.numericText())
-                                            .animation(
-                                                .easeInOut,
-                                                value: firstHour.temperature
-                                            )
-                                        }
-                                        .shadow(
-                                            color: .secondary.opacity(0.5),
-                                            radius: 18
-                                        )
-                                        Text(firstHour.description)
-                                            .font(.body)
-                                            .foregroundColor(.secondary)
-                                            .multilineTextAlignment(.center)
-                                            .padding(.horizontal, 32)
-                                            .id("description")
-                                            .transition(.opacity)
-                                            .animation(
-                                                .easeOut,
-                                                value: firstHour.description
-                                            )
-                                    }
-
-                                    HourByHourView(
-                                        currentDay: firstDay,
-                                        nextDay: meteoData.dayByDay[1]
-                                    )
-
-                                    DayByDayView(
-                                        dayByDay: meteoData.dayByDay
-                                    )
+                    ScrollView {
+                        VStack {
+                            if let country = city.placemark.country {
+                                HStack(spacing: 4) {
+                                    Text(country)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
                                 }
                             }
-                            .padding(.horizontal, 16)
-                        }
-                        .navigationTitle(
-                            city.placemark.locality ?? "Unknown"
-                        )
-                        .toolbar {
-                            ToolbarItem(placement: .topBarLeading) {
-                                FavoriteCitiesView()
-                            }
-                            if let currentCity = locationManager.city {
-                                ToolbarItem(
-                                    placement: .navigationBarTrailing
-                                ) {
-                                    Button {
-                                        Task {
-                                            await meteoData.loadMeteoData(
-                                                city: currentCity
-                                            )
-                                        }
-                                    } label: {
+                            VStack(spacing: 16) {
+                                VStack {
+                                    HStack {
                                         Image(
-                                            systemName: areMapItemsEqual(
-                                                locationManager.city,
-                                                city
-                                            ) ? "location.fill" : "location"
+                                            systemName: currentHour.symbol
                                         )
-                                        .foregroundColor(.blue)
+                                        .font(.system(size: 50))
+                                        .symbolRenderingMode(
+                                            .multicolor
+                                        )
+                                        .frame(height: 54)
+                                        .id("symbol")
+                                        .transition(.opacity)
+                                        .animation(
+                                            .easeOut,
+                                            value: currentHour.symbol
+                                        )
+                                        Text(
+                                            "\(Int(round(currentHour.temperature)))°"
+                                        )
+                                        .font(.system(size: 54))
+                                        .id("temperature")
+                                        .contentTransition(.numericText())
+                                        .animation(
+                                            .easeInOut,
+                                            value: currentHour.temperature
+                                        )
                                     }
+                                    .shadow(
+                                        color: .secondary.opacity(0.5),
+                                        radius: 18
+                                    )
+                                    Text(currentHour.description)
+                                        .font(.body)
+                                        .foregroundColor(.secondary)
+                                        .multilineTextAlignment(.center)
+                                        .padding(.horizontal, 32)
+                                        .id("description")
+                                        .transition(.opacity)
+                                        .animation(
+                                            .easeOut,
+                                            value: currentHour.description
+                                        )
                                 }
-                            }
-                            ToolbarItem(placement: .topBarTrailing) {
-                                SearchCityView()
+
+                                HourByHourView()
+
+                                DayByDayView()
                             }
                         }
-                        .refreshable {
-                            await meteoData.loadMeteoData(
-                                force: true,
-                                city: city
-                            )
+                        .padding(.horizontal, 16)
+                    }
+                    .navigationTitle(
+                        city.placemark.locality ?? "Unknown"
+                    )
+                    .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            FavoriteCitiesView()
+                        }
+                        if let currentCity = locationManager.city {
+                            ToolbarItem(
+                                placement: .navigationBarTrailing
+                            ) {
+                                Button {
+                                    Task {
+                                        await meteoData.loadMeteoData(
+                                            city: currentCity
+                                        )
+                                    }
+                                } label: {
+                                    Image(
+                                        systemName: areMapItemsEqual(
+                                            locationManager.city,
+                                            city
+                                        ) ? "location.fill" : "location"
+                                    )
+                                    .foregroundColor(.blue)
+                                }
+                            }
+                        }
+                        ToolbarItem(placement: .topBarTrailing) {
+                            SearchCityView()
                         }
                     }
+                    .refreshable {
+                        await meteoData.loadMeteoData(
+                            force: true,
+                            city: city
+                        )
+                    }
                 }
+
             } else if let errorMessage = meteoData.error {
                 Text("Error: \(errorMessage)")
                     .foregroundColor(.red)

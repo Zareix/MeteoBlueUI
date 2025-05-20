@@ -9,13 +9,23 @@ import Foundation
 import MapKit
 
 // MARK: - Struct
-struct MeteoData1H: Hashable {
+struct MeteoData1H: Identifiable, Equatable, Hashable {
     let time: Date
     let description: String
     let symbol: String
     let temperature: Double
     let precipitation: Double
     let precipitationProbability: Int
+
+    var id: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return dateFormatter.string(from: time)
+    }
+
+    static func == (lhs: MeteoData1H, rhs: MeteoData1H) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 struct MeteoDataDay: Identifiable, Equatable, Hashable {
@@ -189,7 +199,7 @@ class MockMeteoData: MeteoData {
                         ),
                         temperature: previousTempMean
                             + Double.random(in: -2...2),
-                        precipitation: Double.random(in: 0...10),
+                        precipitation: Double.random(in: 0...20),
                         precipitationProbability: previousPrecipitationProb < 10
                             ? previousPrecipitationProb + Int.random(in: 0...20)
                             : previousPrecipitationProb > 90
@@ -223,7 +233,7 @@ class MockMeteoData: MeteoData {
                         ?? 0,
                     temperatureMax: hourByHour.map { $0.temperature }.max()
                         ?? 0,
-                    precipitation: Double.random(in: 0...10),
+                    precipitation: Double.random(in: 0...20),
                     precipitationProbability: Int.random(in: 0...100),
                     //                    sunrise: MeteoData.convertStringHourToTime(
                     //                        input: "06:00"
