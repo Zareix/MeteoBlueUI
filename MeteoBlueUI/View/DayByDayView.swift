@@ -41,9 +41,7 @@ struct DayByDayView: View {
                     .frame(width: 40, alignment: .leading)
 
                     HStack(spacing: 8) {
-                        Image(systemName: item.symbol)
-                            .symbolRenderingMode(.multicolor)
-                            .shadow(color: .secondary.opacity(0.3), radius: 8)
+                        SymbolView(symbol: item.symbol)
                             .font(.system(size: 20))
                             .frame(width: 20, height: 20)
                         if item.precipitationProbability > 30 {
@@ -62,9 +60,7 @@ struct DayByDayView: View {
                             Image(systemName: "arrow.down")
                                 .font(.system(size: 12))
                                 .foregroundColor(.secondary)
-                            Text(
-                                "\(Int(round(item.temperatureMin)))°"
-                            )
+                            TemperatureView(temperature: item.temperatureMin)
                             .font(.system(size: 16))
                             .foregroundColor(.secondary)
                             .frame(minWidth: 30)
@@ -74,9 +70,7 @@ struct DayByDayView: View {
                             Image(systemName: "arrow.up")
                                 .font(.system(size: 12))
                                 .foregroundColor(.primary)
-                            Text(
-                                "\(Int(round(item.temperatureMax)))°"
-                            )
+                            TemperatureView(temperature: item.temperatureMax)
                             .font(.body)
                             .foregroundColor(.primary)
                             .frame(minWidth: 30)

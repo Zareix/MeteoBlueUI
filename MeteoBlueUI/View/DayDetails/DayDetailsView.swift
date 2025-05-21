@@ -51,13 +51,13 @@ struct DayDetailsView: View {
                                     .padding(8)
                                     .foregroundColor(
                                         meteoData.dayByDay.first == day
-                                            ? .cyan : .primary
+                                            ? .accentColor : .primary
                                     )
                                     .font(.body)
                                     .background(
                                         activeDay == day
                                             ? Circle()
-                                                .fill(.white)
+                                            .fill(Color.accentColor.opacity(0.2))
                                             : Circle().fill(.clear)
                                     )
                                     .shadow(

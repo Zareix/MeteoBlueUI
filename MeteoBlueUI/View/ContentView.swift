@@ -49,31 +49,18 @@ struct ContentView: View {
                             }
                             VStack(spacing: 16) {
                                 VStack {
-                                    HStack {
-                                        Image(
-                                            systemName: currentHour.symbol
+                                    HStack(spacing: 20) {
+                                        SymbolView(
+                                            symbol: currentHour.symbol
                                         )
                                         .font(.system(size: 50))
-                                        .symbolRenderingMode(
-                                            .multicolor
-                                        )
                                         .frame(height: 54)
-                                        .id("symbol")
-                                        .transition(.opacity)
-                                        .animation(
-                                            .easeOut,
-                                            value: currentHour.symbol
+
+                                        TemperatureView(
+                                            temperature: currentHour
+                                                .temperature
                                         )
-                                        Text(
-                                            "\(Int(round(currentHour.temperature)))°"
-                                        )
-                                        .font(.system(size: 54))
-                                        .id("temperature")
-                                        .contentTransition(.numericText())
-                                        .animation(
-                                            .easeInOut,
-                                            value: currentHour.temperature
-                                        )
+                                        .font(.system(size: 50))
                                     }
                                     .shadow(
                                         color: .secondary.opacity(0.5),

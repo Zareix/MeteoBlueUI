@@ -72,19 +72,19 @@ struct TemperatureChartView: View {
                         spacing: 0
                     ) {
                         HStack {
-                            Image(systemName: selected.symbol)
-                                .symbolRenderingMode(.multicolor)
-                                .shadow(
-                                    color: .secondary.opacity(0.3),
-                                    radius: 8
-                                )
-                                .font(.system(size: 24))
-                                .frame(width: 24)
-                            Text("\(Int(round(selected.temperature)))°")
-                                .font(.body)
-                                .fontWeight(.bold)
-                                .padding(6)
-                                .cornerRadius(8)
+                            SymbolView(
+                                symbol: selected.symbol,
+                                animationEnabled: false
+                            )
+                            .font(.system(size: 24))
+                            .frame(width: 24, height: 24)
+                            TemperatureView(
+                                temperature: selected.temperature
+                            )
+                            .font(.body)
+                            .fontWeight(.bold)
+                            .padding(6)
+                            .cornerRadius(8)
                         }
                         Text(
                             selected.time.formatted(
@@ -105,18 +105,13 @@ struct TemperatureChartView: View {
                 VStack {
                     if day == meteoData.dayByDay.first {
                         HStack {
-                            Text(
-                                "\(Int(round(day.temperatureMean)))°"
+                            TemperatureView(
+                                temperature: day
+                                    .temperatureMean
                             )
                             .font(.title)
-                            Image(systemName: day.symbol)
-                                .symbolRenderingMode(.multicolor)
-                                .shadow(
-                                    color: .secondary.opacity(0.3),
-                                    radius: 8
-                                )
+                            SymbolView(symbol: day.symbol)
                                 .font(.system(size: 24))
-                                .frame(width: 24)
                             Spacer()
                         }
                         HStack {
@@ -134,36 +129,25 @@ struct TemperatureChartView: View {
                                 Image(systemName: "arrow.down")
                                     .font(.system(size: 12))
                                     .foregroundColor(.secondary)
-                                Text(
-                                    "\(Int(round(day.temperatureMin)))°"
-                                )
-                                .font(.subheadline)
-                                .foregroundColor(.secondary)
+                                TemperatureView(temperature: day.temperatureMin)
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
                             }
                             Spacer()
                         }
                     } else {
                         HStack {
                             HStack(spacing: 4) {
-                                Text(
-                                    "\(Int(round(day.temperatureMax)))°"
-                                )
-                                .font(.system(size: 24))
-                                .fontWeight(.semibold)
-                                .foregroundColor(.primary)
-                                Text(
-                                    "\(Int(round(day.temperatureMin)))°"
-                                )
-                                .font(.system(size: 24))
-                                .foregroundColor(.secondary)
-                                Image(systemName: day.symbol)
-                                    .symbolRenderingMode(.multicolor)
-                                    .shadow(
-                                        color: .secondary.opacity(0.3),
-                                        radius: 8
-                                    )
+                                TemperatureView(temperature: day.temperatureMax)
                                     .font(.system(size: 24))
-                                    .frame(width: 24)
+                                    .fontWeight(.semibold)
+                                    .foregroundColor(.primary)
+                                TemperatureView(temperature: day.temperatureMin)
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.secondary)
+                                SymbolView(symbol: day.symbol)
+                                    .font(.system(size: 24))
+                                    .frame(width: 24, height: 24)
                             }
                             Spacer()
                         }
@@ -182,8 +166,10 @@ struct TemperatureChartView: View {
 
                 if selectedHour == nil {
                     ForEach(
-                        day.hourByHour.enumerated().filter { $0.offset % 2 == 0 }
-                            .map { $0.element },
+                        day.hourByHour.enumerated().filter {
+                            $0.offset % 2 == 0
+                        }
+                        .map { $0.element },
                         id: \.self
                     ) {
                         hour in
@@ -192,13 +178,9 @@ struct TemperatureChartView: View {
                         )
                         .foregroundStyle(.clear)
                         .annotation(position: .top) {
-                            Image(systemName: hour.symbol)
-                                .symbolRenderingMode(.multicolor)
-                                .shadow(
-                                    color: .secondary.opacity(0.6),
-                                    radius: 8
-                                )
+                            SymbolView(symbol: hour.symbol)
                                 .font(.system(size: 12))
+                                .frame(width: 12, height: 12)
                         }
                     }
                 }

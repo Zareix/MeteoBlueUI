@@ -46,21 +46,21 @@ struct HourByHourView: View {
                         .font(.body)
                         .foregroundColor(.secondary)
 
-                        Image(systemName: item.symbol)
-                            .symbolRenderingMode(.multicolor)
-                            .shadow(color: .secondary.opacity(0.3), radius: 8)
-                            .font(.system(size: 22))
-                            .frame(height: 22)
-
-                        Text(
-                            "\(Int(round(item.temperature)).formatted())°"
+                        SymbolView(
+                            symbol: item.symbol,
+                            description: item.description
                         )
-                        .font(.body)
-                        .foregroundColor(.primary)
+                        .font(.system(size: 24))
+                        .frame(width: 24, height: 24)
+
+                        TemperatureView(temperature: item.temperature)
+                            .font(.body)
+                            .foregroundColor(.primary)
                     }
                 }
             }
         }
+        .foregroundColor(.primary)
         .frame(maxWidth: .infinity)
         .padding(16)
         .background(.ultraThinMaterial)
