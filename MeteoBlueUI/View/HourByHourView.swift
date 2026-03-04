@@ -7,11 +7,12 @@
 import SwiftUI
 
 struct HourByHourView: View {
-    @EnvironmentObject private var meteoData: MeteoData
+    let days: [MeteoDataDay]
 
     private var hourByHour: [MeteoData1H] {
-        let currentDay = meteoData.dayByDay[0]
-        let nextDay = meteoData.dayByDay[1]
+        guard days.count >= 2 else { return [] }
+        let currentDay = days[0]
+        let nextDay = days[1]
 
         let currentHourByHour = currentDay.hourByHour.filter {
             $0.time
@@ -62,32 +63,27 @@ struct HourByHourView: View {
         }
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity)
-        .padding(16)
-        .background(.ultraThinMaterial)
-        .cornerRadius(12)
     }
 }
 
 // MARK: - Preview
+
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
-    @Previewable @StateObject var locationManager = LocationManager()
 
-    if let city = locationManager.city {
-        VStack {
-            if mockData.dayByDay.first != nil {
-                HourByHourView()
-                    .environmentObject(mockData as MeteoData)
-                Button("Refresh") {
-                    Task {
-                        await mockData.loadMeteoData(force: true, city: city)
-                    }
-                }
-            } else {
-                ProgressView()
+    let defaultCity = LocationManager.defaultMapItem()
+
+    VStack {
+        HourByHourView(days: mockData.dayByDay)
+        Button("Refresh") {
+            Task {
+                await mockData.loadMeteoData(force: true, city: defaultCity)
             }
-        }.task {
-            await mockData.loadMeteoData(city: city)
         }
+    }
+    .padding(.horizontal, 16)
+    .appBackground()
+    .task {
+        await mockData.loadMeteoData(city: defaultCity)
     }
 }

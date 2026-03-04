@@ -1,4 +1,5 @@
 import Contacts
+
 //
 //  LocationService.swift
 //  MeteoBlueUI
@@ -10,7 +11,6 @@ import MapKit
 
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
-    private let geocoder = CLGeocoder()
     @Published var location: CLLocation?
     @Published var city: MKMapItem?
 
@@ -21,16 +21,12 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     }
 
     static func defaultMapItem() -> MKMapItem {
-        let coordinate = CLLocationCoordinate2D(
-            latitude: 37.323,
-            longitude: -122.032
+        let location = CLLocation(latitude: 37.323, longitude: -122.032)
+        let address = MKAddress(
+            fullAddress: "Cupertino, United States",
+            shortAddress: "United States"
         )
-        let addressDict = [CNPostalAddressCityKey: "Cupertino"]
-        let placemark = MKPlacemark(
-            coordinate: coordinate,
-            addressDictionary: addressDict
-        )
-        let mapItem = MKMapItem(placemark: placemark)
+        let mapItem = MKMapItem(location: location, address: address)
         mapItem.name = "Cupertino"
         return mapItem
     }
@@ -40,7 +36,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         case .authorizedWhenInUse, .authorizedAlways:
             manager.requestLocation()
         default:
-            self.city = LocationManager.defaultMapItem()
+            city = LocationManager.defaultMapItem()
         }
     }
 
@@ -51,14 +47,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         guard let location = locations.first else { return }
         self.location = location
 
-        geocoder.reverseGeocodeLocation(location) {
-            [weak self] placemarks, error in
-            guard let self = self, let placemark = placemarks?.first,
-                error == nil
-            else { return }
-            let mkPlacemark = MKPlacemark(placemark: placemark)
-            self.city = MKMapItem(placemark: mkPlacemark)
-        }
+        let request = MKReverseGeocodingRequest(location: location)
+        request?.getMapItems(completionHandler: { [weak self] mapItems, error in
+            guard let self, let mapItem = mapItems?.first, error == nil else { return }
+            DispatchQueue.main.async {
+                self.city = mapItem
+            }
+        })
     }
 
     func locationManager(

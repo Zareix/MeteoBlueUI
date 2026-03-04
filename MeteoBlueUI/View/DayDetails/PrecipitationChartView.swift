@@ -199,7 +199,9 @@ struct PrecipitationChartView: View {
                 }
                 .padding(.horizontal, 16)
             }
-        }.task {
+        }
+        .appBackground()
+        .task {
             await mockData.loadMeteoData(city: city)
         }
     } else {

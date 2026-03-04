@@ -156,7 +156,9 @@ struct DayDetailsView: View {
                     .environmentObject(mockData as MeteoData)
                 }
             }
-        }.task {
+        }
+        .appBackground()
+        .task {
             await mockData.loadMeteoData(city: city)
         }
     } else {

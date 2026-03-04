@@ -32,8 +32,8 @@ struct FavoriteCitiesView: View {
         }
         favorites.add(
             FavoriteCitiesItem(
-                title: city.placemark.locality ?? "",
-                subtitle: city.placemark.country ?? ""
+                title: city.name ?? "",
+                subtitle: city.addressRepresentations?.regionName ?? ""
             )
         )
     }
@@ -52,8 +52,8 @@ struct FavoriteCitiesView: View {
         }
         return favorites.items.contains(
             FavoriteCitiesItem(
-                title: city.placemark.locality ?? "",
-                subtitle: city.placemark.country ?? ""
+                title: city.name ?? "",
+                subtitle: city.addressRepresentations?.regionName ?? ""
             )
         )
     }

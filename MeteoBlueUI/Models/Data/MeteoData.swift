@@ -9,11 +9,13 @@ import Foundation
 import MapKit
 
 // MARK: - Struct
+
 struct MeteoData1H: Identifiable, Equatable, Hashable {
     let time: Date
     let description: String
     let symbol: String
     let temperature: Double
+    let feltTemperature: Double
     let precipitation: Double
     let precipitationProbability: Int
 
@@ -54,23 +56,28 @@ struct MeteoDataDay: Identifiable, Equatable, Hashable {
 }
 
 // MARK: - MeteoData
+
 @MainActor
 class MeteoData: ObservableObject {
     @Published var city: MKMapItem?
     @Published var dayByDay: [MeteoDataDay] = []
     @Published var error: String?
 
+    private let service: MeteoBlueAPIService
+
+    init(service: MeteoBlueAPIService = MeteoBlueAPIService()) {
+        self.service = service
+    }
+
     func loadMeteoData(force: Bool = false, city: MKMapItem) async {
         do {
-            if self.city != nil && !force && self.city == city {
+            if self.city != nil, !force, self.city == city {
                 return
             }
-            let data = try await MeteoBlueAPIService().fetchForecast(
-                city: city
-            )
+            let data = try await service.fetchForecast(city: city)
             self.city = city
-            self.dayByDay.removeAll()
-            self.error = nil
+            dayByDay.removeAll()
+            error = nil
 
             for (index, day) in data.dataDay.time.enumerated() {
                 let date = MeteoData.convertStringDayToDate(
@@ -79,7 +86,7 @@ class MeteoData: ObservableObject {
                 if date < Calendar.current.startOfDay(for: .now) {
                     continue
                 }
-                self.dayByDay.append(
+                dayByDay.append(
                     MeteoDataDay(
                         hourByHour: [],
                         time: date,
@@ -87,14 +94,14 @@ class MeteoData: ObservableObject {
                             picto: data.dataDay.pictocode[index]
                         ),
                         symbol: PictoMapper.pictoIdayToSFSymbol(
-                            picto: data.dataDay.pictocode[index],
+                            picto: data.dataDay.pictocode[index]
                         ),
                         temperatureMean: data.dataDay.temperatureMean[index],
                         temperatureMin: data.dataDay.temperatureMin[index],
                         temperatureMax: data.dataDay.temperatureMax[index],
                         precipitation: data.dataDay.precipitation[index],
                         precipitationProbability: data.dataDay
-                            .precipitationProbability[index],
+                            .precipitationProbability[index]
                         //                        sunrise: MeteoData.convertStringHourToTime(
                         //                            input: data.dataDay.time[index]
                         //                        ),
@@ -106,7 +113,7 @@ class MeteoData: ObservableObject {
             }
             for (index, hour) in data.data1H.time.enumerated() {
                 let day = dayByDay.first { day in
-                    return hour.contains(day.id)
+                    hour.contains(day.id)
                 }
                 guard var day else {
                     continue
@@ -124,6 +131,7 @@ class MeteoData: ObservableObject {
                             ? false : true
                     ),
                     temperature: data.data1H.temperature[index],
+                    feltTemperature: data.data1H.felttemperature[index],
                     precipitation: data.data1H.precipitation[index],
                     precipitationProbability: data.data1H
                         .precipitationProbability[index]
@@ -131,7 +139,10 @@ class MeteoData: ObservableObject {
                 day.hourByHour.append(
                     hourData
                 )
-                self.dayByDay[self.dayByDay.firstIndex(of: day)!] = day
+                guard let dayIndex = dayByDay.firstIndex(of: day) else {
+                    continue
+                }
+                dayByDay[dayIndex] = day
             }
         } catch {
             print("Error loading meteo data: \(error)")
@@ -142,7 +153,7 @@ class MeteoData: ObservableObject {
         }
     }
 
-    static func convertStringDayHourToTime(input: String, ) -> Date {
+    static func convertStringDayHourToTime(input: String) -> Date {
         return convertStringToDate(input: input, format: "yyyy-MM-dd HH:mm")
     }
 
@@ -163,14 +174,16 @@ class MeteoData: ObservableObject {
 }
 
 // MARK: - Mock
+
 class MockMeteoData: MeteoData {
     override func loadMeteoData(force: Bool = false, city: MKMapItem) async {
-        print("Loading meteo data for \(city.placemark.locality ?? "Unknown")")
+        print("Loading meteo data for \(city.name ?? "Unknown")")
+        await Task.yield()
         self.city = city
-        self.dayByDay.removeAll()
+        dayByDay.removeAll()
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd"
         for index in 0...7 {
-            let dateFormatter = DateFormatter()
-            dateFormatter.dateFormat = "yyyy-MM-dd"
             let day = dateFormatter.string(
                 from: Calendar.current
                     .startOfDay(for: Date())
@@ -184,11 +197,11 @@ class MockMeteoData: MeteoData {
                     hourByHour.last?.temperature ?? Double.random(in: -5...30)
                 let previousPrecipitationProb =
                     hourByHour.last?.precipitationProbability
-                    ?? Int.random(in: 0...100)
+                        ?? Int.random(in: 0...100)
                 hourByHour.append(
                     MeteoData1H(
                         time: MeteoData.convertStringDayHourToTime(
-                            input: "\(day) \(index2):00"
+                            input: String(format: "%@ %02d:00", day, index2)
                         ),
                         description: PictoMapper.pictoToDescription(
                             picto: picto
@@ -199,21 +212,22 @@ class MockMeteoData: MeteoData {
                         ),
                         temperature: previousTempMean
                             + Double.random(in: -2...2),
+                        feltTemperature: previousTempMean
+                            + Double.random(in: -5...5),
                         precipitation: Double.random(in: 0...20),
                         precipitationProbability: previousPrecipitationProb < 10
                             ? previousPrecipitationProb + Int.random(in: 0...20)
                             : previousPrecipitationProb > 90
-                                ? previousPrecipitationProb
-                                    + Int.random(in: -20...0)
-                                : previousPrecipitationProb
-                                    + Int.random(in: -10...10)
-
+                            ? previousPrecipitationProb
+                            + Int.random(in: -20...0)
+                            : previousPrecipitationProb
+                            + Int.random(in: -10...10)
                     )
                 )
             }
 
             let picto = Int.random(in: 1...17)
-            self.dayByDay.append(
+            dayByDay.append(
                 MeteoDataDay(
                     hourByHour: hourByHour,
                     time: MeteoData.convertStringDayToDate(
@@ -223,7 +237,7 @@ class MockMeteoData: MeteoData {
                         picto: picto
                     ),
                     symbol: PictoMapper.pictoIdayToSFSymbol(
-                        picto: picto,
+                        picto: picto
                     ),
                     temperatureMean: hourByHour.map { $0.temperature }.reduce(
                         0,
@@ -234,7 +248,7 @@ class MockMeteoData: MeteoData {
                     temperatureMax: hourByHour.map { $0.temperature }.max()
                         ?? 0,
                     precipitation: Double.random(in: 0...20),
-                    precipitationProbability: Int.random(in: 0...100),
+                    precipitationProbability: Int.random(in: 0...100)
                     //                    sunrise: MeteoData.convertStringHourToTime(
                     //                        input: "06:00"
                     //                    ),

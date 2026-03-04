@@ -16,6 +16,23 @@
     "API Token" : {
 
     },
+    "day-by-day.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 7 days"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "7 prochains jours"
+          }
+        }
+      }
+    },
     "day-by-day.today" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -154,6 +171,23 @@
         }
       }
     },
+    "feels" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feels"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ressentie"
+          }
+        }
+      }
+    },
     "hour" : {
       "localizations" : {
         "en" : {
@@ -166,23 +200,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Heure"
-          }
-        }
-      }
-    },
-    "hour-by-hour.description" : {
-      "extractionState" : "stale",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Description"
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Description"
           }
         }
       }

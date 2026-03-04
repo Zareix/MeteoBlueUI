@@ -17,7 +17,7 @@ struct SymbolView: View {
     var body: some View {
         Image(systemName: symbol)
             .symbolRenderingMode(.multicolor)
-            .shadow(color: .secondary.opacity(0.3), radius: 8)
+            //.shadow(color: .secondary.opacity(0.3), radius: 8)
             .contentTransition(transition)
             .animation(
                 animationEnabled ? .easeInOut : nil,
@@ -95,5 +95,5 @@ struct SymbolView: View {
                 description = PictoMapper.pictoToDescription(picto: picto)
             }
         }
-    }
+    }.appBackground()
 }

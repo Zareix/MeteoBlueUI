@@ -14,89 +14,70 @@ struct ContentView: View {
 
     @State private var displayedTemperature: Int = 0
 
+    init() {
+        let appearance = UINavigationBarAppearance()
+        let largeTitleDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .largeTitle)
+            .withDesign(.serif)!
+            .withSymbolicTraits(.traitBold)!
+        let titleDescriptor = UIFontDescriptor.preferredFontDescriptor(withTextStyle: .headline)
+            .withDesign(.serif)!
+        appearance.largeTitleTextAttributes = [
+            .font: UIFont(descriptor: largeTitleDescriptor, size: 0)
+        ]
+        appearance.titleTextAttributes = [
+            .font: UIFont(descriptor: titleDescriptor, size: 0)
+        ]
+        UINavigationBar.appearance().standardAppearance = appearance
+        UINavigationBar.appearance().scrollEdgeAppearance = appearance
+        UINavigationBar.appearance().layoutMargins.left = 20
+        UINavigationBar.appearance().layoutMargins.right = 20
+    }
+
     func areMapItemsEqual(_ item1: MKMapItem?, _ item2: MKMapItem?) -> Bool {
         guard let item1 = item1, let item2 = item2 else {
             return false
         }
-        return item1.placemark.locality == item2.placemark.locality
-            && item1.placemark.country == item2.placemark.country
+        return item1.name == item2.name
+            && item1.addressRepresentations?.regionName == item2.addressRepresentations?.regionName
     }
 
     var body: some View {
         VStack {
             if let city = meteoData.city,
-                let firstDay = meteoData.dayByDay.first,
-                let currentHour = firstDay.hourByHour.first(where: {
-                    $0.time
-                        == Calendar.current.date(
-                            from: Calendar.current.dateComponents(
-                                [.year, .month, .day, .hour],
-                                from: Date()
-                            )
-                        ) ?? Date()
-                })
+               let firstDay = meteoData.dayByDay.first,
+               let currentHour = firstDay.hourByHour.first(where: {
+                   $0.time
+                       == Calendar.current.date(
+                           from: Calendar.current.dateComponents(
+                               [.year, .month, .day, .hour],
+                               from: Date()
+                           )
+                       ) ?? Date()
+               })
             {
                 NavigationStack {
                     ScrollView {
-                        VStack {
-                            if let country = city.placemark.country {
-                                HStack(spacing: 4) {
-                                    Text(country)
-                                        .font(.subheadline)
-                                        .foregroundColor(.secondary)
-                                    Spacer()
-                                }
-                            }
-                            VStack(spacing: 16) {
-                                VStack {
-                                    HStack(spacing: 20) {
-                                        SymbolView(
-                                            symbol: currentHour.symbol
-                                        )
-                                        .font(.system(size: 50))
-                                        .frame(height: 54)
+                        VStack(spacing: 32) {
+                            CurrentWeatherView(
+                                currentHour: currentHour
+                            )
 
-                                        TemperatureView(
-                                            temperature: currentHour
-                                                .temperature
-                                        )
-                                        .font(.system(size: 50))
-                                    }
-                                    .shadow(
-                                        color: .secondary.opacity(0.5),
-                                        radius: 18
-                                    )
-                                    Text(currentHour.description)
-                                        .font(.body)
-                                        .foregroundColor(.secondary)
-                                        .multilineTextAlignment(.center)
-                                        .padding(.horizontal, 32)
-                                        .id("description")
-                                        .transition(.opacity)
-                                        .animation(
-                                            .easeOut,
-                                            value: currentHour.description
-                                        )
-                                }
+                            HourByHourView(days: meteoData.dayByDay)
+                                .scrollEdgeEffectStyle(.hard, for: .horizontal)
 
-                                HourByHourView()
-
-                                DayByDayView()
-                            }
+                            DayByDayView(days: meteoData.dayByDay)
                         }
-                        .padding(.horizontal, 16)
+                        .padding(.horizontal, 20)
                     }
-                    .navigationTitle(
-                        city.placemark.locality ?? "Unknown"
-                    )
+                    .navigationTitle(city.name ?? "Unknown Location")
+                    .navigationSubtitle(city.addressRepresentations?.regionName ?? "Unknown")
+                    .navigationBarTitleDisplayMode(.large)
                     .toolbar {
                         ToolbarItem(placement: .topBarLeading) {
                             FavoriteCitiesView()
                         }
                         if let currentCity = locationManager.city {
-                            ToolbarItem(
-                                placement: .navigationBarTrailing
-                            ) {
+                            ToolbarItem(placement: .navigationBarTrailing) {
                                 Button {
                                     Task {
                                         await meteoData.loadMeteoData(
@@ -124,6 +105,8 @@ struct ContentView: View {
                             city: city
                         )
                     }
+                    .scrollContentBackground(.hidden)
+                    .background(Color("BackgroundColor"))
                 }
 
             } else if let errorMessage = meteoData.error {
@@ -135,20 +118,25 @@ struct ContentView: View {
             }
         }
         .task {
-            await meteoData.loadMeteoData(city: locationManager.city!)
+            let city = locationManager.city ?? LocationManager.defaultMapItem()
+            await meteoData.loadMeteoData(city: city)
         }
     }
 }
 
 // MARK: - Preview
+
 #Preview {
+    @Previewable @StateObject var mockData = MockMeteoData()
     @Previewable @StateObject var locationManager = LocationManager()
 
-    if locationManager.city != nil {
-        ContentView()
-            .environmentObject(MockMeteoData() as MeteoData)
-            .environmentObject(locationManager)
-    } else {
-        ProgressView()
-    }
+    let defaultCity = LocationManager.defaultMapItem()
+
+    ContentView()
+        .environmentObject(mockData as MeteoData)
+        .environmentObject(locationManager)
+        .appBackground()
+        .task {
+            await mockData.loadMeteoData(city: defaultCity)
+        }
 }

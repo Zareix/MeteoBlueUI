@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct DayByDayView: View {
-    @EnvironmentObject private var meteoData: MeteoData
+    let days: [MeteoDataDay]
 
     @State private var selectedDescription = ""
     @State private var selectedItem: MeteoDataDay?
@@ -18,17 +18,18 @@ struct DayByDayView: View {
 
     var body: some View {
         VStack(spacing: 8) {
+            Text("day-by-day.title")
+                .font(.title.bold())
+                .fontDesign(.serif)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.bottom, 8)
+
             ForEach(
-                Array(meteoData.dayByDay.enumerated()),
+                Array(days.enumerated()),
                 id: \.element.time
             ) {
                 index,
                 item in
-
-                if index != 0 {
-                    Divider()
-                }
-
                 HStack(spacing: 16) {
                     Text(
                         index == 0
@@ -37,8 +38,8 @@ struct DayByDayView: View {
                                 .dateTime.weekday(.abbreviated)
                             ).capitalized
                     )
-                    .font(.body)
-                    .frame(width: 40, alignment: .leading)
+                    .font(.body.bold())
+                    .frame(width: 42, alignment: .leading)
 
                     HStack(spacing: 8) {
                         SymbolView(symbol: item.symbol)
@@ -61,9 +62,9 @@ struct DayByDayView: View {
                                 .font(.system(size: 12))
                                 .foregroundColor(.secondary)
                             TemperatureView(temperature: item.temperatureMin)
-                            .font(.system(size: 16))
-                            .foregroundColor(.secondary)
-                            .frame(minWidth: 30)
+                                .font(.system(size: 16))
+                                .foregroundColor(.secondary)
+                                .frame(minWidth: 30)
                         }
 
                         HStack(spacing: 0) {
@@ -71,9 +72,9 @@ struct DayByDayView: View {
                                 .font(.system(size: 12))
                                 .foregroundColor(.primary)
                             TemperatureView(temperature: item.temperatureMax)
-                            .font(.body)
-                            .foregroundColor(.primary)
-                            .frame(minWidth: 30)
+                                .font(.body)
+                                .foregroundColor(.primary)
+                                .frame(minWidth: 30)
                         }
                     }
                 }
@@ -94,24 +95,18 @@ struct DayByDayView: View {
                 )
             }
         }
-        .padding(16)
-        .background(.ultraThinMaterial)
         .cornerRadius(12)
     }
-
 }
 
 // MARK: - Preview
+
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
-    @Previewable @StateObject var locationManager = LocationManager()
 
-    if let city = locationManager.city {
-        DayByDayView()
-            .environmentObject(mockData as MeteoData)
-            .task {
-                await mockData.loadMeteoData(city: city)
-            }
+    if !mockData.dayByDay.isEmpty {
+        DayByDayView(days: mockData.dayByDay)
+            .appBackground()
     } else {
         ProgressView()
     }
