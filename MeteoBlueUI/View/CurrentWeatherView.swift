@@ -18,7 +18,6 @@ struct CurrentWeatherView: View {
                                description: currentHour.description)
                         .font(.system(size: 50))
                         .frame(height: 54)
-                        .shadow(color: .secondary.opacity(0.5), radius: 18)
 
                     TemperatureView(temperature: currentHour.temperature)
                         .font(.system(size: 50))

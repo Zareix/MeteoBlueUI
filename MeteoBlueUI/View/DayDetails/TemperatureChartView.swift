@@ -1,4 +1,5 @@
 import Charts
+
 //
 //  TemperatureChartView.swift
 //  MeteoBlueUI
@@ -55,18 +56,17 @@ struct TemperatureChartView: View {
 
     var body: some View {
         VStack {
-
             if let selected = selectedHour, let x = selectedX {
                 HStack {
                     Spacer().frame(
                         width:
-                            x < 14
+                        x < 14
                             ? 14
                             : x - 14
                     )
                     VStack(
                         alignment:
-                            x < 14
+                        x < 14
                             ? .leading
                             : .center,
                         spacing: 0
@@ -238,7 +238,7 @@ struct TemperatureChartView: View {
                             x: .value("hour", hourData.time, unit: .hour),
                             y: .value(
                                 "day-details.temperature",
-                                hourData.temperature,
+                                hourData.temperature
                             ),
                             series: .value("Series", "Future")
                         )
@@ -292,10 +292,9 @@ struct TemperatureChartView: View {
                         .foregroundStyle(.gray.opacity(0.2))
                         .lineStyle(StrokeStyle(lineWidth: 2))
                 }
-
             }
             .chartXAxis {
-                AxisMarks(values: axisHours) { value in
+                AxisMarks(values: axisHours) { _ in
                     AxisGridLine()
                     AxisValueLabel(
                         format: .dateTime.hour(
@@ -313,7 +312,7 @@ struct TemperatureChartView: View {
                     }
                 }
             }
-            .chartYScale(domain: yMin...yMax)
+            .chartYScale(domain: yMin ... yMax)
             .chartOverlay { proxy in
                 GeometryReader { geo in
                     Rectangle().fill(Color.clear).contentShape(Rectangle())
@@ -322,7 +321,7 @@ struct TemperatureChartView: View {
                                 .onChanged { value in
                                     let xPos =
                                         value.location.x
-                                        - geo[proxy.plotFrame!].origin.x
+                                            - geo[proxy.plotFrame!].origin.x
                                     if let date: Date = proxy.value(
                                         atX: xPos
                                     ) {
@@ -348,8 +347,8 @@ struct TemperatureChartView: View {
                                             ) {
                                                 selectedX =
                                                     x
-                                                    + geo[proxy.plotFrame!]
-                                                    .origin.x
+                                                        + geo[proxy.plotFrame!]
+                                                        .origin.x
                                             } else {
                                                 selectedX = nil
                                             }
@@ -369,13 +368,14 @@ struct TemperatureChartView: View {
 }
 
 // MARK: - Preview
+
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
     @Previewable @StateObject var locationManager = LocationManager()
 
-    @Previewable @State var open: Bool = true
+    @Previewable @State var open = true
 
-    if let city = locationManager.city {
+    if let location = locationManager.currentLocation {
         ZStack {
             if mockData.dayByDay.count > 1 {
                 VStack {
@@ -389,7 +389,7 @@ struct TemperatureChartView: View {
         }
         .appBackground()
         .task {
-            await mockData.loadMeteoData(city: city)
+            await mockData.loadMeteoData(location: location)
         }
     } else {
         ProgressView()

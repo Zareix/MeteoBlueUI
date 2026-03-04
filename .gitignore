@@ -66,3 +66,23 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+Forecast Widget/AppIntent.swift
+
+Forecast Widget/Assets.xcassets/AccentColor.colorset/Contents.json
+
+Forecast Widget/Assets.xcassets/AppIcon.appiconset/Contents.json
+
+Forecast Widget/Assets.xcassets/Contents.json
+
+Forecast Widget/Assets.xcassets/WidgetBackground.colorset/Contents.json
+
+Forecast Widget/Forecast_Widget.swift
+
+Forecast Widget/Forecast_WidgetBundle.swift
+
+Forecast Widget/Forecast_WidgetControl.swift
+
+Forecast Widget/Info.plist
+
+MeteoBlueUI.xcodeproj/project.pbxproj

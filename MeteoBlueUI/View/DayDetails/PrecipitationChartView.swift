@@ -1,4 +1,5 @@
 import Charts
+
 //
 //  PrecipitationChartView.swift
 //  MeteoBlueUI
@@ -71,13 +72,13 @@ struct PrecipitationChartView: View {
                     .lineStyle(StrokeStyle(lineWidth: 3, dash: [8, 4]))
                     .interpolationMethod(.catmullRom)
                 }
-                
+
                 ForEach(futureHours, id: \.time) { hourData in
                     LineMark(
                         x: .value("hour", hourData.time, unit: .hour),
                         y: .value(
                             "day-details.precipitation-percent",
-                            hourData.precipitationProbability,
+                            hourData.precipitationProbability
                         ),
                         series: .value("Series", "Future")
                     )
@@ -88,7 +89,7 @@ struct PrecipitationChartView: View {
                 }
             }
             .chartXAxis {
-                AxisMarks(values: axisHours) { value in
+                AxisMarks(values: axisHours) { _ in
                     AxisGridLine()
                     AxisValueLabel(
                         format: .dateTime.hour(
@@ -111,7 +112,6 @@ struct PrecipitationChartView: View {
             .chartYScale(
                 domain: 0...110,
                 type: .linear
-
             )
             .frame(height: 200)
             .clipped()
@@ -146,7 +146,7 @@ struct PrecipitationChartView: View {
                     }
                 }
                 .chartXAxis {
-                    AxisMarks(values: axisHours) { value in
+                    AxisMarks(values: axisHours) { _ in
                         AxisGridLine()
                         AxisValueLabel(
                             format: .dateTime.hour(
@@ -178,18 +178,18 @@ struct PrecipitationChartView: View {
                 .clipped()
             }
         }
-
     }
 }
 
 // MARK: - Preview
+
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
     @Previewable @StateObject var locationManager = LocationManager()
 
-    @Previewable @State var open: Bool = true
+    @Previewable @State var open = true
 
-    if let city = locationManager.city {
+    if let location = locationManager.currentLocation {
         ZStack {
             if let firstDay = mockData.dayByDay.first {
                 VStack {
@@ -202,7 +202,7 @@ struct PrecipitationChartView: View {
         }
         .appBackground()
         .task {
-            await mockData.loadMeteoData(city: city)
+            await mockData.loadMeteoData(location: location)
         }
     } else {
         ProgressView()

@@ -71,19 +71,19 @@ struct HourByHourView: View {
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
 
-    let defaultCity = LocationManager.defaultMapItem()
+    let defaultLocation = LocationManager.defaultLocation()
 
     VStack {
         HourByHourView(days: mockData.dayByDay)
         Button("Refresh") {
             Task {
-                await mockData.loadMeteoData(force: true, city: defaultCity)
+                await mockData.loadMeteoData(force: true, location: defaultLocation)
             }
         }
     }
     .padding(.horizontal, 16)
     .appBackground()
     .task {
-        await mockData.loadMeteoData(city: defaultCity)
+        await mockData.loadMeteoData(location: defaultLocation)
     }
 }

@@ -1,4 +1,5 @@
 import MapKit
+
 //
 //  SearchCityView.swift
 //  MeteoBlueUI
@@ -17,12 +18,10 @@ struct SearchCityView: View {
     func handleSave(title: String, subtitle: String) {
         isSearchActive = false
         Task {
-            let foundCity = try await MeteoBlueAPIService()
+            let foundLocation = try await MeteoBlueAPIService()
                 .getCityFromCompletion(title: title, subtitle: subtitle)
-            if foundCity == nil {
-                return
-            }
-            await meteoData.loadMeteoData(city: foundCity!)
+            guard let foundLocation else { return }
+            await meteoData.loadMeteoData(location: foundLocation)
 
             searchHistory.add(
                 SearchHistoryItem(title: title, subtitle: subtitle)
@@ -82,8 +81,7 @@ struct SearchCityView: View {
                     text: $locationSearchService.searchQuery,
                     prompt: String(localized: "search.prompt")
                 ) {
-                    ForEach($locationSearchService.completions, id: \.title) {
-                        $completion in
+                    ForEach(locationSearchService.completions, id: \.self) { completion in
                         Button {
                             handleSave(
                                 title: completion.title,
@@ -108,14 +106,12 @@ struct SearchCityView: View {
 
 #Preview {
     NavigationStack {
-        VStack {
-
-        }
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                SearchCityView()
-                    .environmentObject(MockMeteoData() as MeteoData)
+        VStack {}
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    SearchCityView()
+                        .environmentObject(MockMeteoData() as MeteoData)
+                }
             }
-        }
     }
 }

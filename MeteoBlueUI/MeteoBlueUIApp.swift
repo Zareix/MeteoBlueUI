@@ -13,22 +13,22 @@ struct MeteoBlueUIApp: App {
     @StateObject private var locationManager = LocationManager()
     @StateObject private var meteoData: MeteoData
     @State private var showSheet =
-    KeychainService().getMetoBlueAPIToken() == nil
+        KeychainService().getMetoBlueAPIToken() == nil
     @State private var apiToken: String = ""
-    
+
     init() {
         let service = MeteoBlueAPIService()
         _meteoData = StateObject(wrappedValue: MeteoData(service: service))
     }
-    
+
     var body: some Scene {
         WindowGroup {
             ZStack {
                 Color("BackgroundColor")
                     .ignoresSafeArea()
-                
+
                 if !showSheet {
-                    if locationManager.city != nil {
+                    if locationManager.currentLocation != nil {
                         ContentView()
                             .environmentObject(meteoData)
                             .environmentObject(locationManager)

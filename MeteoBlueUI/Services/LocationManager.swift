@@ -1,4 +1,6 @@
 import Contacts
+import CoreLocation
+import MapKit
 
 //
 //  LocationService.swift
@@ -6,13 +8,10 @@ import Contacts
 //
 //  Created by Raphaël Catarino on 13/05/2025.
 //
-import CoreLocation
-import MapKit
-
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     @Published var location: CLLocation?
-    @Published var city: MKMapItem?
+    @Published var currentLocation: WeatherLocation?
 
     override init() {
         super.init()
@@ -20,15 +19,13 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         manager.requestWhenInUseAuthorization()
     }
 
-    static func defaultMapItem() -> MKMapItem {
-        let location = CLLocation(latitude: 37.323, longitude: -122.032)
-        let address = MKAddress(
-            fullAddress: "Cupertino, United States",
-            shortAddress: "United States"
+    static func defaultLocation() -> WeatherLocation {
+        return WeatherLocation(
+            city: "Cupertino",
+            country: "United States",
+            latitude: 37.323,
+            longitude: -122.032
         )
-        let mapItem = MKMapItem(location: location, address: address)
-        mapItem.name = "Cupertino"
-        return mapItem
     }
 
     func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
@@ -36,7 +33,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         case .authorizedWhenInUse, .authorizedAlways:
             manager.requestLocation()
         default:
-            city = LocationManager.defaultMapItem()
+            currentLocation = LocationManager.defaultLocation()
         }
     }
 
@@ -51,7 +48,7 @@ class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
         request?.getMapItems(completionHandler: { [weak self] mapItems, error in
             guard let self, let mapItem = mapItems?.first, error == nil else { return }
             DispatchQueue.main.async {
-                self.city = mapItem
+                self.currentLocation = WeatherLocation(from: mapItem)
             }
         })
     }

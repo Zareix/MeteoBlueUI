@@ -33,17 +33,9 @@ struct ContentView: View {
         UINavigationBar.appearance().layoutMargins.right = 20
     }
 
-    func areMapItemsEqual(_ item1: MKMapItem?, _ item2: MKMapItem?) -> Bool {
-        guard let item1 = item1, let item2 = item2 else {
-            return false
-        }
-        return item1.name == item2.name
-            && item1.addressRepresentations?.regionName == item2.addressRepresentations?.regionName
-    }
-
     var body: some View {
         VStack {
-            if let city = meteoData.city,
+            if let location = meteoData.location,
                let firstDay = meteoData.dayByDay.first,
                let currentHour = firstDay.hourByHour.first(where: {
                    $0.time
@@ -69,27 +61,25 @@ struct ContentView: View {
                         }
                         .padding(.horizontal, 20)
                     }
-                    .navigationTitle(city.name ?? "Unknown Location")
-                    .navigationSubtitle(city.addressRepresentations?.regionName ?? "Unknown")
+                    .navigationTitle(location.city)
+                    .navigationSubtitle(location.country)
                     .navigationBarTitleDisplayMode(.large)
                     .toolbar {
                         ToolbarItem(placement: .topBarLeading) {
                             FavoriteCitiesView()
                         }
-                        if let currentCity = locationManager.city {
+                        if let currentLocation = locationManager.currentLocation {
                             ToolbarItem(placement: .navigationBarTrailing) {
                                 Button {
                                     Task {
                                         await meteoData.loadMeteoData(
-                                            city: currentCity
+                                            location: currentLocation,
+                                            isCurrentLocation: true
                                         )
                                     }
                                 } label: {
                                     Image(
-                                        systemName: areMapItemsEqual(
-                                            locationManager.city,
-                                            city
-                                        ) ? "location.fill" : "location"
+                                        systemName: locationManager.currentLocation == location ? "location.fill" : "location"
                                     )
                                     .foregroundColor(.blue)
                                 }
@@ -102,7 +92,8 @@ struct ContentView: View {
                     .refreshable {
                         await meteoData.loadMeteoData(
                             force: true,
-                            city: city
+                            location: location,
+                            isCurrentLocation: locationManager.currentLocation == location
                         )
                     }
                     .scrollContentBackground(.hidden)
@@ -118,8 +109,8 @@ struct ContentView: View {
             }
         }
         .task {
-            let city = locationManager.city ?? LocationManager.defaultMapItem()
-            await meteoData.loadMeteoData(city: city)
+            let location = locationManager.currentLocation ?? LocationManager.defaultLocation()
+            await meteoData.loadMeteoData(location: location, isCurrentLocation: true)
         }
     }
 }
@@ -130,13 +121,13 @@ struct ContentView: View {
     @Previewable @StateObject var mockData = MockMeteoData()
     @Previewable @StateObject var locationManager = LocationManager()
 
-    let defaultCity = LocationManager.defaultMapItem()
+    let defaultLocation = LocationManager.defaultLocation()
 
     ContentView()
         .environmentObject(mockData as MeteoData)
         .environmentObject(locationManager)
         .appBackground()
         .task {
-            await mockData.loadMeteoData(city: defaultCity)
+            await mockData.loadMeteoData(location: defaultLocation)
         }
 }

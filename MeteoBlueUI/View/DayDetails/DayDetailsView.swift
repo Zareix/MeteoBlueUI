@@ -136,13 +136,14 @@ struct DayDetailsView: View {
 }
 
 // MARK: - Preview
+
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
     @Previewable @StateObject var locationManager = LocationManager()
 
-    @Previewable @State var open: Bool = true
+    @Previewable @State var open = true
 
-    if let city = locationManager.city {
+    if let location = locationManager.currentLocation {
         ZStack {
             if let firstDay = mockData.dayByDay.first {
                 VStack {
@@ -159,7 +160,7 @@ struct DayDetailsView: View {
         }
         .appBackground()
         .task {
-            await mockData.loadMeteoData(city: city)
+            await mockData.loadMeteoData(location: location)
         }
     } else {
         ProgressView()

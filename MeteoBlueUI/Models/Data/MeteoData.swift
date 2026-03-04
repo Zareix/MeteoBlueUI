@@ -6,60 +6,12 @@
 //
 
 import Foundation
-import MapKit
-
-// MARK: - Struct
-
-struct MeteoData1H: Identifiable, Equatable, Hashable {
-    let time: Date
-    let description: String
-    let symbol: String
-    let temperature: Double
-    let feltTemperature: Double
-    let precipitation: Double
-    let precipitationProbability: Int
-
-    var id: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
-        return dateFormatter.string(from: time)
-    }
-
-    static func == (lhs: MeteoData1H, rhs: MeteoData1H) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
-
-struct MeteoDataDay: Identifiable, Equatable, Hashable {
-    var hourByHour: [MeteoData1H]
-
-    let time: Date
-    let description: String
-    let symbol: String
-    let temperatureMean: Double
-    let temperatureMin: Double
-    let temperatureMax: Double
-    let precipitation: Double
-    let precipitationProbability: Int
-    //    let sunrise: Date
-    //    let sunset: Date
-
-    var id: String {
-        let dateFormatter = DateFormatter()
-        dateFormatter.dateFormat = "yyyy-MM-dd"
-        return dateFormatter.string(from: time)
-    }
-
-    static func == (lhs: MeteoDataDay, rhs: MeteoDataDay) -> Bool {
-        return lhs.id == rhs.id
-    }
-}
 
 // MARK: - MeteoData
 
 @MainActor
 class MeteoData: ObservableObject {
-    @Published var city: MKMapItem?
+    @Published var location: WeatherLocation?
     @Published var dayByDay: [MeteoDataDay] = []
     @Published var error: String?
 
@@ -69,13 +21,13 @@ class MeteoData: ObservableObject {
         self.service = service
     }
 
-    func loadMeteoData(force: Bool = false, city: MKMapItem) async {
+    func loadMeteoData(force: Bool = false, location: WeatherLocation, isCurrentLocation: Bool = false) async {
         do {
-            if self.city != nil, !force, self.city == city {
+            if self.location != nil, !force, self.location == location {
                 return
             }
-            let data = try await service.fetchForecast(city: city)
-            self.city = city
+            let data = try await service.fetchForecast(location: location)
+            self.location = location
             dayByDay.removeAll()
             error = nil
 
@@ -144,6 +96,11 @@ class MeteoData: ObservableObject {
                 }
                 dayByDay[dayIndex] = day
             }
+
+            let allHours = dayByDay.flatMap { $0.hourByHour }
+            if isCurrentLocation {
+                WidgetDataService.save(location: location, hours: allHours)
+            }
         } catch {
             print("Error loading meteo data: \(error)")
             if let urlError = error as? URLError, urlError.code == .cancelled {
@@ -176,10 +133,10 @@ class MeteoData: ObservableObject {
 // MARK: - Mock
 
 class MockMeteoData: MeteoData {
-    override func loadMeteoData(force: Bool = false, city: MKMapItem) async {
-        print("Loading meteo data for \(city.name ?? "Unknown")")
+    override func loadMeteoData(force: Bool = false, location: WeatherLocation, isCurrentLocation: Bool = false) async {
+        print("Loading meteo data for \(location.city)")
         await Task.yield()
-        self.city = city
+        self.location = location
         dayByDay.removeAll()
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"

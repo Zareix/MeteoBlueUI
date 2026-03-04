@@ -16,24 +16,19 @@ struct FavoriteCitiesView: View {
     func handleClick(title: String, subtitle: String) {
         isSheetOpen = false
         Task {
-            let foundCity = try await MeteoBlueAPIService()
+            let foundLocation = try await MeteoBlueAPIService()
                 .getCityFromCompletion(title: title, subtitle: subtitle)
-            if foundCity == nil {
-                return
-            }
-            await meteoData.loadMeteoData(city: foundCity!)
+            guard let foundLocation else { return }
+            await meteoData.loadMeteoData(location: foundLocation)
         }
     }
 
     func addCurrent() {
-        guard let city = meteoData.city
-        else {
-            return
-        }
+        guard let location = meteoData.location else { return }
         favorites.add(
             FavoriteCitiesItem(
-                title: city.name ?? "",
-                subtitle: city.addressRepresentations?.regionName ?? ""
+                title: location.city,
+                subtitle: location.country
             )
         )
     }
@@ -47,13 +42,11 @@ struct FavoriteCitiesView: View {
     }
 
     func isCurrentCityFavorite() -> Bool {
-        guard let city = meteoData.city else {
-            return false
-        }
+        guard let location = meteoData.location else { return false }
         return favorites.items.contains(
             FavoriteCitiesItem(
-                title: city.name ?? "",
-                subtitle: city.addressRepresentations?.regionName ?? ""
+                title: location.city,
+                subtitle: location.country
             )
         )
     }

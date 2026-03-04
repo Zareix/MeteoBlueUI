@@ -17,7 +17,7 @@ struct SymbolView: View {
     var body: some View {
         Image(systemName: symbol)
             .symbolRenderingMode(.multicolor)
-            //.shadow(color: .secondary.opacity(0.3), radius: 8)
+            .shadow(color: .secondary.opacity(0.3), radius: 8)
             .contentTransition(transition)
             .animation(
                 animationEnabled ? .easeInOut : nil,
@@ -42,6 +42,7 @@ struct SymbolView: View {
 }
 
 // MARK: - Preview
+
 #Preview {
     @Previewable @State var symbol = "cloud.sun.fill"
     @Previewable @State var description =
@@ -87,7 +88,7 @@ struct SymbolView: View {
 
         Button("Refresh") {
             withAnimation {
-                let picto = Int.random(in: 1...35)
+                let picto = Int.random(in: 1 ... 35)
                 symbol = PictoMapper.pictoToSFSymbol(
                     picto: picto,
                     isDaylight: Bool.random()

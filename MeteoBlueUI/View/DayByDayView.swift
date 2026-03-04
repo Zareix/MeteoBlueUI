@@ -84,6 +84,7 @@ struct DayByDayView: View {
                     selectedItem = item
                 }
             }
+            .padding(.horizontal, 16)
             .sheet(
                 item: $selectedItem,
                 onDismiss: {
@@ -95,7 +96,6 @@ struct DayByDayView: View {
                 )
             }
         }
-        .cornerRadius(12)
     }
 }
 

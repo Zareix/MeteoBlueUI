@@ -8,7 +8,7 @@
 import Foundation
 import MapKit
 
-actor MeteoBlueAPIService: ObservableObject {
+actor MeteoBlueAPIService {
     private let session: URLSession = {
         let config = URLSessionConfiguration.default
         config.timeoutIntervalForRequest = 15
@@ -20,7 +20,7 @@ actor MeteoBlueAPIService: ObservableObject {
 
     private var forecastTask: Task<MeteoBlueAPIForecast, Error>?
 
-    func getCityFromCompletion(title: String, subtitle: String) async throws -> MKMapItem? {
+    func getCityFromCompletion(title: String, subtitle: String) async throws -> WeatherLocation? {
         let searchRequest = MKLocalSearch.Request()
         searchRequest.naturalLanguageQuery = "\(title), \(subtitle)"
         let search = MKLocalSearch(request: searchRequest)
@@ -29,19 +29,16 @@ actor MeteoBlueAPIService: ObservableObject {
             print("No results found")
             return nil
         }
-        return mapItem
+        return WeatherLocation(from: mapItem)
     }
 
-    func fetchForecast(city: MKMapItem) async throws -> MeteoBlueAPIForecast {
+    func fetchForecast(location: WeatherLocation) async throws -> MeteoBlueAPIForecast {
         forecastTask?.cancel()
 
         let task = Task<MeteoBlueAPIForecast, Error> {
-            let (lat, lon) = (
-                city.location.coordinate.latitude,
-                city.location.coordinate.longitude
-            )
+            let (lat, lon) = (location.latitude, location.longitude)
             print(
-                "Fetching MeteoBlue API forecast for \(city.name ?? "Unknown") — lat: \(lat), lon: \(lon)"
+                "Fetching MeteoBlue API forecast for \(location.city) — lat: \(lat), lon: \(lon)"
             )
 
             guard let token = KeychainService().getMetoBlueAPIToken() else {
@@ -69,6 +66,7 @@ actor MeteoBlueAPIService: ObservableObject {
                 default: throw AppError.httpError(http.statusCode)
                 }
             }
+            
 
             return try JSONDecoder().decode(MeteoBlueAPIForecast.self, from: data)
         }

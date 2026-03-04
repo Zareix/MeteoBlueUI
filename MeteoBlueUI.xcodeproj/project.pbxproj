@@ -8,34 +8,78 @@
 
 /* Begin PBXBuildFile section */
 		562878A12DD22A09005268C6 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 562878A02DD22A09005268C6 /* KeychainAccess */; };
+		5691EE7A2F58CE6600F06FCC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */; };
+		5691EE7B2F58CE6600F06FCC /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */; };
+		5691EEF72F58D41E00F06FCC /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 5691EEF62F58D41E00F06FCC /* KeychainAccess */; };
+		5691EEFD2F58DB7600F06FCC /* MeteoBlueWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		5611DA732DCB9CCC00F6A76A /* PBXContainerItemProxy */ = {
+		5691EEFA2F58D9BA00F06FCC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5611DA5D2DCB9CCB00F6A76A /* Project object */;
 			proxyType = 1;
-			remoteGlobalIDString = 5611DA642DCB9CCB00F6A76A;
-			remoteInfo = MeteoBlueUI;
-		};
-		5611DA7D2DCB9CCC00F6A76A /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 5611DA5D2DCB9CCB00F6A76A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 5611DA642DCB9CCB00F6A76A;
-			remoteInfo = MeteoBlueUI;
+			remoteGlobalIDString = 5691EE782F58CE6600F06FCC;
+			remoteInfo = MeteoBlueWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		5691EEFC2F58D9BA00F06FCC /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5691EEFD2F58DB7600F06FCC /* MeteoBlueWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeteoBlueUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		5611DA722DCB9CCC00F6A76A /* MeteoBlueUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeteoBlueUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		5611DA7C2DCB9CCC00F6A76A /* MeteoBlueUIUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeteoBlueUIUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeteoBlueWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5691EE982F58CF7500F06FCC /* MeteoBlueWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeteoBlueWidgetExtension.entitlements; sourceTree = "<group>"; };
+		56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5691EE8B2F58CE6600F06FCC /* Exceptions for "MeteoBlueWidget" folder in "MeteoBlueWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */;
+		};
+		5691EE902F58CEA100F06FCC /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/AppError.swift,
+				Models/Data/MeteoDataStructs.swift,
+				Models/MeteoBlueAPI/MeteoBlueAPICurrentData.swift,
+				Models/MeteoBlueAPI/MeteoBlueAPIForecast.swift,
+				Models/PictoMapper.swift,
+				Models/WeatherLocation.swift,
+				Modifiers/AppBackground.swift,
+				Modifiers/IfModifier.swift,
+				Services/KeychainService.swift,
+				Services/MeteoBlueAPIService.swift,
+				Services/WidgetDataService.swift,
+				View/Components/SymbolView.swift,
+			);
+			target = 5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5691EE902F58CEA100F06FCC /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueWidgetExtension" target */,
+			);
 			path = MeteoBlueUI;
 			sourceTree = "<group>";
 		};
@@ -49,6 +93,14 @@
 			path = MeteoBlueUIUITests;
 			sourceTree = "<group>";
 		};
+		5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5691EE8B2F58CE6600F06FCC /* Exceptions for "MeteoBlueWidget" folder in "MeteoBlueWidgetExtension" target */,
+			);
+			path = MeteoBlueWidget;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,17 +112,13 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5611DA6F2DCB9CCC00F6A76A /* Frameworks */ = {
+		5691EE762F58CE6600F06FCC /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5611DA792DCB9CCC00F6A76A /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
+				5691EE7B2F58CE6600F06FCC /* SwiftUI.framework in Frameworks */,
+				5691EE7A2F58CE6600F06FCC /* WidgetKit.framework in Frameworks */,
+				5691EEF72F58D41E00F06FCC /* KeychainAccess in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -80,9 +128,12 @@
 		5611DA5C2DCB9CCB00F6A76A = {
 			isa = PBXGroup;
 			children = (
+				5691EE982F58CF7500F06FCC /* MeteoBlueWidgetExtension.entitlements */,
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
 				5611DA752DCB9CCC00F6A76A /* MeteoBlueUITests */,
 				5611DA7F2DCB9CCC00F6A76A /* MeteoBlueUIUITests */,
+				5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */,
+				56F9F1D32F58CDAE0051D51D /* Frameworks */,
 				5611DA662DCB9CCB00F6A76A /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,10 +142,18 @@
 			isa = PBXGroup;
 			children = (
 				5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */,
-				5611DA722DCB9CCC00F6A76A /* MeteoBlueUITests.xctest */,
-				5611DA7C2DCB9CCC00F6A76A /* MeteoBlueUIUITests.xctest */,
+				5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		56F9F1D32F58CDAE0051D51D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */,
+				56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -107,10 +166,12 @@
 				5611DA612DCB9CCB00F6A76A /* Sources */,
 				5611DA622DCB9CCB00F6A76A /* Frameworks */,
 				5611DA632DCB9CCB00F6A76A /* Resources */,
+				5691EEFC2F58D9BA00F06FCC /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				5691EEFB2F58D9BA00F06FCC /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
@@ -123,51 +184,28 @@
 			productReference = 5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */;
 			productType = "com.apple.product-type.application";
 		};
-		5611DA712DCB9CCC00F6A76A /* MeteoBlueUITests */ = {
+		5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 5611DA892DCB9CCC00F6A76A /* Build configuration list for PBXNativeTarget "MeteoBlueUITests" */;
+			buildConfigurationList = 5691EE8C2F58CE6600F06FCC /* Build configuration list for PBXNativeTarget "MeteoBlueWidgetExtension" */;
 			buildPhases = (
-				5611DA6E2DCB9CCC00F6A76A /* Sources */,
-				5611DA6F2DCB9CCC00F6A76A /* Frameworks */,
-				5611DA702DCB9CCC00F6A76A /* Resources */,
+				5691EE752F58CE6600F06FCC /* Sources */,
+				5691EE762F58CE6600F06FCC /* Frameworks */,
+				5691EE772F58CE6600F06FCC /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				5611DA742DCB9CCC00F6A76A /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				5611DA752DCB9CCC00F6A76A /* MeteoBlueUITests */,
+				5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */,
 			);
-			name = MeteoBlueUITests;
+			name = MeteoBlueWidgetExtension;
 			packageProductDependencies = (
+				5691EEF62F58D41E00F06FCC /* KeychainAccess */,
 			);
-			productName = MeteoBlueUITests;
-			productReference = 5611DA722DCB9CCC00F6A76A /* MeteoBlueUITests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		5611DA7B2DCB9CCC00F6A76A /* MeteoBlueUIUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 5611DA8C2DCB9CCC00F6A76A /* Build configuration list for PBXNativeTarget "MeteoBlueUIUITests" */;
-			buildPhases = (
-				5611DA782DCB9CCC00F6A76A /* Sources */,
-				5611DA792DCB9CCC00F6A76A /* Frameworks */,
-				5611DA7A2DCB9CCC00F6A76A /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				5611DA7E2DCB9CCC00F6A76A /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				5611DA7F2DCB9CCC00F6A76A /* MeteoBlueUIUITests */,
-			);
-			name = MeteoBlueUIUITests;
-			packageProductDependencies = (
-			);
-			productName = MeteoBlueUIUITests;
-			productReference = 5611DA7C2DCB9CCC00F6A76A /* MeteoBlueUIUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
+			productName = MeteoBlueWidgetExtension;
+			productReference = 5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -176,19 +214,14 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 2600;
+				LastSwiftUpdateCheck = 2630;
+				LastUpgradeCheck = 2630;
 				TargetAttributes = {
 					5611DA642DCB9CCB00F6A76A = {
 						CreatedOnToolsVersion = 16.3;
 					};
-					5611DA712DCB9CCC00F6A76A = {
-						CreatedOnToolsVersion = 16.3;
-						TestTargetID = 5611DA642DCB9CCB00F6A76A;
-					};
-					5611DA7B2DCB9CCC00F6A76A = {
-						CreatedOnToolsVersion = 16.3;
-						TestTargetID = 5611DA642DCB9CCB00F6A76A;
+					5691EE782F58CE6600F06FCC = {
+						CreatedOnToolsVersion = 26.3;
 					};
 				};
 			};
@@ -211,8 +244,7 @@
 			projectRoot = "";
 			targets = (
 				5611DA642DCB9CCB00F6A76A /* MeteoBlueUI */,
-				5611DA712DCB9CCC00F6A76A /* MeteoBlueUITests */,
-				5611DA7B2DCB9CCC00F6A76A /* MeteoBlueUIUITests */,
+				5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
@@ -225,14 +257,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5611DA702DCB9CCC00F6A76A /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5611DA7A2DCB9CCC00F6A76A /* Resources */ = {
+		5691EE772F58CE6600F06FCC /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -249,14 +274,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		5611DA6E2DCB9CCC00F6A76A /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		5611DA782DCB9CCC00F6A76A /* Sources */ = {
+		5691EE752F58CE6600F06FCC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -266,15 +284,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		5611DA742DCB9CCC00F6A76A /* PBXTargetDependency */ = {
+		5691EEFB2F58D9BA00F06FCC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 5611DA642DCB9CCB00F6A76A /* MeteoBlueUI */;
-			targetProxy = 5611DA732DCB9CCC00F6A76A /* PBXContainerItemProxy */;
-		};
-		5611DA7E2DCB9CCC00F6A76A /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 5611DA642DCB9CCB00F6A76A /* MeteoBlueUI */;
-			targetProxy = 5611DA7D2DCB9CCC00F6A76A /* PBXContainerItemProxy */;
+			target = 5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */;
+			targetProxy = 5691EEFA2F58D9BA00F06FCC /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -410,6 +423,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueUI/MeteoBlueUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KC74NH6SS8;
@@ -441,6 +455,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = NO;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueUI/MeteoBlueUI.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KC74NH6SS8;
@@ -466,71 +481,67 @@
 			};
 			name = Release;
 		};
-		5611DA8A2DCB9CCC00F6A76A /* Debug */ = {
+		5691EE8D2F58CE6600F06FCC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KC74NH6SS8;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUITests;
+				INFOPLIST_FILE = MeteoBlueWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.5.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUI.MeteoBlueWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MeteoBlueUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MeteoBlueUI";
 			};
 			name = Debug;
 		};
-		5611DA8B2DCB9CCC00F6A76A /* Release */ = {
+		5691EE8E2F58CE6600F06FCC /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KC74NH6SS8;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUITests;
+				INFOPLIST_FILE = MeteoBlueWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 26.2;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.5.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUI.MeteoBlueWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MeteoBlueUI.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/MeteoBlueUI";
-			};
-			name = Release;
-		};
-		5611DA8D2DCB9CCC00F6A76A /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUIUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = MeteoBlueUI;
-			};
-			name = Debug;
-		};
-		5611DA8E2DCB9CCC00F6A76A /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUIUITests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_TARGET_NAME = MeteoBlueUI;
 			};
 			name = Release;
 		};
@@ -555,20 +566,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		5611DA892DCB9CCC00F6A76A /* Build configuration list for PBXNativeTarget "MeteoBlueUITests" */ = {
+		5691EE8C2F58CE6600F06FCC /* Build configuration list for PBXNativeTarget "MeteoBlueWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				5611DA8A2DCB9CCC00F6A76A /* Debug */,
-				5611DA8B2DCB9CCC00F6A76A /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		5611DA8C2DCB9CCC00F6A76A /* Build configuration list for PBXNativeTarget "MeteoBlueUIUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				5611DA8D2DCB9CCC00F6A76A /* Debug */,
-				5611DA8E2DCB9CCC00F6A76A /* Release */,
+				5691EE8D2F58CE6600F06FCC /* Debug */,
+				5691EE8E2F58CE6600F06FCC /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
@@ -588,6 +590,11 @@
 
 /* Begin XCSwiftPackageProductDependency section */
 		562878A02DD22A09005268C6 /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5628789F2DD229E4005268C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		5691EEF62F58D41E00F06FCC /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5628789F2DD229E4005268C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
