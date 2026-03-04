@@ -50,9 +50,16 @@ struct ContentView: View {
                 NavigationStack {
                     ScrollView {
                         VStack(spacing: 32) {
-                            CurrentWeatherView(
-                                currentHour: currentHour
-                            )
+                            VStack(spacing: 8) {
+                                CurrentWeatherView(
+                                    currentHour: currentHour
+                                )
+
+//                                WeatherAISummaryView(
+//                                    days: meteoData.dayByDay,
+//                                    location: location
+//                                )
+                            }
 
                             HourByHourView(days: meteoData.dayByDay)
                                 .scrollEdgeEffectStyle(.hard, for: .horizontal)
