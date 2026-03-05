@@ -15,79 +15,79 @@ struct DayDetailsView: View {
 
     @State var activeItem: MeteoDataDay?
 
+    private var activeDay: MeteoDataDay { activeItem ?? selectedItem }
+
     var body: some View {
         NavigationStack {
             VStack {
-                if let activeDay = activeItem {
-                    VStack(spacing: 8) {
-                        HStack {
-                            ForEach(meteoData.dayByDay) { day in
-                                VStack {
+                VStack(spacing: 8) {
+                    HStack {
+                        ForEach(meteoData.dayByDay) { day in
+                            VStack {
+                                Text(
+                                    day.time.formatted(
+                                        .dateTime.weekday(.abbreviated)
+                                    )
+                                    .capitalized
+                                    .prefix(1)
+                                )
+                                .font(.system(size: 14))
+                                .onTapGesture {
+                                    withAnimation {
+                                        activeItem = day
+                                    }
+                                }
+                                Button {
+                                    withAnimation {
+                                        activeItem = day
+                                    }
+                                } label: {
                                     Text(
                                         day.time.formatted(
-                                            .dateTime.weekday(.abbreviated)
+                                            .dateTime.day(.twoDigits)
                                         )
-                                        .capitalized
-                                        .prefix(1)
                                     )
-                                    .font(.system(size: 14))
-                                    .onTapGesture {
-                                        withAnimation {
-                                            activeItem = day
-                                        }
-                                    }
-                                    Button {
-                                        withAnimation {
-                                            activeItem = day
-                                        }
-                                    } label: {
-                                        Text(
-                                            day.time.formatted(
-                                                .dateTime.day(.twoDigits)
-                                            )
-                                        )
-                                    }
-                                    .frame(maxWidth: .infinity)
-                                    .padding(8)
-                                    .foregroundColor(
-                                        meteoData.dayByDay.first == day
-                                            ? .accentColor : .primary
-                                    )
-                                    .font(.body)
-                                    .background(
-                                        activeDay == day
-                                            ? Circle()
-                                            .fill(Color.accentColor.opacity(0.2))
-                                            : Circle().fill(.clear)
-                                    )
-                                    .shadow(
-                                        color: .secondary.opacity(0.4),
-                                        radius: activeDay == day
-                                            ? 2 : 0
-                                    )
-                                    .transition(.opacity)
-                                    .animation(.easeInOut, value: activeDay)
                                 }
+                                .frame(maxWidth: .infinity)
+                                .padding(8)
+                                .foregroundColor(
+                                    meteoData.dayByDay.first == day
+                                        ? .accentColor : .primary
+                                )
+                                .font(.body)
+                                .background(
+                                    activeDay == day
+                                        ? Circle()
+                                        .fill(Color.accentColor.opacity(0.2))
+                                        : Circle().fill(.clear)
+                                )
+                                .shadow(
+                                    color: .secondary.opacity(0.4),
+                                    radius: activeDay == day
+                                        ? 2 : 0
+                                )
+                                .transition(.opacity)
+                                .animation(.easeInOut, value: activeDay)
                             }
                         }
-                        .frame(maxWidth: .infinity)
-                        .padding(.horizontal, 8)
-
-                        Text(
-                            activeDay.time.formatted(
-                                .dateTime
-                                    .weekday(.wide)
-                                    .day(.twoDigits)
-                                    .month(.wide)
-                            )
-                            .capitalized
-                        )
-                        .transition(.opacity)
-                        .animation(.easeInOut, value: activeDay.time)
-                        .frame(maxWidth: .infinity)
-
-                        Divider()
                     }
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal, 8)
+
+                    Text(
+                        activeDay.time.formatted(
+                            .dateTime
+                                .weekday(.wide)
+                                .day(.twoDigits)
+                                .month(.wide)
+                        )
+                        .capitalized
+                    )
+                    .transition(.opacity)
+                    .animation(.easeInOut, value: activeDay.time)
+                    .frame(maxWidth: .infinity)
+
+                    Divider()
                 }
 
                 ScrollView(.horizontal) {
