@@ -59,6 +59,7 @@
 			membershipExceptions = (
 				Models/AppError.swift,
 				Models/Data/MeteoDataStructs.swift,
+				Models/MeteoBlueAPI/MeteoBlueAPI15Min.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPICurrentData.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPIForecast.swift,
 				Models/PictoMapper.swift,
@@ -81,16 +82,6 @@
 				5691EE902F58CEA100F06FCC /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueWidgetExtension" target */,
 			);
 			path = MeteoBlueUI;
-			sourceTree = "<group>";
-		};
-		5611DA752DCB9CCC00F6A76A /* MeteoBlueUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MeteoBlueUITests;
-			sourceTree = "<group>";
-		};
-		5611DA7F2DCB9CCC00F6A76A /* MeteoBlueUIUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = MeteoBlueUIUITests;
 			sourceTree = "<group>";
 		};
 		5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */ = {
@@ -130,8 +121,6 @@
 			children = (
 				5691EE982F58CF7500F06FCC /* MeteoBlueWidgetExtension.entitlements */,
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
-				5611DA752DCB9CCC00F6A76A /* MeteoBlueUITests */,
-				5611DA7F2DCB9CCC00F6A76A /* MeteoBlueUIUITests */,
 				5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */,
 				56F9F1D32F58CDAE0051D51D /* Frameworks */,
 				5611DA662DCB9CCB00F6A76A /* Products */,
@@ -440,7 +429,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -472,7 +461,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -500,7 +489,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUI.MeteoBlueWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -532,7 +521,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.5.0;
+				MARKETING_VERSION = 1.6.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.zareix.MeteoBlueUI.MeteoBlueWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

@@ -61,10 +61,16 @@ struct ContentView: View {
 //                                )
                             }
 
+//                            NextHourView(
+//                                nextHour: meteoData.nextHour
+//                            )
+
                             HourByHourView(days: meteoData.dayByDay)
                                 .scrollEdgeEffectStyle(.hard, for: .horizontal)
 
                             DayByDayView(days: meteoData.dayByDay)
+
+                            MapsView()
                         }
                         .padding(.horizontal, 20)
                     }

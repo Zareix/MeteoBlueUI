@@ -104,10 +104,17 @@ struct DayByDayView: View {
 #Preview {
     @Previewable @StateObject var mockData = MockMeteoData()
 
-    if !mockData.dayByDay.isEmpty {
-        DayByDayView(days: mockData.dayByDay)
-            .appBackground()
-    } else {
-        ProgressView()
+    let defaultLocation = LocationManager.defaultLocation()
+
+    VStack {
+        if !mockData.dayByDay.isEmpty {
+            DayByDayView(days: mockData.dayByDay)
+                .appBackground()
+        } else {
+            ProgressView()
+        }
+    }
+    .task {
+        await mockData.loadMeteoData(location: defaultLocation)
     }
 }

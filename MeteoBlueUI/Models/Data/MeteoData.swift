@@ -13,6 +13,7 @@ import Foundation
 class MeteoData: ObservableObject {
     @Published var location: WeatherLocation?
     @Published var dayByDay: [MeteoDataDay] = []
+    @Published var nextHour: [MeteoData15Min] = []
     @Published var error: String?
 
     private let service: MeteoBlueAPIService
@@ -97,9 +98,19 @@ class MeteoData: ObservableObject {
                 dayByDay[dayIndex] = day
             }
 
-            let allHours = dayByDay.flatMap { $0.hourByHour }
             if isCurrentLocation {
-                WidgetDataService.save(location: location, hours: allHours)
+                WidgetDataService.save(location: location, hours: dayByDay.flatMap { $0.hourByHour })
+
+//                let data15min = try await service.fetch15Min(location: location)
+//                for (index, hour) in data15min.data15Min.time.enumerated() {
+//                    nextHour.append(MeteoData15Min(
+//                        time: MeteoData.convertStringDayHourToTime(
+//                            input: hour
+//                        ),
+//                        precipitation: data15min.data15Min.precipitation[index],
+//                        precipitationProbability: data15min.data15Min.precipitationProbability[index]
+//                    ))
+//                }
             }
         } catch {
             print("Error loading meteo data: \(error)")
