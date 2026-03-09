@@ -32,7 +32,7 @@ struct WidgetData: Codable {
 // MARK: - Service
 
 enum WidgetDataService {
-    static let appGroupID = "group.com.zareix.MeteoBlueUI"
+    static let appGroupID = "group.com.zareix.MeteoBlueUl"
     static let userDefaultsKey = "widget_forecast_data"
     static let staleThreshold: TimeInterval = 60 * 60 // 1 hour
 
@@ -105,13 +105,11 @@ enum WidgetDataService {
     }
 
     static func loadOrFetch() async -> WidgetData? {
-        // 1. If we have a fresh cache, use it immediately — no GPS needed
         if !isStale(), let cached = loadFromCache() {
             wdLogger.info("♻️ loadOrFetch: using fresh cache for \(cached.location.city)")
             return cached
         }
 
-        // 2. Determine location: prefer cached location, only fall back to GPS if nothing cached
         let location: WeatherLocation
         if let cachedLocation = loadFromCache()?.location {
             wdLogger.info("📍 loadOrFetch: using cached location = \(cachedLocation.city)")
@@ -122,7 +120,6 @@ enum WidgetDataService {
             wdLogger.info("📍 loadOrFetch: resolved location = \(location.city)")
         }
 
-        // 3. Fetch fresh data for that location
         wdLogger.info("🔄 loadOrFetch: cache stale or missing, fetching…")
         do {
             return try await fetchWidgetData(for: location)
@@ -155,20 +152,19 @@ private final class _WidgetLocationResolver: NSObject, CLLocationManagerDelegate
         )
     }
 
-    // Retained for the lifetime of the async location request
     private static var _active: _WidgetLocationResolver?
 
     static func resolve() async -> WeatherLocation? {
         await withCheckedContinuation { continuation in
             let resolver = _WidgetLocationResolver()
-            _active = resolver          // keep alive until resume()
+            _active = resolver
             resolver.continuation = continuation
             resolver.start()
         }
     }
 
     private func start() {
-        wdLogger.info("📡 _WidgetLocationResolver: authStatus=\(self.manager.authorizationStatus.rawValue)")
+        wdLogger.info("📡 _WidgetLocationResolver: authStatus=\(manager.authorizationStatus.rawValue)")
         switch manager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             manager.requestLocation()
@@ -217,6 +213,6 @@ private final class _WidgetLocationResolver: NSObject, CLLocationManagerDelegate
     private func resume(with location: WeatherLocation?) {
         continuation?.resume(returning: location)
         continuation = nil
-        Self._active = nil   // release the retained reference
+        Self._active = nil
     }
 }
