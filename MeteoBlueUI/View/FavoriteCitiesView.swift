@@ -1,4 +1,5 @@
 import MapKit
+
 //
 //  FavoriteCitiesView.swift
 //  MeteoBlueUI
@@ -25,12 +26,7 @@ struct FavoriteCitiesView: View {
 
     func addCurrent() {
         guard let location = meteoData.location else { return }
-        favorites.add(
-            FavoriteCitiesItem(
-                title: location.city,
-                subtitle: location.country
-            )
-        )
+        favorites.add(location)
     }
 
     func deleteFromFavorite(at offsets: IndexSet) {
@@ -43,12 +39,7 @@ struct FavoriteCitiesView: View {
 
     func isCurrentCityFavorite() -> Bool {
         guard let location = meteoData.location else { return false }
-        return favorites.items.contains(
-            FavoriteCitiesItem(
-                title: location.city,
-                subtitle: location.country
-            )
-        )
+        return favorites.items.contains(location)
     }
 
     var body: some View {
@@ -57,7 +48,7 @@ struct FavoriteCitiesView: View {
         } label: {
             Image(
                 systemName:
-                    isCurrentCityFavorite() ? "star.fill" : "star"
+                isCurrentCityFavorite() ? "star.fill" : "star"
             )
             .foregroundColor(.blue)
         }
@@ -72,17 +63,17 @@ struct FavoriteCitiesView: View {
                     if !favorites.items.isEmpty {
                         Section {
                             List {
-                                ForEach(favorites.items) { city in
+                                ForEach(favorites.items) { location in
                                     Button {
                                         handleClick(
-                                            title: city.title,
-                                            subtitle: city.subtitle
+                                            title: location.city,
+                                            subtitle: location.country
                                         )
                                     } label: {
                                         VStack(alignment: .leading) {
-                                            Text(city.title)
+                                            Text(location.city)
                                                 .foregroundColor(.primary)
-                                            Text(city.subtitle)
+                                            Text(location.country)
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                         }
@@ -113,15 +104,17 @@ struct FavoriteCitiesView: View {
 }
 
 #Preview {
+    @Previewable @State var mock = MockMeteoData()
     NavigationStack {
-        VStack {
-
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                FavoriteCitiesView()
-                    .environmentObject(MockMeteoData() as MeteoData)
+        VStack {}
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    FavoriteCitiesView()
+                        .environmentObject(mock as MeteoData)
+                        .task {
+                            await mock.loadMeteoData()
+                        }
+                }
             }
-        }
     }
 }

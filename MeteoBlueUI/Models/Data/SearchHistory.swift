@@ -5,23 +5,13 @@
 //  Created by Raphaël Catarino on 15/05/2025.
 //
 
-import Foundation
 import Combine
-
-struct SearchHistoryItem: Codable, Identifiable, Equatable {
-    let title: String
-    let subtitle: String
-    var id: String { title }
-    
-    static func == (lhs: SearchHistoryItem, rhs: SearchHistoryItem) -> Bool {
-        return lhs.title == rhs.title && lhs.subtitle == rhs.subtitle
-    }
-}
+import Foundation
 
 class SearchHistory: ObservableObject {
     private static let maxHistoryCount = 5
     private let storageKey = "searchHistory"
-    @Published var items: [SearchHistoryItem] = []
+    @Published var items: [WeatherLocation] = []
 
     init() {
         load()
@@ -29,7 +19,8 @@ class SearchHistory: ObservableObject {
 
     func load() {
         if let data = UserDefaults.standard.data(forKey: storageKey),
-           let decoded = try? JSONDecoder().decode([SearchHistoryItem].self, from: data) {
+           let decoded = try? JSONDecoder().decode([WeatherLocation].self, from: data)
+        {
             items = decoded
         }
     }
@@ -42,7 +33,7 @@ class SearchHistory: ObservableObject {
         }
     }
 
-    func add(_ item: SearchHistoryItem) {
+    func add(_ item: WeatherLocation) {
         if items.contains(item) {
             items.removeAll(where: { $0 == item })
         }

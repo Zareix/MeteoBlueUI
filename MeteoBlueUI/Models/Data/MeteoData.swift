@@ -57,15 +57,11 @@ class MeteoData: ObservableObject {
     }
 
     private func resolveFallbackLocation() async -> WeatherLocation? {
-        if let city = SearchHistory().items.first,
-           let resolved = try? await service.getCityFromCompletion(title: city.title, subtitle: city.subtitle)
-        {
-            return resolved
+        if let location = SearchHistory().items.first {
+            return location
         }
-        if let city = FavoriteCities().items.first,
-           let resolved = try? await service.getCityFromCompletion(title: city.title, subtitle: city.subtitle)
-        {
-            return resolved
+        if let location = FavoriteCities().items.first {
+            return location
         }
         return LocationManager.defaultLocation()
     }

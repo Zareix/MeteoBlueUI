@@ -15,7 +15,7 @@ struct SearchCityView: View {
     @StateObject private var searchHistory = SearchHistory()
     @State private var isSearchActive = false
 
-    func handleSave(title: String, subtitle: String) {
+    func handleSearch(title: String, subtitle: String) {
         isSearchActive = false
         Task {
             let foundLocation = try await MeteoBlueAPIService()
@@ -23,9 +23,18 @@ struct SearchCityView: View {
             guard let foundLocation else { return }
             await meteoData.loadMeteoData(location: foundLocation)
 
-            searchHistory.add(
-                SearchHistoryItem(title: title, subtitle: subtitle)
-            )
+            searchHistory.add(foundLocation)
+
+            locationSearchService.searchQuery = ""
+        }
+    }
+
+    func handleSearch(location: WeatherLocation) {
+        isSearchActive = false
+        Task {
+            await meteoData.loadMeteoData(location: location)
+
+            searchHistory.add(location)
 
             locationSearchService.searchQuery = ""
         }
@@ -54,17 +63,16 @@ struct SearchCityView: View {
                     if !searchHistory.items.isEmpty {
                         Section("search.history") {
                             List {
-                                ForEach(searchHistory.items) { city in
+                                ForEach(searchHistory.items) { location in
                                     Button {
-                                        handleSave(
-                                            title: city.title,
-                                            subtitle: city.subtitle
+                                        handleSearch(
+                                            location: location
                                         )
                                     } label: {
                                         VStack(alignment: .leading) {
-                                            Text(city.title)
+                                            Text(location.city)
                                                 .foregroundColor(.primary)
-                                            Text(city.subtitle)
+                                            Text(location.country)
                                                 .font(.subheadline)
                                                 .foregroundColor(.secondary)
                                         }
@@ -83,7 +91,7 @@ struct SearchCityView: View {
                 ) {
                     ForEach(locationSearchService.completions, id: \.self) { completion in
                         Button {
-                            handleSave(
+                            handleSearch(
                                 title: completion.title,
                                 subtitle: completion.subtitle
                             )

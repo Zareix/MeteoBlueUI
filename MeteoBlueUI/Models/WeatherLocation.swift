@@ -8,11 +8,14 @@
 import Foundation
 import MapKit
 
-struct WeatherLocation: Equatable, Hashable, Codable {
+struct WeatherLocation: Equatable, Hashable, Codable, Identifiable {
     let city: String
     let country: String
     let latitude: Double
     let longitude: Double
+    var id: String {
+        city + country + String(latitude) + String(longitude)
+    }
 
     init(city: String, country: String, latitude: Double, longitude: Double) {
         self.city = city

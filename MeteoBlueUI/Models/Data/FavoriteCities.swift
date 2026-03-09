@@ -5,22 +5,12 @@
 //  Created by Raphaël Catarino on 15/05/2025.
 //
 
-import Foundation
 import Combine
-
-struct FavoriteCitiesItem: Codable, Identifiable, Equatable {
-    let title: String
-    let subtitle: String
-    var id: String { title }
-    
-    static func == (lhs: FavoriteCitiesItem, rhs: FavoriteCitiesItem) -> Bool {
-        return lhs.title == rhs.title && lhs.subtitle == rhs.subtitle
-    }
-}
+import Foundation
 
 class FavoriteCities: ObservableObject {
     private let storageKey = "favoriteCities"
-    @Published var items: [FavoriteCitiesItem] = []
+    @Published var items: [WeatherLocation] = []
 
     init() {
         load()
@@ -28,7 +18,8 @@ class FavoriteCities: ObservableObject {
 
     func load() {
         if let data = UserDefaults.standard.data(forKey: storageKey),
-           let decoded = try? JSONDecoder().decode([FavoriteCitiesItem].self, from: data) {
+           let decoded = try? JSONDecoder().decode([WeatherLocation].self, from: data)
+        {
             items = decoded
         }
     }
@@ -39,13 +30,13 @@ class FavoriteCities: ObservableObject {
             items = items
         }
     }
-    
+
     func move(from source: IndexSet, to destination: Int) {
         items.move(fromOffsets: source, toOffset: destination)
         save()
     }
 
-    func add(_ item: FavoriteCitiesItem) {
+    func add(_ item: WeatherLocation) {
         if items.contains(item) {
             return
         }
