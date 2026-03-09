@@ -24,7 +24,6 @@ struct SearchCityView: View {
             await meteoData.loadMeteoData(location: foundLocation)
 
             searchHistory.add(foundLocation)
-
             locationSearchService.searchQuery = ""
         }
     }
@@ -33,9 +32,8 @@ struct SearchCityView: View {
         isSearchActive = false
         Task {
             await meteoData.loadMeteoData(location: location)
-
+            
             searchHistory.add(location)
-
             locationSearchService.searchQuery = ""
         }
     }

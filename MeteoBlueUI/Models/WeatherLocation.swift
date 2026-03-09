@@ -33,4 +33,8 @@ struct WeatherLocation: Equatable, Hashable, Codable, Identifiable {
         self.latitude = mapItem.location.coordinate.latitude
         self.longitude = mapItem.location.coordinate.longitude
     }
+
+    static func == (lhs: WeatherLocation, rhs: WeatherLocation) -> Bool {
+        return lhs.id == rhs.id
+    }
 }

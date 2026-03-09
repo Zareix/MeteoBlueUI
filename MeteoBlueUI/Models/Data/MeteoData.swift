@@ -6,7 +6,6 @@
 //
 import Foundation
 import SwiftUI
-import WidgetKit
 
 // MARK: - MeteoData
 
@@ -156,10 +155,10 @@ class MeteoData: ObservableObject {
 //                    ))
 //                }
 
-                Task.detached(priority: .background) {
-                    _ = try? await WidgetDataService.fetchWidgetData(for: location)
-                    WidgetCenter.shared.reloadAllTimelines()
-                }
+//                Task.detached(priority: .background) {
+//                    _ = try? await WidgetDataService.fetchWidgetData(for: location)
+//                    WidgetCenter.shared.reloadAllTimelines()
+//                }
             }
         } catch {
             print("Error loading meteo data: \(error)")

@@ -14,13 +14,10 @@ struct FavoriteCitiesView: View {
     @StateObject private var favorites = FavoriteCities()
     @State private var isSheetOpen = false
 
-    func handleClick(title: String, subtitle: String) {
+    func handleClick(location: WeatherLocation) {
         isSheetOpen = false
         Task {
-            let foundLocation = try await MeteoBlueAPIService()
-                .getCityFromCompletion(title: title, subtitle: subtitle)
-            guard let foundLocation else { return }
-            await meteoData.loadMeteoData(location: foundLocation)
+            await meteoData.loadMeteoData(location: location)
         }
     }
 
@@ -65,10 +62,7 @@ struct FavoriteCitiesView: View {
                             List {
                                 ForEach(favorites.items) { location in
                                     Button {
-                                        handleClick(
-                                            title: location.city,
-                                            subtitle: location.country
-                                        )
+                                        handleClick(location: location)
                                     } label: {
                                         VStack(alignment: .leading) {
                                             Text(location.city)

@@ -32,7 +32,6 @@ struct WidgetData: Codable {
 // MARK: - Service
 
 enum WidgetDataService {
-    static let appGroupID = "group.com.zareix.MeteoBlueUl"
     static let userDefaultsKey = "widget_forecast_data"
     static let staleThreshold: TimeInterval = 60 * 60 // 1 hour
 
@@ -42,11 +41,7 @@ enum WidgetDataService {
     }
 
     static func loadFromCache() -> WidgetData? {
-        guard let defaults = UserDefaults(suiteName: appGroupID) else {
-            wdLogger.error("❌ loadFromCache: UserDefaults(suiteName:) returned nil — App Group '\(appGroupID)' not configured")
-            return nil
-        }
-        guard let data = defaults.data(forKey: userDefaultsKey) else {
+        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey) else {
             wdLogger.warning("⚠️ loadFromCache: no data for key '\(userDefaultsKey)' — cache is empty")
             return nil
         }
@@ -85,10 +80,8 @@ enum WidgetDataService {
         let widgetData = WidgetData(location: location, hours: hours, savedAt: now)
         wdLogger.info("✅ fetchWidgetData: got \(hours.count) future hours for \(location.city)")
 
-        if let encoded = try? JSONEncoder().encode(widgetData),
-           let defaults = UserDefaults(suiteName: appGroupID)
-        {
-            defaults.set(encoded, forKey: userDefaultsKey)
+        if let encoded = try? JSONEncoder().encode(widgetData) {
+            UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
             wdLogger.info("💾 fetchWidgetData: saved to App Group cache")
         } else {
             wdLogger.error("❌ fetchWidgetData: failed to save to App Group cache")
@@ -164,7 +157,6 @@ private final class _WidgetLocationResolver: NSObject, CLLocationManagerDelegate
     }
 
     private func start() {
-        wdLogger.info("📡 _WidgetLocationResolver: authStatus=\(manager.authorizationStatus.rawValue)")
         switch manager.authorizationStatus {
         case .authorizedWhenInUse, .authorizedAlways:
             manager.requestLocation()
