@@ -8,7 +8,7 @@
 import KeychainAccess
 
 struct KeychainService {
-    let keychain = Keychain(service: "com.zareix.MeteoBlueUI", accessGroup: "group.com.zareix.MeteoBlueUI")
+    let keychain = Keychain(service: "com.zareix.MeteoBlueUI", accessGroup: "KC74NH6SS8.group.com.zareix.MeteoBlueUI")
 
     func getMetoBlueAPIToken() -> String? {
         return keychain["api-token"]
@@ -17,7 +17,7 @@ struct KeychainService {
     func setMetoBlueAPIToken(token: String) {
         keychain[string: "api-token"] = token
     }
-    
+
     func clearMetoBlueAPIToken() {
         try? keychain.remove("api-token")
     }

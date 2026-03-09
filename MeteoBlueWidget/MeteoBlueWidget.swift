@@ -5,8 +5,12 @@
 //  Created by Raphaël Catarino on 04/03/2026.
 //
 
+import AppIntents
+import OSLog
 import SwiftUI
 import WidgetKit
+
+private let widgetLogger = Logger(subsystem: "com.zareix.MeteoBlueUI", category: "MeteoBlueWidget")
 
 // MARK: - Timeline Entry
 
@@ -28,6 +32,8 @@ struct NextHoursProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NextHoursEntry) -> Void) {
+        print("📸 [Widget] getSnapshot called")
+        widgetLogger.info("📸 getSnapshot called for NextHoursProvider")
         if let data = WidgetDataService.loadFromCache() {
             completion(NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours))
         } else {
@@ -36,7 +42,11 @@ struct NextHoursProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
+        print("⏱️ [Widget] getTimeline called")
+        widgetLogger.info("⏱️ getTimeline called for NextHoursProvider")
         Task {
+            print("📡 [Widget] Fetching widget data from WidgetDataService")
+            widgetLogger.info("📡 Fetching widget data from WidgetDataService")
             let widgetData = await WidgetDataService.loadOrFetch()
 
             let entry: NextHoursEntry
@@ -60,7 +70,7 @@ struct NextHoursProvider: TimelineProvider {
                 symbol: offset % 2 == 0 ? "sun.max.fill" : "cloud.fill",
                 description: "Sunny",
                 temperature: 18 + Double(offset),
-                precipitationProbability: 10
+                precipitationProbability: offset * 5
             )
         }
     }
@@ -83,14 +93,14 @@ struct HourCellView: View {
                 .font(.caption2)
                 .foregroundStyle(.secondary)
             SymbolView(symbol: entry.symbol)
+                .font(.title3)
+                .frame(width: 24, height: 24)
             Text("\(Int(entry.temperature.rounded()))°")
                 .font(.caption)
                 .fontWeight(.semibold)
-            if entry.precipitationProbability > 0 {
-                Text("\(entry.precipitationProbability)%")
-                    .font(.caption2)
-                    .foregroundStyle(.blue)
-            }
+//            Text(entry.precipitationProbability > 0 ? "\(entry.precipitationProbability)%" : " ")
+//                .font(.caption2)
+//                .foregroundStyle(.blue)
         }
         .frame(maxWidth: .infinity)
         .frame(maxHeight: .infinity, alignment: .top)
@@ -105,14 +115,11 @@ struct MeteoBlueWidgetEntryView: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 3) {
-                Image(systemName: "location.fill")
-                Text(entry.cityName)
-                    .lineLimit(1)
-            }
-            .font(.caption)
-            .fontWeight(.semibold)
-            .foregroundStyle(.primary)
+            Text(entry.cityName)
+                .fontWeight(.semibold)
+                .foregroundStyle(.primary)
+                .fontDesign(.serif)
+                .lineLimit(1)
 
             Divider()
 
@@ -128,10 +135,11 @@ struct MeteoBlueWidgetEntryView: View {
                         HourCellView(entry: hour)
                     }
                 }
-                .padding(.top)
+                .padding(.vertical)
+                .padding(.top, 2)
             }
         }
-        .containerBackground(.ultraThinMaterial, for: .widget)
+        .containerBackground(Color("WidgetBackground"), for: .widget)
     }
 }
 
@@ -164,7 +172,7 @@ struct MeteoBlueWidget: Widget {
                 symbol: offset % 2 == 0 ? "sun.max.fill" : "cloud.sun.fill",
                 description: "Sunny",
                 temperature: 18 + Double(offset),
-                precipitationProbability: offset * 5
+                precipitationProbability: 0 // offset * 5
             )
         }
     )

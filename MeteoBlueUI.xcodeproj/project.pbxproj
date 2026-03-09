@@ -41,7 +41,6 @@
 /* Begin PBXFileReference section */
 		5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeteoBlueUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeteoBlueWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
-		5691EE982F58CF7500F06FCC /* MeteoBlueWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeteoBlueWidgetExtension.entitlements; sourceTree = "<group>"; };
 		56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -119,7 +118,6 @@
 		5611DA5C2DCB9CCB00F6A76A = {
 			isa = PBXGroup;
 			children = (
-				5691EE982F58CF7500F06FCC /* MeteoBlueWidgetExtension.entitlements */,
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
 				5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */,
 				56F9F1D32F58CDAE0051D51D /* Frameworks */,
@@ -419,7 +417,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUI;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to give forecast from where you are";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -451,7 +449,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUI;
-				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = YES;
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "We use your location to give forecast from where you are";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -475,7 +473,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = MeteoBlueWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueWidget/MeteoBlueWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KC74NH6SS8;
@@ -507,7 +505,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
-				CODE_SIGN_ENTITLEMENTS = MeteoBlueWidgetExtension.entitlements;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueWidget/MeteoBlueWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = KC74NH6SS8;

@@ -91,6 +91,13 @@ struct ContentView: View {
                         ToolbarItem(placement: .topBarTrailing) {
                             SearchCityView()
                         }
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button(role: .destructive) {
+                                KeychainService().clearMetoBlueAPIToken()
+                            } label: {
+                                Image(systemName: "key.slash")
+                            }
+                        }
                     }
                     .refreshable {
                         await meteoData.loadMeteoData(

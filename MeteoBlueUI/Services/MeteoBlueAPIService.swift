@@ -7,6 +7,9 @@
 
 import Foundation
 import MapKit
+import OSLog
+
+private let apiLogger = Logger(subsystem: "com.zareix.MeteoBlueUI", category: "MeteoBlueAPIService")
 
 actor MeteoBlueAPIService {
     private let session: URLSession = {
@@ -38,13 +41,13 @@ actor MeteoBlueAPIService {
 
         let task = Task<MeteoBlueAPIForecast, Error> {
             let (lat, lon) = (location.latitude, location.longitude)
-            print(
-                "Fetching MeteoBlue API forecast for \(location.city) — lat: \(lat), lon: \(lon)"
-            )
+            apiLogger.info("🌐 fetchForecast: \(location.city) lat=\(lat) lon=\(lon)")
 
             guard let token = KeychainService().getMetoBlueAPIToken() else {
+                apiLogger.error("❌ fetchForecast: no API token in keychain — widget cannot fetch")
                 throw AppError.noAPIToken
             }
+            apiLogger.info("🔑 fetchForecast: API token found (\(token.prefix(4))…)")
 
             var components = URLComponents()
             components.scheme = "https"
