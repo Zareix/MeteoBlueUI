@@ -142,8 +142,6 @@ class MeteoData: ObservableObject {
             }
 
             if isCurrentLocation {
-                WidgetDataService.save(location: location, hours: dayByDay.flatMap { $0.hourByHour })
-
 //                let data15min = try await service.fetch15Min(location: location)
 //                for (index, hour) in data15min.data15Min.time.enumerated() {
 //                    let date = MeteoData.convertStringHourToTime(

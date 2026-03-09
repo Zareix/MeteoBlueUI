@@ -28,22 +28,27 @@ struct NextHoursProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NextHoursEntry) -> Void) {
-        if let data = WidgetDataService.load() {
+        if let data = WidgetDataService.loadFromCache() {
             completion(NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours))
         } else {
-            completion(NextHoursEntry(date: .now, cityName: "—", hours: []))
+            completion(NextHoursEntry(date: .now, cityName: "Paris", hours: Self.placeholderHours()))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
-        let entry: NextHoursEntry
-        if let data = WidgetDataService.load() {
-            entry = NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours)
-        } else {
-            entry = NextHoursEntry(date: .now, cityName: "—", hours: [])
+        Task {
+            let widgetData = await WidgetDataService.loadOrFetch()
+
+            let entry: NextHoursEntry
+            if let data = widgetData {
+                entry = NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours)
+            } else {
+                entry = NextHoursEntry(date: .now, cityName: "—", hours: [])
+            }
+
+            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
+            completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
         }
-        let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
-        completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
     }
 
     // MARK: Placeholder helpers
@@ -112,7 +117,7 @@ struct MeteoBlueWidgetEntryView: View {
             Divider()
 
             if entry.hours.isEmpty {
-                Text("Open the app to load data")
+                Text("Loading data…")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
