@@ -1,4 +1,3 @@
-import Charts
 
 //
 //  PrecipitationChartView.swift
@@ -6,6 +5,7 @@ import Charts
 //
 //  Created by Raphaël Catarino on 18/05/2025.
 //
+import Charts
 import SwiftUI
 
 struct PrecipitationChartView: View {

@@ -58,10 +58,12 @@ struct MeteoDataDay: Identifiable, Equatable, Hashable {
 
 struct MeteoData15Min: Identifiable, Equatable {
     let time: Date
+    let temperature: Double
     let precipitation: Double
-    let precipitationProbability: Int
 
-    var id: Date { time }
+    var id: Date {
+        time
+    }
 
     static func == (lhs: MeteoData15Min, rhs: MeteoData15Min) -> Bool {
         lhs.id == rhs.id

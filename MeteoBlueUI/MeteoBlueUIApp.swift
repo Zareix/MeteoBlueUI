@@ -18,7 +18,11 @@ struct MeteoBlueUIApp: App {
 
     init() {
         let service = MeteoBlueAPIService()
-        _meteoData = StateObject(wrappedValue: MeteoData(service: service))
+        let manager = LocationManager()
+        let data = MeteoData(service: service)
+        data.locationManager = manager
+        _locationManager = StateObject(wrappedValue: manager)
+        _meteoData = StateObject(wrappedValue: data)
     }
 
     var body: some Scene {
@@ -28,13 +32,9 @@ struct MeteoBlueUIApp: App {
                     .ignoresSafeArea()
 
                 if !showSheet {
-                    if locationManager.currentLocation != nil {
-                        ContentView()
-                            .environmentObject(meteoData)
-                            .environmentObject(locationManager)
-                    } else {
-                        ProgressView()
-                    }
+                    ContentView()
+                        .environmentObject(meteoData)
+                        .environmentObject(locationManager)
                 } else {
                     VStack {
                         ProgressView()

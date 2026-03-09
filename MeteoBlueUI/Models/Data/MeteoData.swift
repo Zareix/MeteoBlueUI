@@ -4,8 +4,8 @@
 //
 //  Created by Raphaël Catarino on 13/05/2025.
 //
-
 import Foundation
+import SwiftUI
 
 // MARK: - MeteoData
 
@@ -17,9 +17,56 @@ class MeteoData: ObservableObject {
     @Published var error: String?
 
     private let service: MeteoBlueAPIService
+    var locationManager: LocationManager?
 
     init(service: MeteoBlueAPIService = MeteoBlueAPIService()) {
         self.service = service
+    }
+
+    func loadMeteoData() async {
+        if let fallback = await resolveFallbackLocation() {
+            await loadMeteoData(location: fallback)
+        }
+
+        guard let manager = locationManager else { return }
+        let gpsLocation: WeatherLocation? = await withTaskGroup(of: WeatherLocation?.self) { group in
+            group.addTask { @MainActor in
+                for await location: WeatherLocation? in manager.$currentLocation.values {
+                    if let location { return location }
+                }
+                return nil
+            }
+            group.addTask {
+                try? await Task.sleep(nanoseconds: 5_000_000_000)
+                return nil
+            }
+            for await result in group {
+                if let location = result {
+                    group.cancelAll()
+                    return location
+                }
+            }
+            group.cancelAll()
+            return nil
+        }
+
+        if let gpsLocation {
+            await loadMeteoData(location: gpsLocation, isCurrentLocation: true)
+        }
+    }
+
+    private func resolveFallbackLocation() async -> WeatherLocation? {
+        if let city = SearchHistory().items.first,
+           let resolved = try? await service.getCityFromCompletion(title: city.title, subtitle: city.subtitle)
+        {
+            return resolved
+        }
+        if let city = FavoriteCities().items.first,
+           let resolved = try? await service.getCityFromCompletion(title: city.title, subtitle: city.subtitle)
+        {
+            return resolved
+        }
+        return LocationManager.defaultLocation()
     }
 
     func loadMeteoData(force: Bool = false, location: WeatherLocation, isCurrentLocation: Bool = false) async {
@@ -28,7 +75,9 @@ class MeteoData: ObservableObject {
                 return
             }
             let data = try await service.fetchForecast(location: location)
-            self.location = location
+            withAnimation(.easeInOut(duration: 0.4)) {
+                self.location = location
+            }
             dayByDay.removeAll()
             error = nil
 
@@ -55,12 +104,6 @@ class MeteoData: ObservableObject {
                         precipitation: data.dataDay.precipitation[index],
                         precipitationProbability: data.dataDay
                             .precipitationProbability[index]
-                        //                        sunrise: MeteoData.convertStringHourToTime(
-                        //                            input: data.dataDay.time[index]
-                        //                        ),
-                        //                        sunset: MeteoData.convertStringHourToTime(
-                        //                            input: data.dataDay.time[index]
-                        //                        )
                     )
                 )
             }
@@ -103,12 +146,18 @@ class MeteoData: ObservableObject {
 
 //                let data15min = try await service.fetch15Min(location: location)
 //                for (index, hour) in data15min.data15Min.time.enumerated() {
+//                    let date = MeteoData.convertStringHourToTime(
+//                        input: hour
+//                    )
+//                    if date < Calendar.current.startOfDay(for: .now) {
+//                        continue
+//                    }
 //                    nextHour.append(MeteoData15Min(
 //                        time: MeteoData.convertStringDayHourToTime(
 //                            input: hour
 //                        ),
-//                        precipitation: data15min.data15Min.precipitation[index],
-//                        precipitationProbability: data15min.data15Min.precipitationProbability[index]
+//                        temperature: data15min.data15Min.temperature[index],
+//                        precipitation: data15min.data15Min.precipitation[index]
 //                    ))
 //                }
             }
@@ -158,6 +207,7 @@ class MockMeteoData: MeteoData {
                     .addingTimeInterval(TimeInterval(index * 24 * 60 * 60))
             )
 
+            // Mock Hour By Hour
             var hourByHour: [MeteoData1H] = []
             for index2 in 0...23 {
                 let picto = Int.random(in: 1...35)
@@ -194,6 +244,7 @@ class MockMeteoData: MeteoData {
                 )
             }
 
+            // Mock Day By Day
             let picto = Int.random(in: 1...17)
             dayByDay.append(
                 MeteoDataDay(
@@ -226,5 +277,16 @@ class MockMeteoData: MeteoData {
                 )
             )
         }
+
+        // Mock Next Hour (15min by 15min)
+//        for index in 0...200 {
+//            nextHour.append(
+//                MeteoData15Min(
+//                    time: Date().addingTimeInterval(TimeInterval(index * 15 * 60)),
+//                    temperature: Double.random(in: -5...30),
+//                    precipitation: Double.random(in: 0...20)
+//                )
+//            )
+//        }
     }
 }

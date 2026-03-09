@@ -2,12 +2,12 @@ import Contacts
 import CoreLocation
 import MapKit
 
-//
-//  LocationService.swift
-//  MeteoBlueUI
-//
-//  Created by Raphaël Catarino on 13/05/2025.
-//
+///
+///  LocationService.swift
+///  MeteoBlueUI
+///
+///  Created by Raphaël Catarino on 13/05/2025.
+///
 class LocationManager: NSObject, ObservableObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     @Published var location: CLLocation?

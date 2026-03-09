@@ -109,6 +109,7 @@ struct DayByDayView: View {
     VStack {
         if !mockData.dayByDay.isEmpty {
             DayByDayView(days: mockData.dayByDay)
+                .padding(16)
                 .appBackground()
         } else {
             ProgressView()

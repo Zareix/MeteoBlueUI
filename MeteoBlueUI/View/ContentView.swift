@@ -35,35 +35,25 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            if let location = meteoData.location,
-               let firstDay = meteoData.dayByDay.first,
-               let currentHour = firstDay.hourByHour.first(where: {
-                   $0.time
-                       == Calendar.current.date(
-                           from: Calendar.current.dateComponents(
-                               [.year, .month, .day, .hour],
-                               from: Date()
-                           )
-                       ) ?? Date()
-               })
-            {
+            if let location = meteoData.location {
                 NavigationStack {
                     ScrollView {
                         VStack(spacing: 32) {
-                            VStack(spacing: 8) {
+                            if let firstDay = meteoData.dayByDay.first,
+                               let currentHour = firstDay.hourByHour.first(where: {
+                                   $0.time
+                                       == Calendar.current.date(
+                                           from: Calendar.current.dateComponents(
+                                               [.year, .month, .day, .hour],
+                                               from: Date()
+                                           )
+                                       ) ?? Date()
+                               })
+                            {
                                 CurrentWeatherView(
                                     currentHour: currentHour
                                 )
-
-//                                WeatherAISummaryView(
-//                                    days: meteoData.dayByDay,
-//                                    location: location
-//                                )
                             }
-
-//                            NextHourView(
-//                                nextHour: meteoData.nextHour
-//                            )
 
                             HourByHourView(days: meteoData.dayByDay)
                                 .scrollEdgeEffectStyle(.hard, for: .horizontal)
@@ -122,8 +112,7 @@ struct ContentView: View {
             }
         }
         .task {
-            let location = locationManager.currentLocation ?? LocationManager.defaultLocation()
-            await meteoData.loadMeteoData(location: location, isCurrentLocation: true)
+            await meteoData.loadMeteoData()
         }
     }
 }
@@ -134,13 +123,11 @@ struct ContentView: View {
     @Previewable @StateObject var mockData = MockMeteoData()
     @Previewable @StateObject var locationManager = LocationManager()
 
-    let defaultLocation = LocationManager.defaultLocation()
-
     ContentView()
         .environmentObject(mockData as MeteoData)
         .environmentObject(locationManager)
         .appBackground()
         .task {
-            await mockData.loadMeteoData(location: defaultLocation)
+            await mockData.loadMeteoData()
         }
 }
