@@ -32,7 +32,7 @@ struct SearchCityView: View {
         isSearchActive = false
         Task {
             await meteoData.loadMeteoData(location: location)
-            
+
             searchHistory.add(location)
             locationSearchService.searchQuery = ""
         }
@@ -58,7 +58,7 @@ struct SearchCityView: View {
         ) {
             NavigationStack {
                 Form {
-                    if !searchHistory.items.isEmpty {
+                    if !searchHistory.items.isEmpty && locationSearchService.searchQuery.isEmpty {
                         Section("search.history") {
                             List {
                                 ForEach(searchHistory.items) { location in
@@ -87,19 +87,21 @@ struct SearchCityView: View {
                     text: $locationSearchService.searchQuery,
                     prompt: String(localized: "search.prompt")
                 ) {
-                    ForEach(locationSearchService.completions, id: \.self) { completion in
-                        Button {
-                            handleSearch(
-                                title: completion.title,
-                                subtitle: completion.subtitle
-                            )
-                        } label: {
-                            VStack(alignment: .leading) {
-                                Text(completion.title)
-                                    .foregroundColor(.primary)
-                                Text(completion.subtitle)
-                                    .font(.subheadline)
-                                    .foregroundColor(.secondary)
+                    if !locationSearchService.searchQuery.isEmpty {
+                        ForEach(locationSearchService.completions, id: \.self) { completion in
+                            Button {
+                                handleSearch(
+                                    title: completion.title,
+                                    subtitle: completion.subtitle
+                                )
+                            } label: {
+                                VStack(alignment: .leading) {
+                                    Text(completion.title)
+                                        .foregroundColor(.primary)
+                                    Text(completion.subtitle)
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                }
                             }
                         }
                     }

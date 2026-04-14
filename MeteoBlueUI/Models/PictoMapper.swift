@@ -82,7 +82,7 @@ struct PictoMapper {
             case 29: ("cloud.snow.fill", "cloud.snow.fill")
             case 30: ("cloud.sun.bolt.fill", "cloud.moon.bolt.fill")
             case 31: ("cloud.sun.rain.fill", "cloud.moon.rain.fill")
-            case 32: ("sun.snow.fill", "snow.fill")
+            case 32: ("sun.snow.fill", "sun.snow.fill")
             case 33: ("cloud.rain.fill", "cloud.rain.fill")
             case 34: ("cloud.snow.fill", "cloud.snow.fill")
             case 35: ("cloud.rain.fill", "cloud.rain.fill")

@@ -5,57 +5,29 @@
 //  Created by Raphaël Catarino on 13/05/2025.
 //
 import Foundation
+import Observation
 import SwiftUI
 
 // MARK: - MeteoData
 
-@MainActor
+@Observable
 class MeteoData: ObservableObject {
-    @Published var location: WeatherLocation?
-    @Published var dayByDay: [MeteoDataDay] = []
-    @Published var nextHour: [MeteoData15Min] = []
-    @Published var error: String?
+    var location: WeatherLocation?
+    var dayByDay: [MeteoDataDay] = []
+    var nextHour: [MeteoData15Min] = []
+    var error: String?
 
     private let service: MeteoBlueAPIService
-    var locationManager: LocationManager?
 
     init(service: MeteoBlueAPIService = MeteoBlueAPIService()) {
         self.service = service
     }
 
     func loadMeteoData() async {
-        if let fallback = await resolveFallbackLocation() {
-            await loadMeteoData(location: fallback)
-        }
-
-        guard let manager = locationManager else { return }
-        let gpsLocation: WeatherLocation? = await withTaskGroup(of: WeatherLocation?.self) { group in
-            group.addTask { @MainActor in
-                for await location: WeatherLocation? in manager.$currentLocation.values {
-                    if let location { return location }
-                }
-                return nil
-            }
-            group.addTask {
-                try? await Task.sleep(nanoseconds: 5_000_000_000)
-                return nil
-            }
-            for await result in group {
-                if let location = result {
-                    group.cancelAll()
-                    return location
-                }
-            }
-            group.cancelAll()
-            return nil
-        }
-
-        if let gpsLocation {
-            await loadMeteoData(location: gpsLocation, isCurrentLocation: true)
-        }
+        await loadMeteoData(location: resolveFirstLocation())
     }
 
-    private func resolveFallbackLocation() async -> WeatherLocation? {
+    private func resolveFirstLocation() -> WeatherLocation {
         if let location = SearchHistory().items.first {
             return location
         }
@@ -67,24 +39,19 @@ class MeteoData: ObservableObject {
 
     func loadMeteoData(force: Bool = false, location: WeatherLocation, isCurrentLocation: Bool = false) async {
         do {
-            if self.location != nil, !force, self.location == location {
+            if !force, self.location == location {
                 return
             }
             let data = try await service.fetchForecast(location: location)
-            withAnimation(.easeInOut(duration: 0.4)) {
-                self.location = location
-            }
-            dayByDay.removeAll()
-            error = nil
+
+            var newDays: [MeteoDataDay] = []
 
             for (index, day) in data.dataDay.time.enumerated() {
-                let date = MeteoData.convertStringDayToDate(
-                    input: day
-                )
+                let date = MeteoData.convertStringDayToDate(input: day)
                 if date < Calendar.current.startOfDay(for: .now) {
                     continue
                 }
-                dayByDay.append(
+                newDays.append(
                     MeteoDataDay(
                         hourByHour: [],
                         time: date,
@@ -98,44 +65,48 @@ class MeteoData: ObservableObject {
                         temperatureMin: data.dataDay.temperatureMin[index],
                         temperatureMax: data.dataDay.temperatureMax[index],
                         precipitation: data.dataDay.precipitation[index],
-                        precipitationProbability: data.dataDay
-                            .precipitationProbability[index]
+                        precipitationProbability: data.dataDay.precipitationProbability[index]
                     )
                 )
             }
+
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd"
             for (index, hour) in data.data1H.time.enumerated() {
-                let day = dayByDay.first { day in
-                    hour.contains(day.id)
+                let day = newDays.first { day in
+                    hour.contains(dateFormatter.string(from: day.time))
                 }
                 guard var day else {
                     continue
                 }
+
                 let hourData = MeteoData1H(
-                    time: MeteoData.convertStringDayHourToTime(
-                        input: hour
-                    ),
+                    time: MeteoData.convertStringDayHourToTime(input: hour),
                     description: PictoMapper.pictoToDescription(
                         picto: data.data1H.pictocode[index]
                     ),
                     symbol: PictoMapper.pictoToSFSymbol(
                         picto: data.data1H.pictocode[index],
-                        isDaylight: data.data1H.isdaylight[index] == 0
-                            ? false : true
+                        isDaylight: data.data1H.isdaylight[index] == 0 ? false : true
                     ),
                     temperature: data.data1H.temperature[index],
                     feltTemperature: data.data1H.felttemperature[index],
                     precipitation: data.data1H.precipitation[index],
-                    precipitationProbability: data.data1H
-                        .precipitationProbability[index]
+                    precipitationProbability: data.data1H.precipitationProbability[index]
                 )
-                day.hourByHour.append(
-                    hourData
-                )
-                guard let dayIndex = dayByDay.firstIndex(of: day) else {
+
+                day.hourByHour.append(hourData)
+
+                guard let dayIndex = newDays.firstIndex(of: day) else {
                     continue
                 }
-                dayByDay[dayIndex] = day
+                newDays[dayIndex] = day
             }
+
+            self.location = location
+            dayByDay = newDays
+            nextHour.removeAll()
+            error = nil
 
             if isCurrentLocation {
 //                let data15min = try await service.fetch15Min(location: location)
@@ -194,9 +165,8 @@ class MeteoData: ObservableObject {
 class MockMeteoData: MeteoData {
     override func loadMeteoData(force: Bool = false, location: WeatherLocation, isCurrentLocation: Bool = false) async {
         print("Loading meteo data for \(location.city)")
-        await Task.yield()
-        self.location = location
-        dayByDay.removeAll()
+
+        var dayByDay: [MeteoDataDay] = []
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
         for index in 0...7 {
@@ -206,7 +176,6 @@ class MockMeteoData: MeteoData {
                     .addingTimeInterval(TimeInterval(index * 24 * 60 * 60))
             )
 
-            // Mock Hour By Hour
             var hourByHour: [MeteoData1H] = []
             for index2 in 0...23 {
                 let picto = Int.random(in: 1...35)
@@ -277,15 +246,8 @@ class MockMeteoData: MeteoData {
             )
         }
 
-        // Mock Next Hour (15min by 15min)
-//        for index in 0...200 {
-//            nextHour.append(
-//                MeteoData15Min(
-//                    time: Date().addingTimeInterval(TimeInterval(index * 15 * 60)),
-//                    temperature: Double.random(in: -5...30),
-//                    precipitation: Double.random(in: 0...20)
-//                )
-//            )
-//        }
+        self.location = location
+        self.dayByDay = dayByDay
+        error = nil
     }
 }

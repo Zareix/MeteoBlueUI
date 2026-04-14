@@ -37,7 +37,7 @@ struct HourByHourView: View {
     var body: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .top, spacing: 24) {
-                ForEach(hourByHour) { item in
+                ForEach(hourByHour, id: \.time) { item in
                     VStack(spacing: 10) {
                         Text(
                             item == hourByHour.first

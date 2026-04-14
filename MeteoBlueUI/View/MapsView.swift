@@ -47,6 +47,7 @@ struct MapsView: View {
                 .ignoresSafeArea()
                 .clipShape(.rect(cornerRadius: 16))
         }
+        .padding(.bottom, 32)
     }
 }
 

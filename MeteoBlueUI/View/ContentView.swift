@@ -10,7 +10,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var locationManager: LocationManager
-    @EnvironmentObject private var meteoData: MeteoData
+    @Environment(MeteoData.self) private var meteoData
 
     @State private var displayedTemperature: Int = 0
 
@@ -34,29 +34,18 @@ struct ContentView: View {
     }
 
     var body: some View {
-        VStack {
+        Group {
             if let location = meteoData.location {
                 NavigationStack {
                     ScrollView {
                         VStack(spacing: 32) {
-                            if let firstDay = meteoData.dayByDay.first,
-                               let currentHour = firstDay.hourByHour.first(where: {
-                                   $0.time
-                                       == Calendar.current.date(
-                                           from: Calendar.current.dateComponents(
-                                               [.year, .month, .day, .hour],
-                                               from: Date()
-                                           )
-                                       ) ?? Date()
-                               })
-                            {
+                            if let firstDay = meteoData.dayByDay.first {
                                 CurrentWeatherView(
-                                    currentHour: currentHour
+                                    firstDay: firstDay
                                 )
                             }
 
                             HourByHourView(days: meteoData.dayByDay)
-                                .scrollEdgeEffectStyle(.hard, for: .horizontal)
 
                             DayByDayView(days: meteoData.dayByDay)
 
@@ -68,6 +57,9 @@ struct ContentView: View {
                     .navigationSubtitle(location.country)
                     .navigationBarTitleDisplayMode(.large)
                     .toolbar {
+                        ToolbarItem(placement: .topBarLeading) {
+                            SettingsView()
+                        }
                         ToolbarItem(placement: .topBarLeading) {
                             FavoriteCitiesView()
                         }
@@ -104,8 +96,24 @@ struct ContentView: View {
                 }
 
             } else if let errorMessage = meteoData.error {
-                Text("Error: \(errorMessage)")
-                    .foregroundColor(.red)
+                VStack(spacing: 8) {
+                    Text("Error: \(errorMessage)")
+                        .foregroundColor(.red)
+
+                    Button("retry") {
+                        Task {
+                            await meteoData.loadMeteoData()
+                        }
+                    }
+
+                    SettingsView {
+                        HStack {
+                            Image(systemName: "gearshape.fill")
+                            Text("settings.title")
+                        }
+                    }
+                }
+                .padding()
             } else {
                 ProgressView()
                     .padding()
@@ -127,7 +135,4 @@ struct ContentView: View {
         .environmentObject(mockData as MeteoData)
         .environmentObject(locationManager)
         .appBackground()
-        .task {
-            await mockData.loadMeteoData()
-        }
 }

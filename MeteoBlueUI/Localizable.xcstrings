@@ -258,6 +258,9 @@
         }
       }
     },
+    "MeteoBlue API token" : {
+
+    },
     "nexthour.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -271,6 +274,22 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prochaine Heure"
+          }
+        }
+      }
+    },
+    "retry" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "needs_review",
+            "value" : "Retry"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réessayer"
           }
         }
       }
@@ -389,6 +408,22 @@
     },
     "Series" : {
 
+    },
+    "settings.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Paramètres"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
