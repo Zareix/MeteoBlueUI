@@ -8,7 +8,7 @@
 import KeychainAccess
 
 struct KeychainService {
-    let keychain = Keychain(service: "com.zareix.MeteoBlueUI") // Doesn't work when sideloading : accessGroup: "KC74NH6SS8.com.zareix.MeteoBlueUI.keychain-access-group")
+    let keychain = Keychain(service: "com.raphaelgc.MeteoBlueUI")
 
     func getMetoBlueAPIToken() -> String? {
         return keychain["api-token"]

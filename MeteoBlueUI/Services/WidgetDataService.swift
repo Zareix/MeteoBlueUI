@@ -11,7 +11,7 @@ import MapKit
 import OSLog
 import WidgetKit
 
-private let wdLogger = Logger(subsystem: "com.zareix.MeteoBlueUI", category: "WidgetDataService")
+private let wdLogger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "WidgetDataService")
 
 // MARK: - Shared models
 

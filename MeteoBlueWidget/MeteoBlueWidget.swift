@@ -10,7 +10,7 @@ import OSLog
 import SwiftUI
 import WidgetKit
 
-private let widgetLogger = Logger(subsystem: "com.zareix.MeteoBlueUI", category: "MeteoBlueWidget")
+private let widgetLogger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "MeteoBlueWidget")
 
 // MARK: - Timeline Entry
 
@@ -42,10 +42,8 @@ struct NextHoursProvider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
-        print("⏱️ [Widget] getTimeline called")
         widgetLogger.info("⏱️ getTimeline called for NextHoursProvider")
         Task {
-            print("📡 [Widget] Fetching widget data from WidgetDataService")
             widgetLogger.info("📡 Fetching widget data from WidgetDataService")
             let widgetData = await WidgetDataService.loadOrFetch()
 

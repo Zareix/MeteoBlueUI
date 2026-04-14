@@ -26,6 +26,18 @@ struct MeteoBlueAPIForecast: Codable {
     }
 }
 
+// MARK: - MeteoBlueAPI1HForecast
+struct MeteoBlueAPI1HForecast: Codable {
+    let metadata: Metadata
+    let units: Units
+    let data1H: Data1H
+
+    enum CodingKeys: String, CodingKey {
+        case metadata, units
+        case data1H = "data_1h"
+    }
+}
+
 // MARK: - Data1H
 struct Data1H: Codable {
     let time: [String]
