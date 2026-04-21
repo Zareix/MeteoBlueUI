@@ -28,10 +28,10 @@ class MeteoData: ObservableObject {
     }
 
     private func resolveFirstLocation() -> WeatherLocation {
-        if let location = SearchHistory().items.first {
+        if let location = FavoriteCities().items.first {
             return location
         }
-        if let location = FavoriteCities().items.first {
+        if let location = SearchHistory().items.first {
             return location
         }
         return LocationManager.defaultLocation()
