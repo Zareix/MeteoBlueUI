@@ -57,7 +57,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Models/AppError.swift,
+				Models/Data/FavoriteCities.swift,
 				Models/Data/MeteoDataStructs.swift,
+				Models/Data/SearchHistory.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPI15Min.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPICurrentData.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPIForecast.swift,
@@ -480,6 +482,7 @@
 				INFOPLIST_FILE = MeteoBlueWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to display local weather in the widget.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -511,6 +514,7 @@
 				INFOPLIST_FILE = MeteoBlueWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to display local weather in the widget.";
 				IPHONEOS_DEPLOYMENT_TARGET = 26.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

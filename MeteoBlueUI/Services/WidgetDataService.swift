@@ -32,6 +32,7 @@ struct WidgetData: Codable {
 // MARK: - Service
 
 enum WidgetDataService {
+    static let appGroupID = "group.com.raphaelgc.MeteoBlueUI"
     static let userDefaultsKey = "widget_forecast_data"
     static let staleThreshold: TimeInterval = 60 * 60 // 1 hour
 
@@ -41,7 +42,8 @@ enum WidgetDataService {
     }
 
     static func loadFromCache() -> WidgetData? {
-        guard let data = UserDefaults.standard.data(forKey: userDefaultsKey),
+        let userDefaults = UserDefaults(suiteName: appGroupID) ?? .standard
+        guard let data = userDefaults.data(forKey: userDefaultsKey),
               let widgetData = try? JSONDecoder().decode(WidgetData.self, from: data)
         else {
             return nil
@@ -50,7 +52,6 @@ enum WidgetDataService {
     }
 
     static func fetchWidgetData(for location: WeatherLocation) async throws -> WidgetData {
-        // Pour les widgets, utiliser directement URLSession.shared
         guard let token = KeychainService().getMetoBlueAPIToken() else {
             throw AppError.noAPIToken
         }
@@ -106,70 +107,25 @@ enum WidgetDataService {
         let widgetData = WidgetData(location: location, hours: hours, savedAt: Date())
 
         if let encoded = try? JSONEncoder().encode(widgetData) {
-            UserDefaults.standard.set(encoded, forKey: userDefaultsKey)
+            let userDefaults = UserDefaults(suiteName: appGroupID) ?? .standard
+            userDefaults.set(encoded, forKey: userDefaultsKey)
         }
 
         return widgetData
     }
 
-    static func fetchCurrentLocation() async -> WeatherLocation {
-        // Timeout de 5 secondes pour la localisation
-        let location = await withTaskGroup(of: WeatherLocation?.self) { group in
-            group.addTask {
-                try? await Task.sleep(nanoseconds: 5_000_000_000) // 5 secondes
-                wdLogger.warning("⏱️ Location resolution timeout")
-                return nil
-            }
-            group.addTask {
-                await _WidgetLocationResolver.resolve()
-            }
-
-            let first = await group.next()
-            group.cancelAll()
-            return first ?? nil
-        }
-
-        if let location = location {
+    static func fetchCurrentLocation() -> WeatherLocation {
+        if let location = SearchHistory().items.first {
+            wdLogger.info("📍 Using location from search history: \(location.city)")
             return location
         }
-        return loadFromCache()?.location ?? _WidgetLocationResolver.defaultLocation()
-    }
 
-    static func loadOrFetch() async -> WidgetData? {
-        if !isStale(), let cached = loadFromCache() {
-            return cached
+        if let location = FavoriteCities().items.first {
+            wdLogger.info("⭐ Using location from favorites: \(location.city)")
+            return location
         }
 
-        let location: WeatherLocation
-        if let cachedLocation = loadFromCache()?.location {
-            location = cachedLocation
-        } else {
-            location = await fetchCurrentLocation()
-        }
-
-        do {
-            return try await fetchWidgetData(for: location)
-        } catch {
-            wdLogger.error("Failed to fetch widget data: \(error.localizedDescription)")
-            return loadFromCache()
-        }
-    }
-}
-
-// MARK: - _WidgetLocationResolver
-
-/// Minimal one-shot CLLocationManager using async/await. No Combine dependency.
-private final class _WidgetLocationResolver: NSObject, CLLocationManagerDelegate {
-    private let manager = CLLocationManager()
-    private var continuation: CheckedContinuation<WeatherLocation?, Never>?
-
-    override private init() {
-        super.init()
-        manager.delegate = self
-        manager.desiredAccuracy = kCLLocationAccuracyKilometer
-    }
-
-    static func defaultLocation() -> WeatherLocation {
+        wdLogger.info("🏠 Using default location: Cupertino")
         return WeatherLocation(
             city: "Cupertino",
             country: "United States",
@@ -178,55 +134,18 @@ private final class _WidgetLocationResolver: NSObject, CLLocationManagerDelegate
         )
     }
 
-    private static var _active: _WidgetLocationResolver?
-
-    static func resolve() async -> WeatherLocation? {
-        await withCheckedContinuation { continuation in
-            let resolver = _WidgetLocationResolver()
-            _active = resolver
-            resolver.continuation = continuation
-            resolver.start()
+    static func loadOrFetch() async -> WidgetData? {
+        if !isStale(), let cached = loadFromCache() {
+            return cached
         }
-    }
 
-    private func start() {
-        switch manager.authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            manager.requestLocation()
-        default:
-            resume(with: nil)
+        let location = fetchCurrentLocation()
+
+        do {
+            return try await fetchWidgetData(for: location)
+        } catch {
+            wdLogger.error("Failed to fetch widget data: \(error.localizedDescription)")
+            return loadFromCache()
         }
-    }
-
-    func locationManagerDidChangeAuthorization(_ manager: CLLocationManager) {
-        switch manager.authorizationStatus {
-        case .authorizedWhenInUse, .authorizedAlways:
-            manager.requestLocation()
-        default:
-            resume(with: nil)
-        }
-    }
-
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-        guard let location = locations.first else { resume(with: nil); return }
-        let request = MKReverseGeocodingRequest(location: location)
-        request?.getMapItems { [weak self] mapItems, error in
-            if error != nil || mapItems?.first == nil {
-                self?.resume(with: nil)
-                return
-            }
-            let loc = WeatherLocation(from: mapItems!.first!)
-            self?.resume(with: loc)
-        }
-    }
-
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        resume(with: nil)
-    }
-
-    private func resume(with location: WeatherLocation?) {
-        continuation?.resume(returning: location)
-        continuation = nil
-        Self._active = nil
     }
 }

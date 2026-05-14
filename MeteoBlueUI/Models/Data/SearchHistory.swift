@@ -7,10 +7,15 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 class SearchHistory: ObservableObject {
     private static let maxHistoryCount = 5
     private let storageKey = "searchHistory"
+    
+    // Utiliser un App Group pour partager avec le widget
+    private let userDefaults = UserDefaults(suiteName: "group.com.raphaelgc.MeteoBlueUI") ?? .standard
+    
     @Published var items: [WeatherLocation] = []
 
     init() {
@@ -18,7 +23,7 @@ class SearchHistory: ObservableObject {
     }
 
     func load() {
-        if let data = UserDefaults.standard.data(forKey: storageKey),
+        if let data = userDefaults.data(forKey: storageKey),
            let decoded = try? JSONDecoder().decode([WeatherLocation].self, from: data)
         {
             items = decoded
@@ -28,7 +33,7 @@ class SearchHistory: ObservableObject {
     func save() {
         let limited = Array(items.prefix(Self.maxHistoryCount))
         if let data = try? JSONEncoder().encode(limited) {
-            UserDefaults.standard.set(data, forKey: storageKey)
+            userDefaults.set(data, forKey: storageKey)
             items = limited
         }
     }

@@ -7,9 +7,14 @@
 
 import Combine
 import Foundation
+import SwiftUI
 
 class FavoriteCities: ObservableObject {
     private let storageKey = "favoriteCities"
+    
+    // Utiliser un App Group pour partager avec le widget
+    private let userDefaults = UserDefaults(suiteName: "group.com.raphaelgc.MeteoBlueUI") ?? .standard
+    
     @Published var items: [WeatherLocation] = []
 
     init() {
@@ -17,7 +22,7 @@ class FavoriteCities: ObservableObject {
     }
 
     func load() {
-        if let data = UserDefaults.standard.data(forKey: storageKey),
+        if let data = userDefaults.data(forKey: storageKey),
            let decoded = try? JSONDecoder().decode([WeatherLocation].self, from: data)
         {
             items = decoded
@@ -26,7 +31,7 @@ class FavoriteCities: ObservableObject {
 
     func save() {
         if let data = try? JSONEncoder().encode(items) {
-            UserDefaults.standard.set(data, forKey: storageKey)
+            userDefaults.set(data, forKey: storageKey)
             items = items
         }
     }

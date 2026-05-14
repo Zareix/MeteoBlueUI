@@ -32,71 +32,50 @@ struct NextHoursProvider: TimelineProvider {
     }
 
     func getSnapshot(in context: Context, completion: @escaping (NextHoursEntry) -> Void) {
-        print("📸 [Widget] getSnapshot called")
-        widgetLogger.info("📸 getSnapshot called for NextHoursProvider")
         if let data = WidgetDataService.loadFromCache() {
             completion(NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours))
         } else {
-            completion(NextHoursEntry(date: .now, cityName: "Paris", hours: Self.placeholderHours()))
+            completion(NextHoursEntry(date: .now, cityName: "Loading...", hours: Self.placeholderHours()))
         }
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
-        widgetLogger.info("⏱️ getTimeline called for NextHoursProvider")
-        print("🔵 [Widget] getTimeline START")
-
         Task {
-            // Localisation fixe : Paris
-            let parisLocation = WeatherLocation(
-                city: "Paris",
-                country: "France",
-                latitude: 48.8566,
-                longitude: 2.3522
-            )
-
-            widgetLogger.info("📡 Fetching weather data for Paris")
-            print("🔵 [Widget] About to fetch data for Paris...")
+            let location = WidgetDataService.fetchCurrentLocation()
+            widgetLogger.info("📍 Widget location: \(location.city)")
 
             do {
-                let widgetData = try await WidgetDataService.fetchWidgetData(for: parisLocation)
-                widgetLogger.info("✅ Successfully fetched \(widgetData.hours.count) hours")
-                print("🟢 [Widget] SUCCESS! Got \(widgetData.hours.count) hours")
-
-                if widgetData.hours.isEmpty {
-                    print("⚠️ [Widget] WARNING: Hours array is EMPTY!")
-                }
-
-                // Afficher les 3 premières heures pour debug
-                for (index, hour) in widgetData.hours.prefix(3).enumerated() {
-                    print("🔵 [Widget] Hour \(index): \(hour.temperature)° - \(hour.description)")
-                }
+                let widgetData = try await WidgetDataService.fetchWidgetData(for: location)
 
                 let entry = NextHoursEntry(
                     date: .now,
-                    cityName: parisLocation.city,
+                    cityName: location.city,
                     hours: widgetData.hours
                 )
 
                 let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
-                print("🟢 [Widget] Completing timeline with real data, next update: \(nextUpdate)")
                 completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
 
             } catch {
-                widgetLogger.error("❌ Failed to fetch data: \(error.localizedDescription)")
-                print("🔴 [Widget] ERROR: \(error)")
-                print("🔴 [Widget] Error type: \(type(of: error))")
+                widgetLogger.error("Failed to fetch weather data: \(error.localizedDescription)")
 
-                // En cas d'erreur, afficher un placeholder
-                let entry = NextHoursEntry(
-                    date: .now,
-                    cityName: "Paris - Error",
-                    hours: Self.placeholderHours()
-                )
-
-                // Réessayer dans 5 minutes
-                let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: .now) ?? .now
-                print("🔴 [Widget] Completing timeline with PLACEHOLDER, next update: \(nextUpdate)")
-                completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+                if let cached = WidgetDataService.loadFromCache() {
+                    let entry = NextHoursEntry(
+                        date: .now,
+                        cityName: cached.location.city,
+                        hours: cached.hours
+                    )
+                    let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
+                    completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+                } else {
+                    let entry = NextHoursEntry(
+                        date: .now,
+                        cityName: location.city,
+                        hours: Self.placeholderHours()
+                    )
+                    let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: .now) ?? .now
+                    completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+                }
             }
         }
     }
@@ -123,7 +102,7 @@ struct HourCellView: View {
 
     private var timeString: String {
         let f = DateFormatter()
-        f.dateFormat = "HH:mm"
+        f.dateFormat = "HH'h'"
         return f.string(from: entry.time)
     }
 
@@ -138,9 +117,6 @@ struct HourCellView: View {
             Text("\(Int(entry.temperature.rounded()))°")
                 .font(.caption)
                 .fontWeight(.semibold)
-//            Text(entry.precipitationProbability > 0 ? "\(entry.precipitationProbability)%" : " ")
-//                .font(.caption2)
-//                .foregroundStyle(.blue)
         }
         .frame(maxWidth: .infinity)
         .frame(maxHeight: .infinity, alignment: .top)
