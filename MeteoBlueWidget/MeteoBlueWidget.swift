@@ -43,19 +43,61 @@ struct NextHoursProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
         widgetLogger.info("⏱️ getTimeline called for NextHoursProvider")
+        print("🔵 [Widget] getTimeline START")
+
         Task {
-            widgetLogger.info("📡 Fetching widget data from WidgetDataService")
-            let widgetData = await WidgetDataService.loadOrFetch()
+            // Localisation fixe : Paris
+            let parisLocation = WeatherLocation(
+                city: "Paris",
+                country: "France",
+                latitude: 48.8566,
+                longitude: 2.3522
+            )
 
-            let entry: NextHoursEntry
-            if let data = widgetData {
-                entry = NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours)
-            } else {
-                entry = NextHoursEntry(date: .now, cityName: "—", hours: [])
+            widgetLogger.info("📡 Fetching weather data for Paris")
+            print("🔵 [Widget] About to fetch data for Paris...")
+
+            do {
+                let widgetData = try await WidgetDataService.fetchWidgetData(for: parisLocation)
+                widgetLogger.info("✅ Successfully fetched \(widgetData.hours.count) hours")
+                print("🟢 [Widget] SUCCESS! Got \(widgetData.hours.count) hours")
+
+                if widgetData.hours.isEmpty {
+                    print("⚠️ [Widget] WARNING: Hours array is EMPTY!")
+                }
+
+                // Afficher les 3 premières heures pour debug
+                for (index, hour) in widgetData.hours.prefix(3).enumerated() {
+                    print("🔵 [Widget] Hour \(index): \(hour.temperature)° - \(hour.description)")
+                }
+
+                let entry = NextHoursEntry(
+                    date: .now,
+                    cityName: parisLocation.city,
+                    hours: widgetData.hours
+                )
+
+                let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
+                print("🟢 [Widget] Completing timeline with real data, next update: \(nextUpdate)")
+                completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+
+            } catch {
+                widgetLogger.error("❌ Failed to fetch data: \(error.localizedDescription)")
+                print("🔴 [Widget] ERROR: \(error)")
+                print("🔴 [Widget] Error type: \(type(of: error))")
+
+                // En cas d'erreur, afficher un placeholder
+                let entry = NextHoursEntry(
+                    date: .now,
+                    cityName: "Paris - Error",
+                    hours: Self.placeholderHours()
+                )
+
+                // Réessayer dans 5 minutes
+                let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: .now) ?? .now
+                print("🔴 [Widget] Completing timeline with PLACEHOLDER, next update: \(nextUpdate)")
+                completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
             }
-
-            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
-            completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
         }
     }
 
@@ -112,14 +154,31 @@ struct MeteoBlueWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text(entry.cityName)
-                .fontWeight(.semibold)
-                .foregroundStyle(.primary)
-                .fontDesign(.serif)
-                .lineLimit(1)
+        VStack(alignment: .leading, spacing: 8) {
+            HStack(alignment: .center) {
+                Text(entry.cityName)
+                    .font(.title)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.primary)
+                    .fontDesign(.serif)
+                    .lineLimit(1)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.leading, 12)
 
-            Divider()
+                if let current = entry.hours.first {
+                    HStack(spacing: 12) {
+                        SymbolView(symbol: current.symbol)
+                            .font(.system(size: 32))
+                            .frame(height: 32)
+
+                        Text("\(Int(current.temperature.rounded()))°")
+                            .font(.system(size: 32))
+                            .fontDesign(.rounded)
+                    }
+                }
+            }
+
+            Spacer()
 
             if entry.hours.isEmpty {
                 Text("Loading data…")
@@ -128,13 +187,13 @@ struct MeteoBlueWidgetEntryView: View {
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 let displayCount = family == .systemSmall ? 3 : 6
+                let hoursToDisplay = Array(entry.hours.dropFirst().prefix(displayCount))
+
                 HStack(spacing: 0) {
-                    ForEach(entry.hours.prefix(displayCount), id: \.time) { hour in
+                    ForEach(hoursToDisplay, id: \.time) { hour in
                         HourCellView(entry: hour)
                     }
                 }
-                .padding(.vertical)
-                .padding(.top, 2)
             }
         }
         .containerBackground(Color("WidgetBackground"), for: .widget)

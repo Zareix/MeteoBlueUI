@@ -7,6 +7,7 @@
 import Foundation
 import Observation
 import SwiftUI
+import WidgetKit
 
 // MARK: - MeteoData
 
@@ -108,6 +109,12 @@ class MeteoData: ObservableObject {
             nextHour.removeAll()
             error = nil
 
+            // Toujours sauvegarder les données pour le widget, pas seulement pour la localisation actuelle
+            Task.detached(priority: .background) {
+                _ = try? await WidgetDataService.fetchWidgetData(for: location)
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+            
             if isCurrentLocation {
 //                let data15min = try await service.fetch15Min(location: location)
 //                for (index, hour) in data15min.data15Min.time.enumerated() {
@@ -124,11 +131,6 @@ class MeteoData: ObservableObject {
 //                        temperature: data15min.data15Min.temperature[index],
 //                        precipitation: data15min.data15Min.precipitation[index]
 //                    ))
-//                }
-
-//                Task.detached(priority: .background) {
-//                    _ = try? await WidgetDataService.fetchWidgetData(for: location)
-//                    WidgetCenter.shared.reloadAllTimelines()
 //                }
             }
         } catch {
