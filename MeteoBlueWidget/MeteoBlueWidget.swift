@@ -41,8 +41,20 @@ struct NextHoursProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
         Task {
-            let location = WidgetDataService.fetchCurrentLocation()
-            widgetLogger.info("📍 Widget location: \(location.city)")
+            // Utiliser le cache de l'app principale si disponible, sinon localisation par défaut
+            let location: WeatherLocation
+            if let cached = WidgetDataService.loadFromCache() {
+                // Utiliser la localisation du cache (mise à jour par l'app principale)
+                location = cached.location
+            } else {
+                // Fallback : Paris par défaut
+                location = WeatherLocation(
+                    city: "Paris",
+                    country: "France",
+                    latitude: 48.8566,
+                    longitude: 2.3522
+                )
+            }
 
             do {
                 let widgetData = try await WidgetDataService.fetchWidgetData(for: location)
@@ -59,6 +71,7 @@ struct NextHoursProvider: TimelineProvider {
             } catch {
                 widgetLogger.error("Failed to fetch weather data: \(error.localizedDescription)")
 
+                // En cas d'erreur, utiliser le cache ou un placeholder
                 if let cached = WidgetDataService.loadFromCache() {
                     let entry = NextHoursEntry(
                         date: .now,
@@ -70,7 +83,7 @@ struct NextHoursProvider: TimelineProvider {
                 } else {
                     let entry = NextHoursEntry(
                         date: .now,
-                        cityName: location.city,
+                        cityName: "Error",
                         hours: Self.placeholderHours()
                     )
                     let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: .now) ?? .now
@@ -130,49 +143,81 @@ struct MeteoBlueWidgetEntryView: View {
     @Environment(\.widgetFamily) var family
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            HStack(alignment: .center) {
-                Text(entry.cityName)
-                    .font(.title)
-                    .fontWeight(.semibold)
-                    .foregroundStyle(.primary)
-                    .fontDesign(.serif)
-                    .lineLimit(1)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.leading, 12)
+        if family == .systemSmall {
+            HStack(alignment: .top) {
+                VStack(alignment: .leading) {
+                    Text(entry.cityName)
+                        .font(.title2)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                        .fontDesign(.serif)
+                        .lineLimit(1)
 
-                if let current = entry.hours.first {
-                    HStack(spacing: 12) {
-                        SymbolView(symbol: current.symbol)
-                            .font(.system(size: 32))
-                            .frame(height: 32)
+                    if let current = entry.hours.first {
+                        HStack(alignment: .center) {
+                            SymbolView(symbol: current.symbol)
+                                .font(.system(size: 42))
+                            Text("\(Int(current.temperature.rounded()))°")
+                                .font(.system(size: 32))
+                                .fontWeight(.medium)
+                                .fontDesign(.rounded)
+                        }
+                        .padding(.top, 8)
+                        .frame(maxWidth: .infinity)
+                    }
 
-                        Text("\(Int(current.temperature.rounded()))°")
-                            .font(.system(size: 32))
-                            .fontDesign(.rounded)
+                    Spacer()
+                }
+
+                Spacer()
+            }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .containerBackground(Color("WidgetBackground"), for: .widget)
+        } else {
+            // Layout pour le widget medium
+            VStack(alignment: .leading, spacing: 8) {
+                HStack(alignment: .center) {
+                    Text(entry.cityName)
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.primary)
+                        .fontDesign(.serif)
+                        .lineLimit(1)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 12)
+
+                    if let current = entry.hours.first {
+                        HStack(spacing: 12) {
+                            SymbolView(symbol: current.symbol)
+                                .font(.system(size: 32))
+                                .frame(height: 32)
+
+                            Text("\(Int(current.temperature.rounded()))°")
+                                .font(.system(size: 32))
+                                .fontDesign(.rounded)
+                        }
+                    }
+                }
+
+                Spacer()
+
+                if entry.hours.isEmpty {
+                    Text("Loading data…")
+                        .font(.caption2)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else {
+                    let hoursToDisplay = Array(entry.hours.dropFirst().prefix(6))
+
+                    HStack(spacing: 0) {
+                        ForEach(hoursToDisplay, id: \.time) { hour in
+                            HourCellView(entry: hour)
+                        }
                     }
                 }
             }
-
-            Spacer()
-
-            if entry.hours.isEmpty {
-                Text("Loading data…")
-                    .font(.caption2)
-                    .foregroundStyle(.secondary)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity)
-            } else {
-                let displayCount = family == .systemSmall ? 3 : 6
-                let hoursToDisplay = Array(entry.hours.dropFirst().prefix(displayCount))
-
-                HStack(spacing: 0) {
-                    ForEach(hoursToDisplay, id: \.time) { hour in
-                        HourCellView(entry: hour)
-                    }
-                }
-            }
+            .containerBackground(Color("WidgetBackground"), for: .widget)
         }
-        .containerBackground(Color("WidgetBackground"), for: .widget)
     }
 }
 
@@ -194,6 +239,24 @@ struct MeteoBlueWidget: Widget {
 // MARK: - Preview
 
 #Preview(as: .systemMedium) {
+    MeteoBlueWidget()
+} timeline: {
+    NextHoursEntry(
+        date: .now,
+        cityName: "Paris",
+        hours: (0..<6).map { offset in
+            WidgetHourEntry(
+                time: Calendar.current.date(byAdding: .hour, value: offset, to: .now) ?? .now,
+                symbol: offset % 2 == 0 ? "sun.max.fill" : "cloud.sun.fill",
+                description: "Sunny",
+                temperature: 18 + Double(offset),
+                precipitationProbability: 0 // offset * 5
+            )
+        }
+    )
+}
+
+#Preview(as: .systemSmall) {
     MeteoBlueWidget()
 } timeline: {
     NextHoursEntry(
