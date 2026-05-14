@@ -115,13 +115,13 @@ enum WidgetDataService {
     }
 
     static func fetchCurrentLocation() -> WeatherLocation {
-        if let location = SearchHistory().items.first {
-            wdLogger.info("📍 Using location from search history: \(location.city)")
+        if let location = FavoriteCities().items.first {
+            wdLogger.info("⭐ Using location from favorites: \(location.city)")
             return location
         }
 
-        if let location = FavoriteCities().items.first {
-            wdLogger.info("⭐ Using location from favorites: \(location.city)")
+        if let location = SearchHistory().items.first {
+            wdLogger.info("📍 Using location from search history: \(location.city)")
             return location
         }
 
