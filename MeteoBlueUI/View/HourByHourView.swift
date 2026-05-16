@@ -13,21 +13,23 @@ struct HourByHourView: View {
         guard days.count >= 2 else { return [] }
         let currentDay = days[0]
         let nextDay = days[1]
+        let calendar = Calendar.current
 
         let currentHourByHour = currentDay.hourByHour.filter {
             $0.time
-                >= Calendar.current.date(
-                    from: Calendar.current.dateComponents(
+                >= calendar.date(
+                    from: calendar.dateComponents(
                         [.year, .month, .day, .hour],
                         from: Date()
                     )
                 ) ?? Date()
         }
 
-        // Show all left hours today
-        // + the first hours of tomorrow to fill a 24h timeline
-        return currentHourByHour
-            + nextDay.hourByHour.prefix(24 - currentHourByHour.count)
+        return currentHourByHour + nextDay.hourByHour.prefix(26 - currentHourByHour.count)
+    }
+
+    private func isMidnight(_ date: Date) -> Bool {
+        Calendar.current.component(.hour, from: date) == 0
     }
 
     private func formattedHour(from date: Date) -> String {
@@ -38,8 +40,14 @@ struct HourByHourView: View {
 
     var body: some View {
         ScrollView(.horizontal) {
-            HStack(alignment: .top, spacing: 24) {
+            HStack(alignment: .center, spacing: 24) {
                 ForEach(hourByHour, id: \.time) { item in
+                    if isMidnight(item.time) {
+                        Rectangle()
+                            .fill(Color.secondary.opacity(0.3))
+                            .frame(width: 1, height: 60)
+                    }
+
                     VStack(spacing: 10) {
                         Text(
                             item == hourByHour.first
