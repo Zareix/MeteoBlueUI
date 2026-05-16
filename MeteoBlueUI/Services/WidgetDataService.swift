@@ -59,7 +59,7 @@ enum WidgetDataService {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "my.meteoblue.com"
-        components.path = "/packages/basic-1h_basic-day"
+        components.path = "/packages/basic-1h"
         components.queryItems = [
             URLQueryItem(name: "lat", value: String(location.latitude)),
             URLQueryItem(name: "lon", value: String(location.longitude)),
