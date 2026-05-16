@@ -78,7 +78,8 @@ struct CurrentWeatherView: View {
                 temperatureMin: 15,
                 temperatureMax: 25,
                 precipitation: 0,
-                precipitationProbability: 5
+                precipitationProbability: 5,
+                predictabilityClass: 4
             )
         )
 
@@ -100,7 +101,8 @@ struct CurrentWeatherView: View {
                 temperatureMin: 10,
                 temperatureMax: 20,
                 precipitation: 0,
-                precipitationProbability: 5
+                precipitationProbability: 5,
+                predictabilityClass: 4
             )
         )
     }

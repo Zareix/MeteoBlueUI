@@ -66,7 +66,8 @@ class MeteoData: ObservableObject {
                         temperatureMin: data.dataDay.temperatureMin[index],
                         temperatureMax: data.dataDay.temperatureMax[index],
                         precipitation: data.dataDay.precipitation[index],
-                        precipitationProbability: data.dataDay.precipitationProbability[index]
+                        precipitationProbability: data.dataDay.precipitationProbability[index],
+                        predictabilityClass: data.dataDay.predictabilityClass[index]
                     )
                 )
             }
@@ -121,8 +122,7 @@ class MeteoData: ObservableObject {
                         input: hour
                     ),
                     temperature: data.data5Min.temperature[index],
-                    precipitation: data.data5Min.precipitation[index],
-                    precipitationProbability: data.data5Min.precipitationProbability[index]
+                    precipitation: data.data5Min.precipitation[index]
                 ))
             }
         } catch {
@@ -229,7 +229,8 @@ class MockMeteoData: MeteoData {
                     temperatureMax: hourByHour.map { $0.temperature }.max()
                         ?? 0,
                     precipitation: Double.random(in: 0...20),
-                    precipitationProbability: Int.random(in: 0...100)
+                    precipitationProbability: Int.random(in: 0...100),
+                    predictabilityClass: Int.random(in: 1...5)
                     //                    sunrise: MeteoData.convertStringHourToTime(
                     //                        input: "06:00"
                     //                    ),

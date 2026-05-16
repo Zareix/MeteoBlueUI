@@ -130,9 +130,8 @@ struct Data5Min: Codable {
     let time: [String]
     let temperature: [Double]
     let precipitation: [Double]
-    let precipitationProbability: [Int]
 
     enum CodingKeys: String, CodingKey {
-        case time, temperature, precipitation, precipitationProbability = "precipitation_probability"
+        case time, temperature, precipitation
     }
 }

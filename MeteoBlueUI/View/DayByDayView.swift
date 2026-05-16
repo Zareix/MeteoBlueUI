@@ -52,6 +52,9 @@ struct DayByDayView: View {
                             .font(.caption)
                             .foregroundColor(.secondary)
                         }
+                        if item.predictabilityClass <= 2 {
+                            PredictabilityBadge(predictabilityClass: item.predictabilityClass)
+                        }
                     }
 
                     Spacer()

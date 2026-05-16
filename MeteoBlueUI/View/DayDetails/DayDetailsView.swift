@@ -15,7 +15,9 @@ struct DayDetailsView: View {
 
     @State var activeItem: MeteoDataDay?
 
-    private var activeDay: MeteoDataDay { activeItem ?? selectedItem }
+    private var activeDay: MeteoDataDay {
+        activeItem ?? selectedItem
+    }
 
     var body: some View {
         NavigationStack {
@@ -74,17 +76,19 @@ struct DayDetailsView: View {
                     .frame(maxWidth: .infinity)
                     .padding(.horizontal, 8)
 
-                    Text(
-                        activeDay.time.formatted(
-                            .dateTime
-                                .weekday(.wide)
-                                .day(.twoDigits)
-                                .month(.wide)
+                    HStack {
+                        Text(
+                            activeDay.time.formatted(
+                                .dateTime
+                                    .weekday(.wide)
+                                    .day(.twoDigits)
+                                    .month(.wide)
+                            )
+                            .capitalized
                         )
-                        .capitalized
-                    )
-                    .transition(.opacity)
-                    .animation(.easeInOut, value: activeDay.time)
+                        .transition(.opacity)
+                        .animation(.easeInOut, value: activeDay.time)
+                    }
                     .frame(maxWidth: .infinity)
 
                     Divider()

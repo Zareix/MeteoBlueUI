@@ -10,7 +10,7 @@ struct SymbolView: View {
     let symbol: String
     var description: String?
     var transition: ContentTransition = .opacity
-    var animationEnabled: Bool = true
+    var animationEnabled = true
 
     @State var selected: Bool = false
 

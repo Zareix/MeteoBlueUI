@@ -24,6 +24,8 @@ struct HourByHourView: View {
                 ) ?? Date()
         }
 
+        // Show all left hours today
+        // + the first hours of tomorrow to fill a 24h timeline
         return currentHourByHour
             + nextDay.hourByHour.prefix(24 - currentHourByHour.count)
     }
@@ -45,6 +47,7 @@ struct HourByHourView: View {
                                 : formattedHour(from: item.time)
                         )
                         .font(.body)
+                        .fontWeight(.medium)
                         .foregroundColor(.secondary)
 
                         SymbolView(

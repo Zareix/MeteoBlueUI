@@ -278,6 +278,74 @@
         }
       }
     },
+    "predictability.low.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Low Confidence"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fiabilité Faible"
+          }
+        }
+      }
+    },
+    "predictability.low.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The forecast for this day has low predictability."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prévision pour ce jour a une fiabilité faible."
+          }
+        }
+      }
+    },
+    "predictability.very-low.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Very Low Confidence"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fiabilité Très Faible"
+          }
+        }
+      }
+    },
+    "predictability.very-low.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The forecast for this day has very low predictability."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prévision pour ce jour a une fiabilité très faible."
+          }
+        }
+      }
+    },
     "retry" : {
       "localizations" : {
         "en" : {

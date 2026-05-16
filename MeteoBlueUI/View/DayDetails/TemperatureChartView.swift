@@ -100,10 +100,10 @@ struct TemperatureChartView: View {
                     .padding(.top, 24)
                     Spacer()
                 }
-                .frame(height: 52)
+                .frame(height: 64)
             } else {
-                VStack {
-                    if day == meteoData.dayByDay.first {
+                HStack {
+                    VStack {
                         HStack {
                             TemperatureView(
                                 temperature: day
@@ -112,7 +112,6 @@ struct TemperatureChartView: View {
                             .font(.title)
                             SymbolView(symbol: day.symbol)
                                 .font(.system(size: 24))
-                            Spacer()
                         }
                         HStack {
                             HStack(spacing: 0) {
@@ -133,28 +132,15 @@ struct TemperatureChartView: View {
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
-                            Spacer()
-                        }
-                    } else {
-                        HStack {
-                            HStack(spacing: 4) {
-                                TemperatureView(temperature: day.temperatureMax)
-                                    .font(.system(size: 24))
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.primary)
-                                TemperatureView(temperature: day.temperatureMin)
-                                    .font(.system(size: 24))
-                                    .foregroundColor(.secondary)
-                                SymbolView(symbol: day.symbol)
-                                    .font(.system(size: 24))
-                                    .frame(width: 24, height: 24)
-                            }
-                            Spacer()
                         }
                     }
+                    if day.predictabilityClass <= 2 {
+                        PredictabilityBadge(predictabilityClass: day.predictabilityClass, size: 18)
+                    }
+                    Spacer()
                 }
                 .padding(.horizontal, 8)
-                .frame(height: 52)
+                .frame(height: 64)
             }
 
             Chart {
@@ -165,14 +151,14 @@ struct TemperatureChartView: View {
                 }
 
                 if selectedHour == nil {
+                    let evenHours = day.hourByHour.enumerated().filter {
+                        $0.offset % 2 == 0
+                    }.map { $0.element }
+
                     ForEach(
-                        day.hourByHour.enumerated().filter {
-                            $0.offset % 2 == 0
-                        }
-                        .map { $0.element },
+                        evenHours.filter { $0.time >= now },
                         id: \.self
-                    ) {
-                        hour in
+                    ) { hour in
                         RuleMark(
                             x: .value("hour", hour.time, unit: .hour)
                         )

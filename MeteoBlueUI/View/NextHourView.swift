@@ -22,7 +22,7 @@ struct NextHourView: View {
     }
 
     private func shouldDisplay() -> Bool {
-        return nextHour.contains { $0.precipitation > 0 }
+        return nextHour.contains { $0.precipitation > 0.1 }
     }
 
     var body: some View {
@@ -49,7 +49,7 @@ struct NextHourView: View {
                 }
                 .chartXAxis {
                     AxisMarks(
-                        values: .stride(by: .minute, count: 15)
+                        values: .stride(by: .minute, count: 10)
                     ) { _ in
                         AxisGridLine()
                         AxisValueLabel(

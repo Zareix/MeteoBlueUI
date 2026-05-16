@@ -38,6 +38,7 @@ struct MeteoDataDay: Identifiable, Equatable, Hashable {
     let temperatureMax: Double
     let precipitation: Double
     let precipitationProbability: Int
+    let predictabilityClass: Int
 
     var id: String = UUID().uuidString
 
@@ -52,7 +53,6 @@ struct MeteoData5Min: Identifiable, Equatable {
     let time: Date
     let temperature: Double
     let precipitation: Double
-    let precipitationProbability: Int
 
     var id: String = UUID().uuidString
 
