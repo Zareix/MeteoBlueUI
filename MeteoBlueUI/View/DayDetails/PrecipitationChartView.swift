@@ -59,6 +59,29 @@ struct PrecipitationChartView: View {
             }
 
             Chart {
+                if day.hourByHour.contains(where: { $0.precipitation > 0 }) {
+                    ForEach(pastHours.dropLast(), id: \.time) { hourData in
+                        BarMark(
+                            x: .value("hour", hourData.time, unit: .hour),
+                            y: .value(
+                                "day-details.precipitation",
+                                hourData.precipitation * 5
+                            )
+                        )
+                        .foregroundStyle(.gray.opacity(0.4))
+                    }
+                    ForEach(futureHours, id: \.time) { hourData in
+                        BarMark(
+                            x: .value("hour", hourData.time, unit: .hour),
+                            y: .value(
+                                "day-details.precipitation",
+                                hourData.precipitation * 5
+                            )
+                        )
+                        .foregroundStyle(.cyan.opacity(0.8))
+                    }
+                }
+
                 ForEach(pastHours, id: \.time) { hourData in
                     LineMark(
                         x: .value("hour", hourData.time, unit: .hour),
@@ -72,7 +95,6 @@ struct PrecipitationChartView: View {
                     .lineStyle(StrokeStyle(lineWidth: 3, dash: [8, 4]))
                     .interpolationMethod(.catmullRom)
                 }
-
                 ForEach(futureHours, id: \.time) { hourData in
                     LineMark(
                         x: .value("hour", hourData.time, unit: .hour),
@@ -82,10 +104,9 @@ struct PrecipitationChartView: View {
                         ),
                         series: .value("Series", "Future")
                     )
-                    .foregroundStyle(
-                        .cyan
-                    )
+                    .foregroundStyle(.cyan)
                     .lineStyle(StrokeStyle(lineWidth: 3))
+                    .interpolationMethod(.catmullRom)
                 }
             }
             .chartXAxis {
@@ -100,6 +121,7 @@ struct PrecipitationChartView: View {
             }
             .chartYAxis {
                 AxisMarks(
+                    position: .leading,
                     values: stride(from: 0, to: 110, by: 20).map { $0 }
                 ) { value in
                     AxisGridLine()
@@ -108,75 +130,24 @@ struct PrecipitationChartView: View {
                         AxisValueLabel("\(Int(y))%")
                     }
                 }
+                if day.hourByHour.contains(where: { $0.precipitation > 0 }) {
+                    AxisMarks(
+                        position: .trailing,
+                        values: [0, 20, 40, 60, 80, 100]
+                    ) { value in
+                        AxisTick()
+                        if let y = value.as(Double.self) {
+                            AxisValueLabel("\(Int(y / 5)) mm")
+                        }
+                    }
+                }
             }
             .chartYScale(
-                domain: 0...110,
+                domain: 0 ... 110,
                 type: .linear
             )
             .frame(height: 200)
             .clipped()
-
-            if day.hourByHour.contains(where: { $0.precipitation > 0 }) {
-                Chart {
-                    ForEach(pastHours.dropLast(), id: \.time) { hourData in
-                        BarMark(
-                            x: .value("hour", hourData.time, unit: .hour),
-                            y: .value(
-                                "day-details.precipitation-mm",
-                                hourData.precipitation
-                            )
-                        )
-                        .foregroundStyle(
-                            .gray.opacity(0.8)
-                        )
-                        .lineStyle(StrokeStyle(lineWidth: 3))
-                    }
-                    ForEach(futureHours, id: \.time) { hourData in
-                        BarMark(
-                            x: .value("hour", hourData.time, unit: .hour),
-                            y: .value(
-                                "day-details.precipitation-mm",
-                                hourData.precipitation
-                            )
-                        )
-                        .foregroundStyle(
-                            .cyan
-                        )
-                        .lineStyle(StrokeStyle(lineWidth: 3))
-                    }
-                }
-                .chartXAxis {
-                    AxisMarks(values: axisHours) { _ in
-                        AxisGridLine()
-                        AxisValueLabel(
-                            format: .dateTime.hour(
-                                .defaultDigits(amPM: .abbreviated)
-                            )
-                        )
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks(
-                        values: stride(
-                            from: 0,
-                            to: 22,
-                            by: 5
-                        ).map { $0 }
-                    ) { value in
-                        AxisGridLine()
-                        AxisTick()
-                        if let y = value.as(Double.self) {
-                            AxisValueLabel("\(Int(y)) mm")
-                        }
-                    }
-                }
-                .chartYScale(
-                    domain: 0...22,
-                    type: .linear
-                )
-                .frame(height: 180)
-                .clipped()
-            }
         }
     }
 }
