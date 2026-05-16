@@ -45,6 +45,8 @@ struct ContentView: View {
                                 )
                             }
 
+                            NextHourView(nextHour: meteoData.nextHour)
+
                             HourByHourView(days: meteoData.dayByDay)
 
                             DayByDayView(days: meteoData.dayByDay)

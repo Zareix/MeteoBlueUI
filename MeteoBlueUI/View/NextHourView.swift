@@ -9,7 +9,7 @@ import Charts
 import SwiftUI
 
 struct NextHourView: View {
-    let nextHour: [MeteoData15Min]
+    let nextHour: [MeteoData5Min]
 
     private var maxPrecipitation: Double {
         nextHour.map(\.precipitation).max() ?? 1
@@ -34,7 +34,7 @@ struct NextHourView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Chart {
-                    ForEach(nextHour, id: \.time) { hourData in
+                    ForEach(nextHour.prefix(12), id: \.time) { hourData in
                         BarMark(
                             x: .value("hour", hourData.time, unit: .minute),
                             y: .value(

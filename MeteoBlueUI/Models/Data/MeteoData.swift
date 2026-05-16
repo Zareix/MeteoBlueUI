@@ -15,7 +15,7 @@ import WidgetKit
 class MeteoData: ObservableObject {
     var location: WeatherLocation?
     var dayByDay: [MeteoDataDay] = []
-    var nextHour: [MeteoData15Min] = []
+    var nextHour: [MeteoData5Min] = []
     var error: String?
 
     private let service: MeteoBlueAPIService
@@ -109,29 +109,21 @@ class MeteoData: ObservableObject {
             nextHour.removeAll()
             error = nil
 
-            // Toujours sauvegarder les données pour le widget, pas seulement pour la localisation actuelle
-            Task.detached(priority: .background) {
-                _ = try? await WidgetDataService.fetchWidgetData(for: location)
-                WidgetCenter.shared.reloadAllTimelines()
-            }
-            
-            if isCurrentLocation {
-//                let data15min = try await service.fetch15Min(location: location)
-//                for (index, hour) in data15min.data15Min.time.enumerated() {
-//                    let date = MeteoData.convertStringHourToTime(
-//                        input: hour
-//                    )
-//                    if date < Calendar.current.startOfDay(for: .now) {
-//                        continue
-//                    }
-//                    nextHour.append(MeteoData15Min(
-//                        time: MeteoData.convertStringDayHourToTime(
-//                            input: hour
-//                        ),
-//                        temperature: data15min.data15Min.temperature[index],
-//                        precipitation: data15min.data15Min.precipitation[index]
-//                    ))
-//                }
+            for (index, hour) in data.data5Min.time.enumerated() {
+                let date = MeteoData.convertStringHourToTime(
+                    input: hour
+                )
+                if date < Calendar.current.startOfDay(for: .now) {
+                    continue
+                }
+                nextHour.append(MeteoData5Min(
+                    time: MeteoData.convertStringDayHourToTime(
+                        input: hour
+                    ),
+                    temperature: data.data5Min.temperature[index],
+                    precipitation: data.data5Min.precipitation[index],
+                    precipitationProbability: data.data5Min.precipitationProbability[index]
+                ))
             }
         } catch {
             print("Error loading meteo data: \(error)")

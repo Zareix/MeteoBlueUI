@@ -60,7 +60,6 @@
 				Models/Data/FavoriteCities.swift,
 				Models/Data/MeteoDataStructs.swift,
 				Models/Data/SearchHistory.swift,
-				Models/MeteoBlueAPI/MeteoBlueAPI15Min.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPICurrentData.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPIForecast.swift,
 				Models/PictoMapper.swift,

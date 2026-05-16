@@ -13,20 +13,24 @@
 import Foundation
 
 // MARK: - MeteoBlueAPIForecast
+
 struct MeteoBlueAPIForecast: Codable {
     let metadata: Metadata
     let units: Units
     let data1H: Data1H
     let dataDay: DataDay
+    let data5Min: Data5Min
 
     enum CodingKeys: String, CodingKey {
         case metadata, units
         case data1H = "data_1h"
         case dataDay = "data_day"
+        case data5Min = "data_xmin"
     }
 }
 
 // MARK: - MeteoBlueAPI1HForecast
+
 struct MeteoBlueAPI1HForecast: Codable {
     let metadata: Metadata
     let units: Units
@@ -39,6 +43,7 @@ struct MeteoBlueAPI1HForecast: Codable {
 }
 
 // MARK: - Data1H
+
 struct Data1H: Codable {
     let time: [String]
     let snowfraction: [Int]
@@ -61,6 +66,7 @@ struct Data1H: Codable {
 }
 
 // MARK: - DataDay
+
 struct DataDay: Codable {
     let time: [String]
     let temperatureInstant, precipitation: [Double]
@@ -115,5 +121,18 @@ struct DataDay: Codable {
         case predictabilityClass = "predictability_class"
         case windspeedMax = "windspeed_max"
 //        case sunrise, sunset
+    }
+}
+
+// MARK: - Data15Min
+
+struct Data5Min: Codable {
+    let time: [String]
+    let temperature: [Double]
+    let precipitation: [Double]
+    let precipitationProbability: [Int]
+
+    enum CodingKeys: String, CodingKey {
+        case time, temperature, precipitation, precipitationProbability = "precipitation_probability"
     }
 }
