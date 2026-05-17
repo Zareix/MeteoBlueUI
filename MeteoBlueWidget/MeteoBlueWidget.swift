@@ -33,7 +33,9 @@ struct NextHoursProvider: TimelineProvider {
 
     func getSnapshot(in context: Context, completion: @escaping (NextHoursEntry) -> Void) {
         if let data = WidgetDataService.loadFromCache() {
-            completion(NextHoursEntry(date: .now, cityName: data.location.city, hours: data.hours))
+            let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
+            let freshHours = data.hours.filter { $0.time >= currentHourStart }
+            completion(NextHoursEntry(date: .now, cityName: data.location.city, hours: freshHours))
         } else {
             completion(NextHoursEntry(date: .now, cityName: "Loading...", hours: Self.placeholderHours()))
         }
@@ -41,10 +43,19 @@ struct NextHoursProvider: TimelineProvider {
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
         Task {
-            // Utiliser le cache de l'app principale si disponible, sinon localisation par défaut
+            // Si le cache est encore frais (< 1h), on l'utilise — évite de spammer l'API
+            // quand iOS recharge la timeline plusieurs fois dans la même heure.
+            if !WidgetDataService.isStale(), let cached = WidgetDataService.loadFromCache() {
+                let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
+                let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
+                completion(Timeline(entries: entries, policy: .after(nextUpdate)))
+                return
+            }
+
+            // Cache absent ou périmé : on refetch
             let location: WeatherLocation
             if let cached = WidgetDataService.loadFromCache() {
-                // Utiliser la localisation du cache (mise à jour par l'app principale)
+                // Localisation conservée du cache même s'il est périmé
                 location = cached.location
             } else {
                 // Fallback : Paris par défaut
@@ -58,28 +69,18 @@ struct NextHoursProvider: TimelineProvider {
 
             do {
                 let widgetData = try await WidgetDataService.fetchWidgetData(for: location)
-
-                let entry = NextHoursEntry(
-                    date: .now,
-                    cityName: location.city,
-                    hours: widgetData.hours
-                )
-
+                let entries = Self.makeEntries(cityName: location.city, hours: widgetData.hours)
                 let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
-                completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+                completion(Timeline(entries: entries, policy: .after(nextUpdate)))
 
             } catch {
                 widgetLogger.error("Failed to fetch weather data: \(error.localizedDescription)")
 
                 // En cas d'erreur, utiliser le cache ou un placeholder
                 if let cached = WidgetDataService.loadFromCache() {
-                    let entry = NextHoursEntry(
-                        date: .now,
-                        cityName: cached.location.city,
-                        hours: cached.hours
-                    )
+                    let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
                     let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
-                    completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
+                    completion(Timeline(entries: entries, policy: .after(nextUpdate)))
                 } else {
                     let entry = NextHoursEntry(
                         date: .now,
@@ -91,6 +92,30 @@ struct NextHoursProvider: TimelineProvider {
                 }
             }
         }
+    }
+
+    // MARK: Timeline helpers
+
+    /// Crée une entrée par heure pour que le widget affiche la bonne heure
+    /// même si iOS ne recharge pas la timeline (budget de rafraîchissement limité).
+    /// Filtre les heures du passé pour éviter d'afficher un cache périmé.
+    private static func makeEntries(cityName: String, hours: [WidgetHourEntry]) -> [NextHoursEntry] {
+        let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
+        let freshHours = hours.filter { $0.time >= currentHourStart }
+
+        guard !freshHours.isEmpty else {
+            return [NextHoursEntry(date: .now, cityName: cityName, hours: [])]
+        }
+
+        // Génère une entrée pour chaque heure disponible (limitée à 24h)
+        let maxEntries = min(freshHours.count, 24)
+        let entries: [NextHoursEntry] = (0..<maxEntries).map { offset in
+            let slice = Array(freshHours[offset...])
+            // La première entrée prend effet immédiatement, les suivantes à l'heure correspondante
+            let date = offset == 0 ? Date() : slice[0].time
+            return NextHoursEntry(date: date, cityName: cityName, hours: slice)
+        }
+        return entries
     }
 
     // MARK: Placeholder helpers

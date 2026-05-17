@@ -88,11 +88,11 @@ enum WidgetDataService {
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
         formatter.locale = Locale(identifier: "en_US_POSIX")
 
-        let now = Date().addingTimeInterval(-3600)
+        let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
 
         let hours: [WidgetHourEntry] = forecast.data1H.time.enumerated().compactMap { index, timeStr in
             let date = formatter.date(from: timeStr) ?? Date()
-            guard date >= now else { return nil }
+            guard date >= currentHourStart else { return nil }
             return WidgetHourEntry(
                 time: date,
                 symbol: PictoMapper.pictoToSFSymbol(
@@ -110,6 +110,7 @@ enum WidgetDataService {
         if let encoded = try? JSONEncoder().encode(widgetData) {
             let userDefaults = UserDefaults(suiteName: appGroupID) ?? .standard
             userDefaults.set(encoded, forKey: userDefaultsKey)
+            WidgetCenter.shared.reloadAllTimelines()
         }
 
         return widgetData
