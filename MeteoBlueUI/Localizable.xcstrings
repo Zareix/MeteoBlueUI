@@ -224,6 +224,40 @@
         }
       }
     },
+    "hour-by-hour.sunrise" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunrise"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Lever"
+          }
+        }
+      }
+    },
+    "hour-by-hour.sunset" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Sunset"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Coucher"
+          }
+        }
+      }
+    },
     "hour-end" : {
 
     },

@@ -132,6 +132,7 @@ struct DayDetailsView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
+            .appBackground()
         }
         .onAppear {
             activeItem = selectedItem

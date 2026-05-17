@@ -9,6 +9,27 @@ import SwiftUI
 struct HourByHourView: View {
     let days: [MeteoDataDay]
 
+    private enum HourItem: Identifiable {
+        case hour(MeteoData1H)
+        case sunrise(Date)
+        case sunset(Date)
+
+        var id: String {
+            switch self {
+            case .hour(let h): "h-\(h.time.timeIntervalSince1970)"
+            case .sunrise(let d): "sr-\(d.timeIntervalSince1970)"
+            case .sunset(let d): "ss-\(d.timeIntervalSince1970)"
+            }
+        }
+
+        var time: Date {
+            switch self {
+            case .hour(let h): h.time
+            case .sunrise(let d), .sunset(let d): d
+            }
+        }
+    }
+
     private var hourByHour: [MeteoData1H] {
         guard days.count >= 2 else { return [] }
         let currentDay = days[0]
@@ -28,6 +49,17 @@ struct HourByHourView: View {
         return currentHourByHour + nextDay.hourByHour.prefix(26 - currentHourByHour.count)
     }
 
+    private var items: [HourItem] {
+        let hours = hourByHour
+        guard let first = hours.first?.time, let last = hours.last?.time else { return [] }
+
+        let sunEvents: [HourItem] = days.prefix(2).flatMap { day in
+            [HourItem.sunrise(day.sunrise), HourItem.sunset(day.sunset)]
+        }.filter { $0.time >= first && $0.time <= last }
+
+        return (hours.map(HourItem.hour) + sunEvents).sorted { $0.time < $1.time }
+    }
+
     private func isMidnight(_ date: Date) -> Bool {
         Calendar.current.component(.hour, from: date) == 0
     }
@@ -38,42 +70,74 @@ struct HourByHourView: View {
         return outputFormatter.string(from: date)
     }
 
+    private func formattedTime(from date: Date) -> String {
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "HH:mm"
+        return outputFormatter.string(from: date)
+    }
+
     var body: some View {
         ScrollView(.horizontal) {
             HStack(alignment: .center, spacing: 24) {
-                ForEach(hourByHour, id: \.time) { item in
-                    if isMidnight(item.time) {
-                        Rectangle()
-                            .fill(Color.secondary.opacity(0.3))
-                            .frame(width: 1, height: 60)
-                    }
-
-                    VStack(spacing: 10) {
-                        Text(
-                            item == hourByHour.first
-                                ? String(localized: "hour-by-hour.now")
-                                : formattedHour(from: item.time)
-                        )
-                        .font(.body)
-                        .fontWeight(.medium)
-                        .foregroundColor(.secondary)
-
-                        SymbolView(
-                            symbol: item.symbol,
-                            description: item.description
-                        )
-                        .font(.system(size: 24))
-                        .frame(width: 24, height: 24)
-
-                        TemperatureView(temperature: item.temperature)
-                            .font(.body)
-                            .foregroundColor(.primary)
+                ForEach(items) { item in
+                    if case .hour(let hourData) = item {
+                        if isMidnight(hourData.time) {
+                            Rectangle()
+                                .fill(Color.secondary.opacity(0.3))
+                                .frame(width: 1, height: 60)
+                        }
+                        hourCell(hourData)
+                    } else if case .sunrise(let date) = item {
+                        sunCell(date: date, symbol: "sunrise.fill", label: "hour-by-hour.sunrise")
+                    } else if case .sunset(let date) = item {
+                        sunCell(date: date, symbol: "sunset.fill", label: "hour-by-hour.sunset")
                     }
                 }
             }
         }
         .foregroundColor(.primary)
         .frame(maxWidth: .infinity)
+    }
+
+    @ViewBuilder
+    private func hourCell(_ item: MeteoData1H) -> some View {
+        VStack(spacing: 10) {
+            Text(
+                item == hourByHour.first
+                    ? String(localized: "hour-by-hour.now")
+                    : formattedHour(from: item.time)
+            )
+            .font(.body)
+            .fontWeight(.medium)
+            .foregroundColor(.secondary)
+
+            SymbolView(symbol: item.symbol, description: item.description)
+                .font(.system(size: 24))
+                .frame(width: 24, height: 24)
+
+            TemperatureView(temperature: item.temperature)
+                .font(.body)
+                .foregroundColor(.primary)
+        }
+    }
+
+    @ViewBuilder
+    private func sunCell(date: Date, symbol: String, label: LocalizedStringKey) -> some View {
+        VStack(spacing: 10) {
+            Text(formattedTime(from: date))
+                .font(.body)
+                .fontWeight(.medium)
+                .foregroundColor(.secondary)
+
+            Image(systemName: symbol)
+                .symbolRenderingMode(.multicolor)
+                .font(.system(size: 24))
+                .frame(width: 24, height: 24)
+
+            Text(label)
+                .font(.body)
+                .foregroundColor(.primary)
+        }
     }
 }
 

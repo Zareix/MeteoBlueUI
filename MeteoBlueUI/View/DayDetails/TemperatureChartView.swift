@@ -156,7 +156,7 @@ struct TemperatureChartView: View {
                     }.map { $0.element }
 
                     ForEach(
-                        evenHours.filter { $0.time >= now },
+                        evenHours,
                         id: \.self
                     ) { hour in
                         RuleMark(
@@ -167,6 +167,7 @@ struct TemperatureChartView: View {
                             SymbolView(symbol: hour.symbol)
                                 .font(.system(size: 12))
                                 .frame(width: 12, height: 12)
+                                .opacity(hour.time <= now ? 0.5 : 1)
                         }
                     }
                 }
@@ -366,7 +367,7 @@ struct TemperatureChartView: View {
             if mockData.dayByDay.count > 1 {
                 VStack {
                     TemperatureChartView(
-                        day: mockData.dayByDay[1]
+                        day: mockData.dayByDay[0]
                     )
                     .environmentObject(mockData as MeteoData)
                 }

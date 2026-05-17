@@ -248,11 +248,11 @@ class MockMeteoData: MeteoData {
                     predictabilityClass: Int.random(in: 1...5),
                     sunrise: MeteoData.combineDayAndTime(
                         day: MeteoData.convertStringDayToDate(input: day),
-                        time: "06:00"
+                        time: "06:32"
                     ),
                     sunset: MeteoData.combineDayAndTime(
                         day: MeteoData.convertStringDayToDate(input: day),
-                        time: "20:00"
+                        time: "20:18"
                     )
                 )
             )
