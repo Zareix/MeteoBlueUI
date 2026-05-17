@@ -39,6 +39,8 @@ struct MeteoDataDay: Identifiable, Equatable, Hashable {
     let precipitation: Double
     let precipitationProbability: Int
     let predictabilityClass: Int
+    let sunrise: Date
+    let sunset: Date
 
     var id: String = UUID().uuidString
 

@@ -79,7 +79,15 @@ struct CurrentWeatherView: View {
                 temperatureMax: 25,
                 precipitation: 0,
                 precipitationProbability: 5,
-                predictabilityClass: 4
+                predictabilityClass: 4,
+                sunrise: MeteoData.combineDayAndTime(
+                    day: Date(),
+                    time: "06:00"
+                ),
+                sunset: MeteoData.combineDayAndTime(
+                    day: Date(),
+                    time: "20:00"
+                )
             )
         )
 
@@ -102,7 +110,15 @@ struct CurrentWeatherView: View {
                 temperatureMax: 20,
                 precipitation: 0,
                 precipitationProbability: 5,
-                predictabilityClass: 4
+                predictabilityClass: 4,
+                sunrise: MeteoData.combineDayAndTime(
+                    day: Date(),
+                    time: "06:00"
+                ),
+                sunset: MeteoData.combineDayAndTime(
+                    day: Date(),
+                    time: "20:00"
+                )
             )
         )
     }

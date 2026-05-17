@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "%.1f mm" : {
+
+    },
     "%lld %%" : {
 
     },
@@ -65,9 +68,6 @@
           }
         }
       }
-    },
-    "day-details.precipitation-mm" : {
-
     },
     "day-details.precipitation-percent" : {
       "localizations" : {
@@ -224,6 +224,9 @@
         }
       }
     },
+    "hour-end" : {
+
+    },
     "loading" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -261,6 +264,23 @@
     "MeteoBlue API token" : {
 
     },
+    "nexthour.now" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Now"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Maintenant"
+          }
+        }
+      }
+    },
     "nexthour.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -274,6 +294,26 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prochaine Heure"
+          }
+        }
+      }
+    },
+    "precipitation" : {
+
+    },
+    "predictability.low.description" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The forecast for this day has low predictability."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La prévision pour ce jour a une fiabilité faible."
           }
         }
       }
@@ -295,19 +335,19 @@
         }
       }
     },
-    "predictability.low.description" : {
+    "predictability.very-low.description" : {
       "extractionState" : "manual",
       "localizations" : {
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "The forecast for this day has low predictability."
+            "value" : "The forecast for this day has very low predictability."
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "La prévision pour ce jour a une fiabilité faible."
+            "value" : "La prévision pour ce jour a une fiabilité très faible."
           }
         }
       }
@@ -325,23 +365,6 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Fiabilité Très Faible"
-          }
-        }
-      }
-    },
-    "predictability.very-low.description" : {
-      "extractionState" : "manual",
-      "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "The forecast for this day has very low predictability."
-          }
-        },
-        "fr" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "La prévision pour ce jour a une fiabilité très faible."
           }
         }
       }

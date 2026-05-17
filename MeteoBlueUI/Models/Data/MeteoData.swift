@@ -67,7 +67,9 @@ class MeteoData: ObservableObject {
                         temperatureMax: data.dataDay.temperatureMax[index],
                         precipitation: data.dataDay.precipitation[index],
                         precipitationProbability: data.dataDay.precipitationProbability[index],
-                        predictabilityClass: data.dataDay.predictabilityClass[index]
+                        predictabilityClass: data.dataDay.predictabilityClass[index],
+                        sunrise: MeteoData.combineDayAndTime(day: date, time: data.dataDay.sunrise[index]),
+                        sunset: MeteoData.combineDayAndTime(day: date, time: data.dataDay.sunset[index])
                     )
                 )
             }
@@ -110,17 +112,14 @@ class MeteoData: ObservableObject {
             nextHour.removeAll()
             error = nil
 
+            let cutoff = Date().addingTimeInterval(-5 * 60)
             for (index, hour) in data.data5Min.time.enumerated() {
-                let date = MeteoData.convertStringHourToTime(
-                    input: hour
-                )
-                if date < Calendar.current.startOfDay(for: .now) {
+                let date = MeteoData.convertStringDayHourToTime(input: hour)
+                if date < cutoff {
                     continue
                 }
                 nextHour.append(MeteoData5Min(
-                    time: MeteoData.convertStringDayHourToTime(
-                        input: hour
-                    ),
+                    time: date,
                     temperature: data.data5Min.temperature[index],
                     precipitation: data.data5Min.precipitation[index]
                 ))
@@ -151,6 +150,22 @@ class MeteoData: ObservableObject {
         inputFormatter.dateFormat = format
         inputFormatter.locale = Locale(identifier: "en_US_POSIX")
         return inputFormatter.date(from: input) ?? Date()
+    }
+
+    static func combineDayAndTime(day: Date, time: String) -> Date {
+        let parts = time.split(separator: ":")
+        guard parts.count == 2,
+              let hour = Int(parts[0]),
+              let minute = Int(parts[1])
+        else {
+            return day
+        }
+        return Calendar.current.date(
+            bySettingHour: hour,
+            minute: minute,
+            second: 0,
+            of: day
+        ) ?? day
     }
 }
 
@@ -230,19 +245,44 @@ class MockMeteoData: MeteoData {
                         ?? 0,
                     precipitation: Double.random(in: 0...20),
                     precipitationProbability: Int.random(in: 0...100),
-                    predictabilityClass: Int.random(in: 1...5)
-                    //                    sunrise: MeteoData.convertStringHourToTime(
-                    //                        input: "06:00"
-                    //                    ),
-                    //                    sunset: MeteoData.convertStringHourToTime(
-                    //                        input: "20:00"
-                    //                    )
+                    predictabilityClass: Int.random(in: 1...5),
+                    sunrise: MeteoData.combineDayAndTime(
+                        day: MeteoData.convertStringDayToDate(input: day),
+                        time: "06:00"
+                    ),
+                    sunset: MeteoData.combineDayAndTime(
+                        day: MeteoData.convertStringDayToDate(input: day),
+                        time: "20:00"
+                    )
+                )
+            )
+        }
+
+        var nextHour: [MeteoData5Min] = []
+        let now = Date()
+        let currentMinute = Calendar.current.component(.minute, from: now)
+        let alignedMinute = currentMinute - (currentMinute % 5)
+        let startDate = Calendar.current.date(
+            bySettingHour: Calendar.current.component(.hour, from: now),
+            minute: alignedMinute,
+            second: 0,
+            of: now
+        ) ?? now
+        for index in 0...23 {
+            let previousTemp =
+                nextHour.last?.temperature ?? Double.random(in: -5...30)
+            nextHour.append(
+                MeteoData5Min(
+                    time: startDate.addingTimeInterval(TimeInterval(index * 5 * 60)),
+                    temperature: previousTemp + Double.random(in: -0.3...0.3),
+                    precipitation: Double.random(in: 0...0.5)
                 )
             )
         }
 
         self.location = location
         self.dayByDay = dayByDay
+        self.nextHour = nextHour
         error = nil
     }
 }

@@ -11,22 +11,39 @@ import SwiftUI
 struct NextHourView: View {
     let nextHour: [MeteoData5Min]
 
+    private var thisNextHour: [MeteoData5Min] {
+        Array(nextHour.prefix(12))
+    }
+
     private var maxPrecipitation: Double {
-        nextHour.map(\.precipitation).max() ?? 1
+        thisNextHour.map(\.precipitation).max() ?? 1
     }
 
-    private func formattedTime(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateFormat = "HH:mm"
-        return formatter.string(from: date)
+    private var yMax: Double {
+        max(maxPrecipitation * 1.2, 2)
     }
 
-    private func shouldDisplay() -> Bool {
-        return nextHour.contains { $0.precipitation > 0.1 }
+    private var hasPrecipitation: Bool {
+        thisNextHour.contains { $0.precipitation > 0 }
+    }
+
+    private var startTime: Date {
+        thisNextHour.first?.time ?? Date()
+    }
+
+    private var axisDates: [Date] {
+        stride(from: 0, through: 50, by: 10).map {
+            startTime.addingTimeInterval(TimeInterval($0 * 60))
+        }
+    }
+
+    private func axisLabel(for date: Date) -> String {
+        let minutes = Int(date.timeIntervalSince(startTime).rounded() / 60)
+        return minutes == 0 ? "" : "\(minutes)min"
     }
 
     var body: some View {
-        if shouldDisplay() {
+        if hasPrecipitation {
             VStack(alignment: .leading, spacing: 12) {
                 Text("nexthour.title")
                     .font(.title.bold())
@@ -34,50 +51,44 @@ struct NextHourView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
 
                 Chart {
-                    ForEach(nextHour.prefix(12), id: \.time) { hourData in
-                        BarMark(
-                            x: .value("hour", hourData.time, unit: .minute),
-                            y: .value(
-                                "day-details.precipitation-mm",
-                                hourData.precipitation
-                            )
+                    ForEach(thisNextHour, id: \.time) { hourData in
+                        RectangleMark(
+                            xStart: .value("hour", hourData.time, unit: .minute),
+                            xEnd: .value(
+                                "hour-end",
+                                hourData.time.addingTimeInterval(5 * 60 - 61),
+                                unit: .minute
+                            ),
+                            yStart: .value("precipitation", 0),
+                            yEnd: .value("precipitation", hourData.precipitation)
                         )
-                        .foregroundStyle(
-                            .cyan
-                        )
+                        .clipShape(UnevenRoundedRectangle(topLeadingRadius: 5, bottomLeadingRadius: 0, bottomTrailingRadius: 0, topTrailingRadius: 5))
+                        .offset(x: 2)
+                        .foregroundStyle(.cyan)
                     }
                 }
                 .chartXAxis {
-                    AxisMarks(
-                        values: .stride(by: .minute, count: 10)
-                    ) { _ in
+                    AxisMarks(values: axisDates) { value in
                         AxisGridLine()
-                        AxisValueLabel(
-                            format: .dateTime.hour(.defaultDigits(amPM: .abbreviated)).minute()
-                        )
-                    }
-                }
-                .chartYAxis {
-                    AxisMarks(
-                        values: stride(
-                            from: 0,
-                            to: 22,
-                            by: 5
-                        ).map { $0 }
-                    ) { value in
-                        AxisGridLine()
-                        AxisTick()
-                        if let y = value.as(Double.self) {
-                            AxisValueLabel("\(Int(y)) mm")
+                        if let date = value.as(Date.self) {
+                            AxisValueLabel(axisLabel(for: date))
                         }
                     }
                 }
-                .chartYScale(
-                    domain: 0 ... 22,
-                    type: .linear
+                .chartXScale(
+                    domain: startTime ... startTime.addingTimeInterval(60 * 60)
                 )
-                .frame(height: 180)
-                .clipped()
+                .chartYAxis {
+                    AxisMarks(values: Array(stride(from: 0, to: yMax, by: 0.5))) { value in
+                        AxisGridLine()
+                        AxisTick()
+                        if let y = value.as(Double.self) {
+                            AxisValueLabel("\(y, specifier: "%.1f") mm")
+                        }
+                    }
+                }
+                .chartYScale(domain: 0 ... yMax, type: .linear)
+                .frame(height: 150)
             }
         }
     }
@@ -89,7 +100,7 @@ struct NextHourView: View {
 
     VStack {
         NextHourView(
-            nextHour: mockData.nextHour.prefix(8).map { $0 }
+            nextHour: mockData.nextHour
         )
         .padding(16)
         .appBackground()

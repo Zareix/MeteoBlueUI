@@ -64,6 +64,7 @@ enum WidgetDataService {
             URLQueryItem(name: "lat", value: String(location.latitude)),
             URLQueryItem(name: "lon", value: String(location.longitude)),
             URLQueryItem(name: "apikey", value: token),
+            URLQueryItem(name: "tz", value: TimeZone.current.identifier),
         ]
 
         guard let url = components.url else {

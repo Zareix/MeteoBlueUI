@@ -52,13 +52,12 @@ actor MeteoBlueAPIService {
             var components = URLComponents()
             components.scheme = "https"
             components.host = "my.meteoblue.com"
-            components.path = "/packages/basic-1h,basic-day,basic-5min"
-            let tz = TimeZone.current.identifier
+            components.path = "/packages/basic-1h,basic-day,basic-5min,sunmoon"
             components.queryItems = [
                 URLQueryItem(name: "lat", value: String(lat)),
                 URLQueryItem(name: "lon", value: String(lon)),
                 URLQueryItem(name: "apikey", value: token),
-                URLQueryItem(name: "tz", value: tz),
+                URLQueryItem(name: "tz", value: TimeZone.current.identifier),
             ]
             guard let url = components.url else { throw URLError(.badURL) }
 
