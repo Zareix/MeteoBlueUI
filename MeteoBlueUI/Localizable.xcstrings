@@ -1,6 +1,9 @@
 {
   "sourceLanguage" : "fr",
   "strings" : {
+    "" : {
+
+    },
     "%.1f mm" : {
 
     },
@@ -53,6 +56,22 @@
         }
       }
     },
+    "day-details.felt-temperature" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Feels like"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Ressenti"
+          }
+        }
+      }
+    },
     "day-details.precipitation" : {
       "localizations" : {
         "en" : {
@@ -101,7 +120,24 @@
         }
       }
     },
+    "day-details.real-temperature" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Actual"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réelle"
+          }
+        }
+      }
+    },
     "day-details.temperature" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

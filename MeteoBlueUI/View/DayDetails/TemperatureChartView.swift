@@ -13,6 +13,28 @@ struct TemperatureChartView: View {
 
     @EnvironmentObject private var meteoData: MeteoData
 
+    enum TemperatureMode: String, CaseIterable, Identifiable {
+        case real
+        case felt
+
+        var id: String { rawValue }
+
+        var label: LocalizedStringKey {
+            switch self {
+            case .real: "day-details.real-temperature"
+            case .felt: "day-details.felt-temperature"
+            }
+        }
+
+        func value(for hour: MeteoData1H) -> Double {
+            switch self {
+            case .real: hour.temperature
+            case .felt: hour.feltTemperature
+            }
+        }
+    }
+
+    @State private var mode: TemperatureMode = .real
     @State private var selectedHour: MeteoData1H?
     @State private var selectedX: CGFloat?
 
@@ -47,11 +69,29 @@ struct TemperatureChartView: View {
     }
 
     private var yMin: Double {
-        round((day.hourByHour.map { $0.temperature }.min() ?? 0)) - 2
+        round(day.hourByHour.map { mode.value(for: $0) }.min() ?? 0) - 2
     }
 
     private var yMax: Double {
-        floor((day.hourByHour.map { $0.temperature }.max() ?? 0)) + 2.5
+        floor(day.hourByHour.map { mode.value(for: $0) }.max() ?? 0) + 2.5
+    }
+
+    private var dayMax: Double {
+        day.hourByHour.map { mode.value(for: $0) }.max() ?? 0
+    }
+
+    private var dayMin: Double {
+        day.hourByHour.map { mode.value(for: $0) }.min() ?? 0
+    }
+
+    private var dayMean: Double {
+        switch mode {
+        case .real:
+            return day.temperatureMean
+        case .felt:
+            let values = day.hourByHour.map { $0.feltTemperature }
+            return values.isEmpty ? 0 : values.reduce(0, +) / Double(values.count)
+        }
     }
 
     var body: some View {
@@ -79,7 +119,7 @@ struct TemperatureChartView: View {
                             .font(.system(size: 24))
                             .frame(width: 24, height: 24)
                             TemperatureView(
-                                temperature: selected.temperature
+                                temperature: mode.value(for: selected)
                             )
                             .font(.body)
                             .fontWeight(.bold)
@@ -106,8 +146,7 @@ struct TemperatureChartView: View {
                     VStack {
                         HStack {
                             TemperatureView(
-                                temperature: day
-                                    .temperatureMean
+                                temperature: dayMean
                             )
                             .font(.title)
                             SymbolView(symbol: day.symbol)
@@ -119,7 +158,7 @@ struct TemperatureChartView: View {
                                     .font(.system(size: 12))
                                     .foregroundColor(.primary)
                                 Text(
-                                    "\(Int(round(day.temperatureMax)))°"
+                                    "\(Int(round(dayMax)))°"
                                 )
                                 .font(.subheadline)
                                 .foregroundColor(.primary)
@@ -128,7 +167,7 @@ struct TemperatureChartView: View {
                                 Image(systemName: "arrow.down")
                                     .font(.system(size: 12))
                                     .foregroundColor(.secondary)
-                                TemperatureView(temperature: day.temperatureMin)
+                                TemperatureView(temperature: dayMin)
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                             }
@@ -145,7 +184,7 @@ struct TemperatureChartView: View {
 
             Chart {
                 if yMin < 0 && yMax > 0 {
-                    RuleMark(y: .value("day-details.temperature", 0))
+                    RuleMark(y: .value(mode.label, 0))
                         .foregroundStyle(.blue.opacity(0.5))
                         .lineStyle(StrokeStyle(lineWidth: 1, dash: [5]))
                 }
@@ -177,20 +216,20 @@ struct TemperatureChartView: View {
                         LineMark(
                             x: .value("hour", hourData.time, unit: .hour),
                             y: .value(
-                                "day-details.temperature",
-                                hourData.temperature
+                                mode.label,
+                                mode.value(for: hourData)
                             ),
                             series: .value("Series", "Previous")
                         )
                         .foregroundStyle(.gray.opacity(0.8))
                         .lineStyle(StrokeStyle(lineWidth: 3, dash: [8, 4]))
                         .interpolationMethod(.catmullRom)
-                        if hourData.temperature == day.temperatureMax {
+                        if mode.value(for: hourData) == dayMax {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
                                 y: .value(
-                                    "day-details.temperature",
-                                    hourData.temperature
+                                    mode.label,
+                                    mode.value(for: hourData)
                                 )
                             )
                             .foregroundStyle(.orange.opacity(0.3))
@@ -200,12 +239,12 @@ struct TemperatureChartView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(.red.opacity(0.3))
                             }
-                        } else if hourData.temperature == day.temperatureMin {
+                        } else if mode.value(for: hourData) == dayMin {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
                                 y: .value(
-                                    "day-details.temperature",
-                                    hourData.temperature
+                                    mode.label,
+                                    mode.value(for: hourData)
                                 )
                             )
                             .foregroundStyle(.blue.opacity(0.3))
@@ -224,8 +263,8 @@ struct TemperatureChartView: View {
                         LineMark(
                             x: .value("hour", hourData.time, unit: .hour),
                             y: .value(
-                                "day-details.temperature",
-                                hourData.temperature
+                                mode.label,
+                                mode.value(for: hourData)
                             ),
                             series: .value("Series", "Future")
                         )
@@ -241,12 +280,12 @@ struct TemperatureChartView: View {
                         )
                         .lineStyle(StrokeStyle(lineWidth: 3))
                         .interpolationMethod(.catmullRom)
-                        if hourData.temperature == day.temperatureMax {
+                        if mode.value(for: hourData) == dayMax {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
                                 y: .value(
-                                    "day-details.temperature",
-                                    hourData.temperature
+                                    mode.label,
+                                    mode.value(for: hourData)
                                 )
                             )
                             .foregroundStyle(.orange)
@@ -256,12 +295,12 @@ struct TemperatureChartView: View {
                                     .fontWeight(.bold)
                                     .foregroundColor(.red.opacity(0.7))
                             }
-                        } else if hourData.temperature == day.temperatureMin {
+                        } else if mode.value(for: hourData) == dayMin {
                             PointMark(
                                 x: .value("hour", hourData.time, unit: .hour),
                                 y: .value(
-                                    "day-details.temperature",
-                                    hourData.temperature
+                                    mode.label,
+                                    mode.value(for: hourData)
                                 )
                             )
                             .foregroundStyle(.blue)
@@ -350,6 +389,14 @@ struct TemperatureChartView: View {
             }
             .frame(height: 200)
             .padding()
+
+            Picker("", selection: $mode) {
+                ForEach(TemperatureMode.allCases) { item in
+                    Text(item.label).tag(item)
+                }
+            }
+            .pickerStyle(.segmented)
+            .padding(.horizontal)
         }
     }
 }
