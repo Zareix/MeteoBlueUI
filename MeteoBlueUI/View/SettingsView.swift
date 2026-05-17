@@ -8,23 +8,12 @@
 import SwiftUI
 
 struct SettingsView<Label: View>: View {
-    let keyChainService = KeychainService()
     @State private var isSheetOpen = false
-    @State private var apiToken: String
 
     let label: Label?
 
     init(@ViewBuilder label: () -> Label) {
         self.label = label()
-        apiToken = keyChainService.getMetoBlueAPIToken() ?? ""
-    }
-
-    func clearAPIToken() {
-        keyChainService.clearMetoBlueAPIToken()
-    }
-
-    func saveToKeychain() {
-        keyChainService.setMetoBlueAPIToken(token: apiToken)
     }
 
     var body: some View {
@@ -33,45 +22,87 @@ struct SettingsView<Label: View>: View {
         } label: {
             label
         }
-        .sheet(
-            isPresented: $isSheetOpen,
-            onDismiss: {
-                isSheetOpen = false
-            }
-        ) {
+        .sheet(isPresented: $isSheetOpen) {
             NavigationStack {
-                VStack(alignment: .leading) {
-                    Text("MeteoBlue API token")
-                        .font(.headline)
-                    SecureField("API Token", text: $apiToken)
-                        .textFieldStyle(.roundedBorder)
-
-                    Spacer()
+                List {
+                    Section {
+                        NavigationLink {
+                            APISettingsView()
+                        } label: {
+                            SettingsRow(
+                                symbol: "key.fill",
+                                color: .blue,
+                                titleKey: "settings.api.title"
+                            )
+                        }
+                    }
                 }
-                .padding()
                 .navigationTitle("settings.title")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
+                    ToolbarItem(placement: .topBarTrailing) {
                         Button {
                             isSheetOpen = false
                         } label: {
                             Image(systemName: "xmark")
                         }
                     }
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            saveToKeychain()
-                            isSheetOpen = false
-                        } label: {
-                            Image(systemName: "checkmark")
-                        }
-                        .buttonStyle(.glassProminent)
-                        .disabled(apiToken.isEmpty)
-                    }
                 }
             }
-            .presentationDetents([.medium])
+        }
+    }
+}
+
+private struct SettingsRow: View {
+    let symbol: String
+    let color: Color
+    let titleKey: LocalizedStringKey
+
+    var body: some View {
+        SwiftUI.Label {
+            Text(titleKey)
+        } icon: {
+            Image(systemName: symbol)
+                .font(.system(size: 14, weight: .semibold))
+                .foregroundStyle(.white)
+                .frame(width: 28, height: 28)
+                .background(color, in: RoundedRectangle(cornerRadius: 6))
+        }
+    }
+}
+
+private struct APISettingsView: View {
+    let keyChainService = KeychainService()
+    @State private var apiToken: String = ""
+    @Environment(\.dismiss) private var dismiss
+    
+
+    var body: some View {
+        Form {
+            Section {
+                SecureField("settings.api.token", text: $apiToken)
+            } header: {
+                Text("settings.api.token")
+            } footer: {
+                Text("settings.api.footer")
+            }
+        }
+        .navigationTitle("settings.api.title")
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    keyChainService.setMetoBlueAPIToken(token: apiToken)
+                    dismiss()
+                } label: {
+                    Image(systemName: "checkmark")
+                }
+                .buttonStyle(.glassProminent)
+                .disabled(apiToken.isEmpty)
+            }
+        }
+        .onAppear {
+            apiToken = keyChainService.getMetoBlueAPIToken() ?? ""
         }
     }
 }

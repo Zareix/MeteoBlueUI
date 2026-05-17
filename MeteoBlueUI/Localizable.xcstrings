@@ -295,9 +295,6 @@
         }
       }
     },
-    "MeteoBlue API token" : {
-
-    },
     "nexthour.now" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -533,6 +530,57 @@
     },
     "Series" : {
 
+    },
+    "settings.api.footer" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Enter your meteoblue API token. You can get one at meteoblue.com."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saisissez votre jeton API meteoblue. Vous pouvez en obtenir un sur meteoblue.com."
+          }
+        }
+      }
+    },
+    "settings.api.title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Settings"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Réglages API"
+          }
+        }
+      }
+    },
+    "settings.api.token" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "API Token"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Jeton API"
+          }
+        }
+      }
     },
     "settings.title" : {
       "localizations" : {
