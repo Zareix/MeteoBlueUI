@@ -14,6 +14,7 @@ struct DayDetailsView: View {
     let selectedItem: MeteoDataDay
 
     @State var activeItem: MeteoDataDay?
+    @State private var daySelectorWidth: CGFloat = 0
 
     private var activeDay: MeteoDataDay {
         activeItem ?? selectedItem
@@ -23,10 +24,9 @@ struct DayDetailsView: View {
         NavigationStack {
             VStack {
                 VStack(spacing: 8) {
-                    HStack {
-                        Spacer()
+                    ScrollViewReader { scrollProxy in
                         ScrollView(.horizontal) {
-                            HStack {
+                            HStack(alignment: .center) {
                                 ForEach(meteoData.dayByDay) { day in
                                     VStack {
                                         Text(
@@ -53,7 +53,6 @@ struct DayDetailsView: View {
                                                 )
                                             ).lineLimit(1)
                                         }
-                                        .frame(maxWidth: .infinity)
                                         .padding(8)
                                         .foregroundColor(
                                             meteoData.dayByDay.first == day
@@ -74,11 +73,22 @@ struct DayDetailsView: View {
                                         .transition(.opacity)
                                         .animation(.easeInOut, value: activeDay)
                                     }
+                                    .id(day.id)
                                 }
                             }
+                            .padding(.horizontal)
+                            .frame(minWidth: daySelectorWidth)
                         }
-                        .padding(.horizontal)
-                        Spacer()
+                        .onGeometryChange(for: CGFloat.self) { proxy in
+                            proxy.size.width
+                        } action: { newWidth in
+                            daySelectorWidth = newWidth
+                        }
+                        .onChange(of: activeDay) { _, newValue in
+                            withAnimation {
+                                scrollProxy.scrollTo(newValue.id, anchor: .center)
+                            }
+                        }
                     }
 
                     HStack {

@@ -78,7 +78,7 @@ class MockMeteoData: MeteoData {
         var dayByDay: [MeteoDataDay] = []
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd"
-        for index in 0...10 {
+        for index in 0...6 {
             let day = dateFormatter.string(
                 from: Calendar.current
                     .startOfDay(for: Date())
