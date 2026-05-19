@@ -11,23 +11,7 @@ import MapKit
 import OSLog
 import WidgetKit
 
-private let wdLogger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "WidgetDataService")
-
-// MARK: - Shared models
-
-struct WidgetHourEntry: Codable {
-    let time: Date
-    let symbol: String
-    let description: String
-    let temperature: Double
-    let precipitationProbability: Int
-}
-
-struct WidgetData: Codable {
-    let location: WeatherLocation
-    let hours: [WidgetHourEntry]
-    let savedAt: Date
-}
+private let logger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "WidgetDataService")
 
 // MARK: - Service
 
@@ -35,6 +19,8 @@ enum WidgetDataService {
     static let appGroupID = "group.com.raphaelgc.MeteoBlueUI"
     static let userDefaultsKey = "widget_forecast_data"
     static let staleThreshold: TimeInterval = 60 * 60 // 1 hour
+
+    private static var provider: WeatherProviderService = MeteoBlueProviderService()
 
     static func isStale() -> Bool {
         guard let data = loadFromCache() else { return true }
@@ -52,60 +38,7 @@ enum WidgetDataService {
     }
 
     static func fetchWidgetData(for location: WeatherLocation) async throws -> WidgetData {
-        guard let token = KeychainService().getMetoBlueAPIToken() else {
-            throw AppError.noAPIToken
-        }
-
-        var components = URLComponents()
-        components.scheme = "https"
-        components.host = "my.meteoblue.com"
-        components.path = "/packages/basic-1h"
-        components.queryItems = [
-            URLQueryItem(name: "lat", value: String(location.latitude)),
-            URLQueryItem(name: "lon", value: String(location.longitude)),
-            URLQueryItem(name: "apikey", value: token),
-            URLQueryItem(name: "tz", value: TimeZone.current.identifier),
-        ]
-
-        guard let url = components.url else {
-            throw URLError(.badURL)
-        }
-
-        let (data, response) = try await URLSession.shared.data(from: url)
-
-        if let http = response as? HTTPURLResponse {
-            switch http.statusCode {
-            case 200 ... 299: break
-            case 401: throw AppError.invalidAPIToken
-            case 429: throw AppError.rateLimitExceeded
-            default: throw AppError.httpError(http.statusCode)
-            }
-        }
-
-        let forecast = try JSONDecoder().decode(MeteoBlueAPIForecast.self, from: data)
-
-        let formatter = DateFormatter()
-        formatter.dateFormat = "yyyy-MM-dd HH:mm"
-        formatter.locale = Locale(identifier: "en_US_POSIX")
-
-        let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
-
-        let hours: [WidgetHourEntry] = forecast.data1H.time.enumerated().compactMap { index, timeStr in
-            let date = formatter.date(from: timeStr) ?? Date()
-            guard date >= currentHourStart else { return nil }
-            return WidgetHourEntry(
-                time: date,
-                symbol: PictoMapper.pictoToSFSymbol(
-                    picto: forecast.data1H.pictocode[index],
-                    isDaylight: forecast.data1H.isdaylight[index] != 0
-                ),
-                description: PictoMapper.pictoToDescription(picto: forecast.data1H.pictocode[index]),
-                temperature: forecast.data1H.temperature[index],
-                precipitationProbability: forecast.data1H.precipitationProbability[index]
-            )
-        }
-
-        let widgetData = WidgetData(location: location, hours: hours, savedAt: Date())
+        let widgetData = try await provider.fetchWidgetData(location: location)
 
         if let encoded = try? JSONEncoder().encode(widgetData) {
             let userDefaults = UserDefaults(suiteName: appGroupID) ?? .standard
@@ -118,16 +51,16 @@ enum WidgetDataService {
 
     static func fetchCurrentLocation() -> WeatherLocation {
         if let location = FavoriteCities().items.first {
-            wdLogger.info("⭐ Using location from favorites: \(location.city)")
+            logger.info("⭐ Using location from favorites: \(location.city)")
             return location
         }
 
         if let location = SearchHistory().items.first {
-            wdLogger.info("📍 Using location from search history: \(location.city)")
+            logger.info("📍 Using location from search history: \(location.city)")
             return location
         }
 
-        wdLogger.info("🏠 Using default location: Cupertino")
+        logger.info("🏠 Using default location: Cupertino")
         return WeatherLocation(
             city: "Cupertino",
             country: "United States",
@@ -146,7 +79,7 @@ enum WidgetDataService {
         do {
             return try await fetchWidgetData(for: location)
         } catch {
-            wdLogger.error("Failed to fetch widget data: \(error.localizedDescription)")
+            logger.error("Failed to fetch widget data: \(error.localizedDescription)")
             return loadFromCache()
         }
     }

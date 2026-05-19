@@ -51,7 +51,7 @@ struct PrecipitationChartView: View {
             }
             HStack {
                 Text(
-                    "day-details.precipitation-risk-today-\(day.time.formatted(.dateTime.weekday(.wide)))-\(day.precipitationProbability)"
+                    "day-details.precipitation-risk-today \(day.time.formatted(.dateTime.weekday(.wide))) \(day.precipitationProbability, format: .percent)"
                 )
                 .font(.subheadline)
                 .foregroundColor(.secondary)
@@ -127,7 +127,7 @@ struct PrecipitationChartView: View {
                     AxisGridLine()
                     AxisTick()
                     if let y = value.as(Double.self) {
-                        AxisValueLabel("\(Int(y))%")
+                        AxisValueLabel("\(y / 100, format: .percent)")
                     }
                 }
                 if day.hourByHour.contains(where: { $0.precipitation > 0 }) {

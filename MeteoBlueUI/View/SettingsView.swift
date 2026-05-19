@@ -9,6 +9,7 @@ import SwiftUI
 
 struct SettingsView<Label: View>: View {
     @State private var isSheetOpen = false
+    @State private var providerSelection: WeatherProviderType = .current
 
     let label: Label?
 
@@ -25,15 +26,19 @@ struct SettingsView<Label: View>: View {
         .sheet(isPresented: $isSheetOpen) {
             NavigationStack {
                 List {
-                    Section {
-                        NavigationLink {
-                            APISettingsView()
-                        } label: {
-                            SettingsRow(
-                                symbol: "key.fill",
-                                color: .blue,
-                                titleKey: "settings.api.title"
-                            )
+                    ProviderSettingsView(selection: $providerSelection)
+
+                    if providerSelection == .meteoblue {
+                        Section {
+                            NavigationLink {
+                                APISettingsView()
+                            } label: {
+                                SettingsRowLabel(
+                                    symbol: "key.fill",
+                                    color: .purple,
+                                    titleKey: "settings.api.title"
+                                )
+                            }
                         }
                     }
                 }
@@ -53,20 +58,65 @@ struct SettingsView<Label: View>: View {
     }
 }
 
-private struct SettingsRow: View {
+private struct SettingsRowLabel: View {
     let symbol: String
     let color: Color
     let titleKey: LocalizedStringKey
+    let iconSize: CGFloat = 30
+    let inset: CGFloat = 4
 
     var body: some View {
-        SwiftUI.Label {
+        Label {
             Text(titleKey)
         } icon: {
             Image(systemName: symbol)
-                .font(.system(size: 14, weight: .semibold))
+                .resizable()
+                .renderingMode(.template)
                 .foregroundStyle(.white)
-                .frame(width: 28, height: 28)
-                .background(color, in: RoundedRectangle(cornerRadius: 6))
+                .aspectRatio(contentMode: .fit)
+                .padding(inset)
+                .frame(width: iconSize, height: iconSize)
+                .background(color)
+                .clipShape(RoundedRectangle(cornerRadius: 6.5))
+        }
+    }
+}
+
+private struct ProviderSettingsView: View {
+    @Binding var selection: WeatherProviderType
+    let iconSize: CGFloat = 28
+
+    var body: some View {
+        Section(footer: Text("settings.provider.footer")) {
+            Picker(selection: $selection) {
+                HStack {
+                    Image("MeteoBlueIcon")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: iconSize, height: iconSize)
+                        .clipShape(RoundedRectangle(cornerRadius: 6.5))
+                    Text("settings.provider.meteoblue")
+                }.tag(WeatherProviderType.meteoblue)
+                HStack {
+                    Image(systemName: "applelogo")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding(2)
+                        .frame(width: iconSize, height: iconSize)
+                    Text("settings.provider.weatherkit")
+                }.tag(WeatherProviderType.weatherkit)
+            } label: {
+                SettingsRowLabel(
+                    symbol: "cloud.sun.fill",
+                    color: .blue,
+                    titleKey: "settings.provider.title"
+                )
+            }
+            .pickerStyle(.inline)
+            .labelsHidden()
+            .onChange(of: selection) { _, newValue in
+                WeatherProviderType.current = newValue
+            }
         }
     }
 }
@@ -75,7 +125,6 @@ private struct APISettingsView: View {
     let keyChainService = KeychainService()
     @State private var apiToken: String = ""
     @Environment(\.dismiss) private var dismiss
-    
 
     var body: some View {
         Form {

@@ -57,9 +57,12 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Models/AppError.swift,
+				Models/Data/DateTimeConverter.swift,
 				Models/Data/FavoriteCities.swift,
 				Models/Data/MeteoDataStructs.swift,
 				Models/Data/SearchHistory.swift,
+				Models/Data/WeatherProviderType.swift,
+				Models/Data/WidgetData.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPICurrentData.swift,
 				Models/MeteoBlueAPI/MeteoBlueAPIForecast.swift,
 				Models/PictoMapper.swift,
@@ -67,7 +70,9 @@
 				Modifiers/AppBackground.swift,
 				Modifiers/IfModifier.swift,
 				Services/KeychainService.swift,
-				Services/MeteoBlueAPIService.swift,
+				Services/WeatherProviders/MeteoBlueProviderService.swift,
+				Services/WeatherProviders/WeatherKitProviderService.swift,
+				Services/WeatherProviders/WeatherProviderService.swift,
 				Services/WidgetDataService.swift,
 				View/Components/SymbolView.swift,
 			);
@@ -429,7 +434,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.0;
+				MARKETING_VERSION = 1.14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -460,7 +465,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.13.0;
+				MARKETING_VERSION = 1.14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -488,7 +493,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.0;
+				MARKETING_VERSION = 1.14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.MeteoBlueWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -520,7 +525,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.13.0;
+				MARKETING_VERSION = 1.14.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.MeteoBlueWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

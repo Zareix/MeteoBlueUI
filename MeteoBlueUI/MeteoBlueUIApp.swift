@@ -13,42 +13,24 @@ struct MeteoBlueUIApp: App {
     @State private var locationManager = LocationManager()
     @State private var meteoData = MeteoData()
 
-    @State private var showSheet =
-        KeychainService().getMetoBlueAPIToken() == nil
-    @State private var apiToken: String = ""
-
-    func saveToKeychain() {
-        KeychainService().setMetoBlueAPIToken(token: apiToken)
-        showSheet = false
-    }
-
     var body: some Scene {
         WindowGroup {
             ZStack {
-                if !showSheet {
-                    ContentView()
-                        .environmentObject(meteoData)
-                        .environmentObject(locationManager)
-                } else {
-                    VStack {
-                        ProgressView()
-                    }.sheet(isPresented: $showSheet) {
-                        VStack(spacing: 8) {
-                            Text("Enter your MeteoBlue API token")
-                                .font(.headline)
-                                .padding()
-                            SecureField("API Token", text: $apiToken)
-                                .textFieldStyle(RoundedBorderTextFieldStyle())
-                                .padding()
-                            Button("Save") {
-                                saveToKeychain()
-                            }
-                            .padding()
-                        }
+                ContentView()
+                    .environmentObject(meteoData)
+                    .environmentObject(locationManager)
+            }
+            .appBackground()
+            .onReceive(
+                NotificationCenter.default.publisher(for: WeatherProviderType.didChangeNotification)
+            ) { _ in
+                meteoData.setProvider(MeteoData.makeDefaultProvider())
+                Task {
+                    if let location = meteoData.location {
+                        await meteoData.loadMeteoData(force: true, location: location)
                     }
                 }
             }
-            .appBackground()
         }
     }
 }

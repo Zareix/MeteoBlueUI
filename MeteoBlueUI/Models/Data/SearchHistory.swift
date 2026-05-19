@@ -13,7 +13,6 @@ class SearchHistory: ObservableObject {
     private static let maxHistoryCount = 5
     private let storageKey = "searchHistory"
     
-    // Utiliser un App Group pour partager avec le widget
     private let userDefaults = UserDefaults(suiteName: "group.com.raphaelgc.MeteoBlueUI") ?? .standard
     
     @Published var items: [WeatherLocation] = []

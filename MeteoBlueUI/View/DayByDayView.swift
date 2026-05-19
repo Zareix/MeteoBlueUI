@@ -46,11 +46,9 @@ struct DayByDayView: View {
                             .font(.system(size: 20))
                             .frame(width: 20, height: 20)
                         if item.precipitationProbability > 30 {
-                            Text(
-                                "\(roundToNearest5(item.precipitationProbability)) %"
-                            )
-                            .font(.caption)
-                            .foregroundColor(.secondary)
+                            Text(roundToNearest5(item.precipitationProbability), format: .percent)
+                                .font(.caption)
+                                .foregroundColor(.secondary)
                         }
                         if item.predictabilityClass <= 2 {
                             PredictabilityBadge(predictabilityClass: item.predictabilityClass)

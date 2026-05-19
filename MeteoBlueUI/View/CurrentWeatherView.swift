@@ -80,11 +80,11 @@ struct CurrentWeatherView: View {
                 precipitation: 0,
                 precipitationProbability: 5,
                 predictabilityClass: 4,
-                sunrise: MeteoData.combineDayAndTime(
+                sunrise: DateTimeConverter.combineDayAndTime(
                     day: Date(),
                     time: "06:00"
                 ),
-                sunset: MeteoData.combineDayAndTime(
+                sunset: DateTimeConverter.combineDayAndTime(
                     day: Date(),
                     time: "20:00"
                 )
@@ -111,11 +111,11 @@ struct CurrentWeatherView: View {
                 precipitation: 0,
                 precipitationProbability: 5,
                 predictabilityClass: 4,
-                sunrise: MeteoData.combineDayAndTime(
+                sunrise: DateTimeConverter.combineDayAndTime(
                     day: Date(),
                     time: "06:00"
                 ),
-                sunset: MeteoData.combineDayAndTime(
+                sunset: DateTimeConverter.combineDayAndTime(
                     day: Date(),
                     time: "20:00"
                 )

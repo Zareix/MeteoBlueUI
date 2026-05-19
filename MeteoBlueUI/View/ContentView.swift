@@ -99,10 +99,10 @@ struct ContentView: View {
 
             } else if let errorMessage = meteoData.error {
                 VStack(spacing: 8) {
-                    Text("Error: \(errorMessage)")
+                    Text("common.error \(errorMessage)")
                         .foregroundColor(.red)
 
-                    Button("retry") {
+                    Button("common.retry") {
                         Task {
                             await meteoData.loadMeteoData()
                         }
