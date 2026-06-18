@@ -13,6 +13,7 @@ struct ContentView: View {
     @Environment(MeteoData.self) private var meteoData
 
     @State private var displayedTemperature: Int = 0
+    @State private var refreshTrigger: Int = 0
 
     init() {
         let appearance = UINavigationBarAppearance()
@@ -92,7 +93,12 @@ struct ContentView: View {
                             location: location,
                             isCurrentLocation: locationManager.currentLocation == location
                         )
+                        refreshTrigger += 1
                     }
+                    .sensoryFeedback(
+                        meteoData.error == nil ? .success : .error,
+                        trigger: refreshTrigger
+                    )
                     .scrollContentBackground(.hidden)
                     .background(Color("BackgroundColor"))
                 }
