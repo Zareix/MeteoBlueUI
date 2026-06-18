@@ -20,7 +20,12 @@ enum WidgetDataService {
     static let userDefaultsKey = "widget_forecast_data"
     static let staleThreshold: TimeInterval = 60 * 60 // 1 hour
 
-    private static var provider: WeatherProviderService = MeteoBlueProviderService()
+    private static var provider: WeatherProviderService {
+        switch WeatherProviderType.current {
+        case .meteoblue: return MeteoBlueProviderService()
+        case .weatherkit: return WeatherKitProviderService()
+        }
+    }
 
     static func isStale() -> Bool {
         guard let data = loadFromCache() else { return true }

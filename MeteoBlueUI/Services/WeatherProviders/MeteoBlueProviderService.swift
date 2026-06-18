@@ -65,7 +65,7 @@ actor MeteoBlueProviderService: WeatherProviderService {
             }
         }
 
-        let forecast = try JSONDecoder().decode(MeteoBlueAPIForecast.self, from: data)
+        let forecast = try JSONDecoder().decode(MeteoBlueAPI1HForecast.self, from: data)
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
