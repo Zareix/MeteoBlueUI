@@ -8,9 +8,15 @@
 import CoreLocation
 import Foundation
 import OSLog
+import UIKit
 import WeatherKit
 
 private let logger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "WeatherKitProviderService")
+
+private func filledSymbol(_ symbolName: String) -> String {
+    let filled = "\(symbolName).fill"
+    return UIImage(systemName: filled) != nil ? filled : symbolName
+}
 
 actor WeatherKitProviderService: WeatherProviderService {
     private var forecastTask: Task<WeatherForecast, Error>?
@@ -43,7 +49,7 @@ actor WeatherKitProviderService: WeatherProviderService {
             .map { hour in
                 WidgetHourEntry(
                     time: hour.date,
-                    symbol: "\(hour.symbolName).fill",
+                    symbol: filledSymbol(hour.symbolName),
                     description: hour.condition.description,
                     temperature: hour.temperature.converted(to: .celsius).value,
                     precipitationProbability: Int((hour.precipitationChance * 100).rounded())
@@ -74,7 +80,7 @@ actor WeatherKitProviderService: WeatherProviderService {
                     MeteoData1H(
                         time: hour.date,
                         description: hour.condition.description,
-                        symbol: "\(hour.symbolName).fill",
+                        symbol: filledSymbol(hour.symbolName),
                         temperature: hour.temperature.converted(to: .celsius).value,
                         feltTemperature: hour.apparentTemperature.converted(to: .celsius).value,
                         precipitation: hour.precipitationAmount.converted(to: .millimeters).value,
@@ -90,7 +96,7 @@ actor WeatherKitProviderService: WeatherProviderService {
                     hourByHour: hourByHour,
                     time: dayStart,
                     description: day.condition.description,
-                    symbol: "\(day.symbolName).fill",
+                    symbol: filledSymbol(day.symbolName),
                     temperatureMean: (min + max) / 2,
                     temperatureMin: min,
                     temperatureMax: max,
@@ -118,7 +124,9 @@ actor WeatherKitProviderService: WeatherProviderService {
         }
         for bucket in bucketed {
             guard let first = bucket.first else { continue }
-            if first.date < cutoff { continue }
+            if first.date < cutoff {
+                continue
+            }
             // WeatherKit stores precipitationIntensity as Measurement<UnitSpeed>; converting to
             // kilometers/hour and scaling by 1_000_000 yields mm/h. Per-minute amount = mm/h / 60.
             let amountMM = bucket.reduce(0.0) { partial, minute in
