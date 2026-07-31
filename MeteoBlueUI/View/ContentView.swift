@@ -64,6 +64,9 @@ struct ContentView: View {
                             SettingsView()
                         }
                         ToolbarItem(placement: .topBarLeading) {
+                            ProviderSwitchButton()
+                        }
+                        ToolbarItem(placement: .topBarLeading) {
                             FavoriteCitiesView()
                         }
                         if let currentLocation = locationManager.currentLocation {
@@ -79,7 +82,7 @@ struct ContentView: View {
                                     Image(
                                         systemName: locationManager.currentLocation == location ? "location.fill" : "location"
                                     )
-                                    .foregroundColor(.blue)
+                                    .foregroundColor(locationManager.currentLocation == location ? .blue : .primary)
                                 }
                             }
                         }

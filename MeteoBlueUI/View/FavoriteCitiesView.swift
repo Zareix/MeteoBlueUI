@@ -47,7 +47,7 @@ struct FavoriteCitiesView: View {
                 systemName:
                 isCurrentCityFavorite() ? "star.fill" : "star"
             )
-            .foregroundColor(.blue)
+            .foregroundColor(isCurrentCityFavorite() ? .blue : .primary)
         }
         .sheet(
             isPresented: $isSheetOpen,

@@ -166,8 +166,8 @@ extension SettingsView where Label == DefaultSettingsIcon {
 
 struct DefaultSettingsIcon: View {
     var body: some View {
-        Image(systemName: "gearshape.fill")
-            .foregroundColor(.blue)
+        Image(systemName: "gearshape")
+            .foregroundColor(.primary)
     }
 }
 

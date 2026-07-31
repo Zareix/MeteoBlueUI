@@ -46,7 +46,7 @@ struct SearchCityView: View {
             isSearchActive.toggle()
         } label: {
             Image(systemName: "magnifyingglass")
-                .foregroundColor(.blue)
+                .foregroundColor(.primary)
         }
         .sheet(
             isPresented: $isSearchActive,

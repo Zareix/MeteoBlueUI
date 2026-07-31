@@ -9,6 +9,11 @@ import SwiftUI
 struct HourByHourView: View {
     let days: [MeteoDataDay]
 
+    private let symbolBlockHeight: CGFloat = 40
+
+    /// meteoblue's ensemble often reports 20-30% on days with no real rain risk, so only surface it past that noise floor.
+    private let significantPrecipitationProbability = 20
+
     private enum HourItem: Identifiable {
         case hour(MeteoData1H)
         case sunrise(Date)
@@ -99,7 +104,6 @@ struct HourByHourView: View {
         .frame(maxWidth: .infinity)
     }
 
-    @ViewBuilder
     private func hourCell(_ item: MeteoData1H) -> some View {
         VStack(spacing: 10) {
             Text(
@@ -111,9 +115,18 @@ struct HourByHourView: View {
             .fontWeight(.medium)
             .foregroundColor(.secondary)
 
-            SymbolView(symbol: item.symbol, description: item.description)
-                .font(.system(size: 24))
-                .frame(width: 24, height: 24)
+            VStack(spacing: 4) {
+                SymbolView(symbol: item.symbol, description: item.description)
+                    .font(.system(size: 24))
+                    .frame(width: 24, height: 24)
+
+                if item.precipitationProbability >= significantPrecipitationProbability {
+                    Text("\(item.precipitationProbability)%")
+                        .font(.caption2)
+                        .foregroundColor(.cyan)
+                }
+            }
+            .frame(height: symbolBlockHeight)
 
             TemperatureView(temperature: item.temperature)
                 .font(.body)
@@ -121,7 +134,6 @@ struct HourByHourView: View {
         }
     }
 
-    @ViewBuilder
     private func sunCell(date: Date, symbol: String, label: LocalizedStringKey) -> some View {
         VStack(spacing: 10) {
             Text(formattedTime(from: date))
@@ -132,7 +144,7 @@ struct HourByHourView: View {
             Image(systemName: symbol)
                 .symbolRenderingMode(.multicolor)
                 .font(.system(size: 24))
-                .frame(width: 24, height: 24)
+                .frame(width: 24, height: symbolBlockHeight)
 
             Text(label)
                 .font(.body)
