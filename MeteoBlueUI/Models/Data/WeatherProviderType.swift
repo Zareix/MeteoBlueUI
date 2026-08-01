@@ -10,6 +10,7 @@ import Foundation
 enum WeatherProviderType: String, CaseIterable, Identifiable {
     case meteoblue
     case weatherkit
+    case openmeteo
 
     var id: String {
         rawValue

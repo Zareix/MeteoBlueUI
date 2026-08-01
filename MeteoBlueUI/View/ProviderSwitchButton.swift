@@ -11,24 +11,34 @@ struct ProviderSwitchButton: View {
     @State private var current: WeatherProviderType = .current
 
     var body: some View {
-        Button {
-            let all = WeatherProviderType.allCases
-            let index = all.firstIndex(of: current) ?? 0
-            let next = all[(index + 1) % all.count]
-            current = next
-            WeatherProviderType.current = next
-        } label: {
-            switch current {
-            case .meteoblue:
-                Image("MeteoBlueIcon")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .frame(width: 22, height: 22)
-                    .clipShape(RoundedRectangle(cornerRadius: 5))
-            case .weatherkit:
-                Image(systemName: "applelogo")
-                    .foregroundColor(.primary)
+        Menu {
+            ForEach(WeatherProviderType.allCases) { provider in
+                Button {
+                    current = provider
+                    WeatherProviderType.current = provider
+                } label: {
+                    Label {
+                        Text(provider.titleKey)
+                    } icon: {
+                        ProviderIcon(provider: provider)
+                    }
+                }
             }
+        } label: {
+            ProviderIcon(provider: current)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: WeatherProviderType.didChangeNotification)) { _ in
+            current = .current
+        }
+    }
+}
+
+private extension WeatherProviderType {
+    var titleKey: LocalizedStringKey {
+        switch self {
+        case .meteoblue: "settings.provider.meteoblue"
+        case .weatherkit: "settings.provider.weatherkit"
+        case .openmeteo: "settings.provider.openmeteo"
         }
     }
 }

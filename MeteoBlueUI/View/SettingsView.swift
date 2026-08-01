@@ -31,7 +31,11 @@ struct SettingsView<Label: View>: View {
                     if providerSelection == .meteoblue {
                         Section {
                             NavigationLink {
-                                APISettingsView()
+                                APISettingsView(
+                                    tokenFooter: "settings.api.footer",
+                                    getToken: { KeychainService().getMetoBlueAPIToken() },
+                                    setToken: { KeychainService().setMetoBlueAPIToken(token: $0) }
+                                )
                             } label: {
                                 SettingsRowLabel(
                                     symbol: "key.fill",
@@ -55,6 +59,9 @@ struct SettingsView<Label: View>: View {
                 }
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: WeatherProviderType.didChangeNotification)) { _ in
+            providerSelection = .current
+        }
     }
 }
 
@@ -62,7 +69,7 @@ private struct SettingsRowLabel: View {
     let symbol: String
     let color: Color
     let titleKey: LocalizedStringKey
-    let iconSize: CGFloat = 30
+    let iconSize: CGFloat = 26
     let inset: CGFloat = 4
 
     var body: some View {
@@ -90,21 +97,17 @@ private struct ProviderSettingsView: View {
         Section(footer: Text("settings.provider.footer")) {
             Picker(selection: $selection) {
                 HStack {
-                    Image("MeteoBlueIcon")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: iconSize, height: iconSize)
-                        .clipShape(RoundedRectangle(cornerRadius: 6.5))
+                    ProviderIcon(provider: .meteoblue, size: iconSize)
                     Text("settings.provider.meteoblue")
                 }.tag(WeatherProviderType.meteoblue)
                 HStack {
-                    Image(systemName: "applelogo")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding(2)
-                        .frame(width: iconSize, height: iconSize)
+                    ProviderIcon(provider: .weatherkit, size: iconSize)
                     Text("settings.provider.weatherkit")
                 }.tag(WeatherProviderType.weatherkit)
+                HStack {
+                    ProviderIcon(provider: .openmeteo, size: iconSize)
+                    Text("settings.provider.openmeteo")
+                }.tag(WeatherProviderType.openmeteo)
             } label: {
                 SettingsRowLabel(
                     symbol: "cloud.sun.fill",
@@ -122,7 +125,10 @@ private struct ProviderSettingsView: View {
 }
 
 private struct APISettingsView: View {
-    let keyChainService = KeychainService()
+    let tokenFooter: LocalizedStringKey
+    let getToken: () -> String?
+    let setToken: (String) -> Void
+
     @State private var apiToken: String = ""
     @Environment(\.dismiss) private var dismiss
 
@@ -133,7 +139,7 @@ private struct APISettingsView: View {
             } header: {
                 Text("settings.api.token")
             } footer: {
-                Text("settings.api.footer")
+                Text(tokenFooter)
             }
         }
         .navigationTitle("settings.api.title")
@@ -141,7 +147,7 @@ private struct APISettingsView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    keyChainService.setMetoBlueAPIToken(token: apiToken)
+                    setToken(apiToken)
                     dismiss()
                 } label: {
                     Image(systemName: "checkmark")
@@ -151,7 +157,7 @@ private struct APISettingsView: View {
             }
         }
         .onAppear {
-            apiToken = keyChainService.getMetoBlueAPIToken() ?? ""
+            apiToken = getToken() ?? ""
         }
     }
 }

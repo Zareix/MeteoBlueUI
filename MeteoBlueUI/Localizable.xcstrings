@@ -694,13 +694,13 @@
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "MeteoBlue API Key"
+            "value" : "API Key"
           }
         },
         "fr" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Clé API MeteoBlue"
+            "value" : "Clé API"
           }
         }
       }
@@ -735,6 +735,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "MeteoBlue"
+          }
+        }
+      }
+    },
+    "settings.provider.openmeteo" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open-Meteo"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Open-Meteo"
           }
         }
       }

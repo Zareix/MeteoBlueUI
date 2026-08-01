@@ -28,6 +28,7 @@ class MeteoData: ObservableObject {
         switch WeatherProviderType.current {
         case .meteoblue: return MeteoBlueProviderService()
         case .weatherkit: return WeatherKitProviderService()
+        case .openmeteo: return OpenMeteoProviderService()
         }
     }
 

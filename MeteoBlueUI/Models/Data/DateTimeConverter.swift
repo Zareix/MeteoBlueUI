@@ -10,6 +10,10 @@ enum DateTimeConverter {
     static func convertStringDayHourToTime(input: String) -> Date {
         return convertStringToDate(input: input, format: "yyyy-MM-dd HH:mm")
     }
+
+    static func convertISODayHourToTime(input: String) -> Date {
+        return convertStringToDate(input: input, format: "yyyy-MM-dd'T'HH:mm")
+    }
     
     static func convertStringDayToDate(input: String) -> Date {
         return convertStringToDate(input: input, format: "yyyy-MM-dd")
