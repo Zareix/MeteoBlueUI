@@ -35,103 +35,110 @@ struct ContentView: View {
     }
 
     var body: some View {
-        Group {
-            if let location = meteoData.location {
+        TabView {
+            Tab("weather.title", systemImage: "cloud.sun.fill") {
+                weatherTab
+            }
+
+            Tab("maps.title", systemImage: "map.fill") {
                 NavigationStack {
-                    ScrollView {
-                        VStack(spacing: 32) {
-                            if let firstDay = meteoData.dayByDay.first {
-                                CurrentWeatherView(
-                                    firstDay: firstDay
-                                )
-                            }
-
-                            NextHourView(nextHour: meteoData.nextHour)
-
-                            HourByHourView(days: meteoData.dayByDay)
-
-                            DayByDayView(days: meteoData.dayByDay)
-
-                            MapsView()
-                        }
-                        .padding(.horizontal, 20)
-                    }
-                    .navigationTitle(location.city)
-                    .navigationSubtitle(location.country)
-                    .navigationBarTitleDisplayMode(.large)
-                    .toolbar {
-                        ToolbarItem(placement: .topBarLeading) {
-                            SettingsView()
-                        }
-                        ToolbarItem(placement: .topBarLeading) {
-                            ProviderSwitchButton()
-                        }
-                        ToolbarItem(placement: .topBarLeading) {
-                            FavoriteCitiesView()
-                        }
-                        if let currentLocation = locationManager.currentLocation {
-                            ToolbarItem(placement: .navigationBarTrailing) {
-                                Button {
-                                    Task {
-                                        await meteoData.loadMeteoData(
-                                            location: currentLocation,
-                                            isCurrentLocation: true
-                                        )
-                                    }
-                                } label: {
-                                    Image(
-                                        systemName: locationManager.currentLocation == location ? "location.fill" : "location"
-                                    )
-                                    .foregroundColor(locationManager.currentLocation == location ? .blue : .primary)
-                                }
-                            }
-                        }
-                        ToolbarItem(placement: .topBarTrailing) {
-                            SearchCityView()
-                        }
-                    }
-                    .refreshable {
-                        await meteoData.loadMeteoData(
-                            force: true,
-                            location: location,
-                            isCurrentLocation: locationManager.currentLocation == location
-                        )
-                        refreshTrigger += 1
-                    }
-                    .sensoryFeedback(
-                        meteoData.error == nil ? .success : .error,
-                        trigger: refreshTrigger
-                    )
-                    .scrollContentBackground(.hidden)
-                    .background(Color("BackgroundColor"))
+                    MapsView()
                 }
+            }
 
-            } else if let errorMessage = meteoData.error {
-                VStack(spacing: 8) {
-                    Text("common.error \(errorMessage)")
-                        .foregroundColor(.red)
-
-                    Button("common.retry") {
-                        Task {
-                            await meteoData.loadMeteoData()
-                        }
-                    }
-
-                    SettingsView {
-                        HStack {
-                            Image(systemName: "gearshape.fill")
-                            Text("settings.title")
-                        }
-                    }
+            Tab("settings.title", systemImage: "gearshape.fill") {
+                NavigationStack {
+                    SettingsView()
                 }
-                .padding()
-            } else {
-                ProgressView()
-                    .padding()
             }
         }
         .task {
             await meteoData.loadMeteoData()
+        }
+    }
+
+    @ViewBuilder
+    private var weatherTab: some View {
+        if let location = meteoData.location {
+            NavigationStack {
+                ScrollView {
+                    VStack(spacing: 32) {
+                        if let firstDay = meteoData.dayByDay.first {
+                            CurrentWeatherView(
+                                firstDay: firstDay
+                            )
+                        }
+
+                        NextHourView(nextHour: meteoData.nextHour)
+
+                        HourByHourView(days: meteoData.dayByDay)
+
+                        DayByDayView(days: meteoData.dayByDay)
+                    }
+                    .padding(.horizontal, 20)
+                }
+                .navigationTitle(location.city)
+                .navigationSubtitle(location.country)
+                .navigationBarTitleDisplayMode(.large)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        ProviderSwitchButton()
+                    }
+                    ToolbarItem(placement: .topBarLeading) {
+                        FavoriteCitiesView()
+                    }
+                    if let currentLocation = locationManager.currentLocation {
+                        ToolbarItem(placement: .navigationBarTrailing) {
+                            Button {
+                                Task {
+                                    await meteoData.loadMeteoData(
+                                        location: currentLocation,
+                                        isCurrentLocation: true
+                                    )
+                                }
+                            } label: {
+                                Image(
+                                    systemName: locationManager.currentLocation == location ? "location.fill" : "location"
+                                )
+                                .foregroundColor(locationManager.currentLocation == location ? .blue : .primary)
+                            }
+                        }
+                    }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        SearchCityView()
+                    }
+                }
+                .refreshable {
+                    await meteoData.loadMeteoData(
+                        force: true,
+                        location: location,
+                        isCurrentLocation: locationManager.currentLocation == location
+                    )
+                    refreshTrigger += 1
+                }
+                .sensoryFeedback(
+                    meteoData.error == nil ? .success : .error,
+                    trigger: refreshTrigger
+                )
+                .scrollContentBackground(.hidden)
+                .background(Color("BackgroundColor"))
+            }
+
+        } else if let errorMessage = meteoData.error {
+            VStack(spacing: 8) {
+                Text("common.error \(errorMessage)")
+                    .foregroundColor(.red)
+
+                Button("common.retry") {
+                    Task {
+                        await meteoData.loadMeteoData()
+                    }
+                }
+            }
+            .padding()
+        } else {
+            ProgressView()
+                .padding()
         }
     }
 }

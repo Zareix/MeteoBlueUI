@@ -7,58 +7,35 @@
 
 import SwiftUI
 
-struct SettingsView<Label: View>: View {
-    @State private var isSheetOpen = false
+struct SettingsView: View {
     @State private var providerSelection: WeatherProviderType = .current
 
-    let label: Label?
-
-    init(@ViewBuilder label: () -> Label) {
-        self.label = label()
-    }
-
     var body: some View {
-        Button {
-            isSheetOpen.toggle()
-        } label: {
-            label
-        }
-        .sheet(isPresented: $isSheetOpen) {
-            NavigationStack {
-                List {
-                    ProviderSettingsView(selection: $providerSelection)
+        List {
+            ProviderSettingsView(selection: $providerSelection)
 
-                    if providerSelection == .meteoblue {
-                        Section {
-                            NavigationLink {
-                                APISettingsView(
-                                    tokenFooter: "settings.api.footer",
-                                    getToken: { KeychainService().getMetoBlueAPIToken() },
-                                    setToken: { KeychainService().setMetoBlueAPIToken(token: $0) }
-                                )
-                            } label: {
-                                SettingsRowLabel(
-                                    symbol: "key.fill",
-                                    color: .purple,
-                                    titleKey: "settings.api.title"
-                                )
-                            }
-                        }
-                    }
-                }
-                .navigationTitle("settings.title")
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button {
-                            isSheetOpen = false
-                        } label: {
-                            Image(systemName: "xmark")
-                        }
+            if providerSelection == .meteoblue {
+                Section {
+                    NavigationLink {
+                        APISettingsView(
+                            tokenFooter: "settings.api.footer",
+                            getToken: { KeychainService().getMetoBlueAPIToken() },
+                            setToken: { KeychainService().setMetoBlueAPIToken(token: $0) }
+                        )
+                    } label: {
+                        SettingsRowLabel(
+                            symbol: "key.fill",
+                            color: .purple,
+                            titleKey: "settings.api.title"
+                        )
                     }
                 }
             }
         }
+        .navigationTitle("settings.title")
+        .navigationBarTitleDisplayMode(.large)
+        .scrollContentBackground(.hidden)
+        .background(Color("BackgroundColor"))
         .onReceive(NotificationCenter.default.publisher(for: WeatherProviderType.didChangeNotification)) { _ in
             providerSelection = .current
         }
@@ -144,6 +121,8 @@ private struct APISettingsView: View {
         }
         .navigationTitle("settings.api.title")
         .navigationBarTitleDisplayMode(.inline)
+        .scrollContentBackground(.hidden)
+        .background(Color("BackgroundColor"))
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
@@ -162,37 +141,8 @@ private struct APISettingsView: View {
     }
 }
 
-extension SettingsView where Label == DefaultSettingsIcon {
-    init() {
-        self.init {
-            DefaultSettingsIcon()
-        }
-    }
-}
-
-struct DefaultSettingsIcon: View {
-    var body: some View {
-        Image(systemName: "gearshape")
-            .foregroundColor(.primary)
-    }
-}
-
 #Preview {
-    @Previewable @State var mock = MockMeteoData()
     NavigationStack {
-        VStack {
-            SettingsView {
-                HStack {
-                    Image(systemName: "gearshape.fill")
-                        .font(.system(size: 16))
-                    Text("settings.title")
-                }
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarLeading) {
-                SettingsView()
-            }
-        }
+        SettingsView()
     }
 }

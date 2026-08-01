@@ -35,26 +35,17 @@ struct MapsView: View {
     }
 
     var body: some View {
-        VStack {
-            Text("maps.title")
-                .font(.title.bold())
-                .fontDesign(.serif)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.bottom, 8)
-
-            WebView(url: mapURL)
-                .frame(height: 500)
-                .ignoresSafeArea()
-                .clipShape(.rect(cornerRadius: 16))
-        }
-        .padding(.bottom, 32)
+        WebView(url: mapURL)
+            .navigationTitle("maps.title")
+            .navigationBarTitleDisplayMode(.inline)
+            .background(Color("BackgroundColor"))
     }
 }
 
 // MARK: - Preview
 
 #Preview {
-    MapsView()
-        .padding(16)
-        .appBackground()
+    NavigationStack {
+        MapsView()
+    }
 }

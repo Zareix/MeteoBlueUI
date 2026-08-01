@@ -805,6 +805,22 @@
           }
         }
       }
+    },
+    "weather.title" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Weather"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Météo"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"
