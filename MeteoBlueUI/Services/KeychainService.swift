@@ -9,7 +9,7 @@ import Foundation
 import KeychainAccess
 
 struct KeychainService {
-    static let didChangeNotification = Notification.Name("WeatherProviderTypeDidChange")
+    static let didChangeNotification = Notification.Name("KeychainAPITokenDidChange")
 
     let keychain = Keychain(service: "com.raphaelgc.MeteoBlueUI")
         .accessibility(.afterFirstUnlock)

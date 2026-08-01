@@ -23,6 +23,7 @@ struct MeteoBlueUIApp: App {
             .appBackground()
             .onReceive(
                 NotificationCenter.default.publisher(for: WeatherProviderType.didChangeNotification)
+                    .merge(with: NotificationCenter.default.publisher(for: KeychainService.didChangeNotification))
             ) { _ in
                 meteoData.setProvider(MeteoData.makeDefaultProvider())
                 Task {

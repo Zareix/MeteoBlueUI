@@ -12,15 +12,6 @@ private let logger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "O
 
 /// Uses Open-Meteo's best-match model selection — free, no API key, plain JSON.
 actor OpenMeteoProviderService: WeatherProviderService {
-    private let session: URLSession = {
-        let config = URLSessionConfiguration.default
-        config.timeoutIntervalForRequest = 15
-        config.timeoutIntervalForResource = 30
-        config.urlCache = nil
-        config.requestCachePolicy = .reloadIgnoringLocalCacheData
-        return URLSession(configuration: config)
-    }()
-
     private var forecastTask: Task<WeatherForecast, Error>?
 
     func fetchForecast(location: WeatherLocation) async throws -> WeatherForecast {
@@ -43,7 +34,7 @@ actor OpenMeteoProviderService: WeatherProviderService {
         ])
         guard let url = components.url else { throw URLError(.badURL) }
 
-        let (data, response) = try await session.data(from: url)
+        let (data, response) = try await URLSession.shared.data(from: url)
         try Self.checkResponse(response)
 
         let forecast = try JSONDecoder().decode(OpenMeteoHourlyForecast.self, from: data)
@@ -85,7 +76,7 @@ actor OpenMeteoProviderService: WeatherProviderService {
         ])
         guard let url = components.url else { throw URLError(.badURL) }
 
-        let (data, response) = try await session.data(from: url)
+        let (data, response) = try await URLSession.shared.data(from: url)
         try Self.checkResponse(response)
 
         return try JSONDecoder().decode(OpenMeteoForecast.self, from: data)
@@ -148,8 +139,8 @@ actor OpenMeteoProviderService: WeatherProviderService {
                   let code = data.hourly.weathercode[index],
                   let isDay = data.hourly.isDay[index],
                   let temperature = data.hourly.temperature2M[index],
-                  let feltTemperature = data.hourly.apparentTemperature[index],
-                  let precipitation = data.hourly.precipitation[index]
+                  let feltTemperature = data.hourly.apparentTemperature.flatMap({ $0[index] }),
+                  let precipitation = data.hourly.precipitation.flatMap({ $0[index] })
             else { continue }
 
             days[dayIndex].hourByHour.append(

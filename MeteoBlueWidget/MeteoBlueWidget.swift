@@ -22,7 +22,7 @@ struct NextHoursEntry: TimelineEntry {
 
 // MARK: - Provider
 
-struct NextHoursProvider: TimelineProvider {
+struct NextHoursProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> NextHoursEntry {
         NextHoursEntry(
             date: .now,
@@ -31,65 +31,58 @@ struct NextHoursProvider: TimelineProvider {
         )
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (NextHoursEntry) -> Void) {
-        if let data = WidgetDataService.loadFromCache() {
+    func snapshot(for configuration: SelectProviderIntent, in context: Context) async -> NextHoursEntry {
+        let providerType = configuration.provider.resolvedType
+        if let data = WidgetDataService.loadFromCache(providerType: providerType) {
             let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
             let freshHours = data.hours.filter { $0.time >= currentHourStart }
-            completion(NextHoursEntry(date: .now, cityName: data.location.city, hours: freshHours))
+            return NextHoursEntry(date: .now, cityName: data.location.city, hours: freshHours)
         } else {
-            completion(NextHoursEntry(date: .now, cityName: "Loading...", hours: Self.placeholderHours()))
+            return NextHoursEntry(date: .now, cityName: "Loading...", hours: Self.placeholderHours())
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<NextHoursEntry>) -> Void) {
-        Task {
-            // Si le cache est encore frais (< 1h), on l'utilise — évite de spammer l'API
-            // quand iOS recharge la timeline plusieurs fois dans la même heure.
-            if !WidgetDataService.isStale(), let cached = WidgetDataService.loadFromCache() {
+    func timeline(for configuration: SelectProviderIntent, in context: Context) async -> Timeline<NextHoursEntry> {
+        let providerType = configuration.provider.resolvedType
+
+        // Si le cache est encore frais (< 1h), on l'utilise — évite de spammer l'API
+        // quand iOS recharge la timeline plusieurs fois dans la même heure.
+        if !WidgetDataService.isStale(providerType: providerType),
+           let cached = WidgetDataService.loadFromCache(providerType: providerType)
+        {
+            let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
+            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
+            return Timeline(entries: entries, policy: .after(nextUpdate))
+        }
+
+        // Localisation conservée du cache même s'il est périmé ; sinon favoris > historique > Cupertino.
+        let location = WidgetDataService.loadFromCache(providerType: providerType)?.location
+            ?? WidgetDataService.fetchCurrentLocation()
+
+        do {
+            let widgetData = try await WidgetDataService.fetchWidgetData(for: location, providerType: providerType)
+            let entries = Self.makeEntries(cityName: location.city, hours: widgetData.hours)
+            let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
+            return Timeline(entries: entries, policy: .after(nextUpdate))
+
+        } catch {
+            let nsError = error as NSError
+            widgetLogger.error(
+                "Failed to fetch weather data [\(providerType.rawValue)]: \(error.localizedDescription) — domain=\(nsError.domain) code=\(nsError.code) userInfo=\(nsError.userInfo)"
+            )
+
+            if let cached = WidgetDataService.loadFromCache(providerType: providerType) {
                 let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
-                let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
-                completion(Timeline(entries: entries, policy: .after(nextUpdate)))
-                return
-            }
-
-            // Cache absent ou périmé : on refetch
-            let location: WeatherLocation
-            if let cached = WidgetDataService.loadFromCache() {
-                // Localisation conservée du cache même s'il est périmé
-                location = cached.location
+                let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
+                return Timeline(entries: entries, policy: .after(nextUpdate))
             } else {
-                // Fallback : Paris par défaut
-                location = WeatherLocation(
-                    city: "Paris",
-                    country: "France",
-                    latitude: 48.8566,
-                    longitude: 2.3522
+                let entry = NextHoursEntry(
+                    date: .now,
+                    cityName: "Error",
+                    hours: Self.placeholderHours()
                 )
-            }
-
-            do {
-                let widgetData = try await WidgetDataService.fetchWidgetData(for: location)
-                let entries = Self.makeEntries(cityName: location.city, hours: widgetData.hours)
-                let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
-                completion(Timeline(entries: entries, policy: .after(nextUpdate)))
-
-            } catch {
-                widgetLogger.error("Failed to fetch weather data: \(error.localizedDescription)")
-
-                // En cas d'erreur, utiliser le cache ou un placeholder
-                if let cached = WidgetDataService.loadFromCache() {
-                    let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
-                    let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
-                    completion(Timeline(entries: entries, policy: .after(nextUpdate)))
-                } else {
-                    let entry = NextHoursEntry(
-                        date: .now,
-                        cityName: "Error",
-                        hours: Self.placeholderHours()
-                    )
-                    let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: .now) ?? .now
-                    completion(Timeline(entries: [entry], policy: .after(nextUpdate)))
-                }
+                let nextUpdate = Calendar.current.date(byAdding: .minute, value: 5, to: .now) ?? .now
+                return Timeline(entries: [entry], policy: .after(nextUpdate))
             }
         }
     }
@@ -107,15 +100,13 @@ struct NextHoursProvider: TimelineProvider {
             return [NextHoursEntry(date: .now, cityName: cityName, hours: [])]
         }
 
-        // Génère une entrée pour chaque heure disponible (limitée à 24h)
         let maxEntries = min(freshHours.count, 24)
-        let entries: [NextHoursEntry] = (0..<maxEntries).map { offset in
+        return (0..<maxEntries).map { offset in
             let slice = Array(freshHours[offset...])
             // La première entrée prend effet immédiatement, les suivantes à l'heure correspondante
             let date = offset == 0 ? Date() : slice[0].time
             return NextHoursEntry(date: date, cityName: cityName, hours: slice)
         }
-        return entries
     }
 
     // MARK: Placeholder helpers
@@ -166,6 +157,7 @@ struct HourCellView: View {
 struct MeteoBlueWidgetEntryView: View {
     var entry: NextHoursEntry
     @Environment(\.widgetFamily) var family
+    @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
         if family == .systemSmall {
@@ -199,7 +191,6 @@ struct MeteoBlueWidgetEntryView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .containerBackground(Color("WidgetBackground"), for: .widget)
         } else {
-            // Layout pour le widget medium
             VStack(alignment: .leading, spacing: 8) {
                 HStack(alignment: .center) {
                     Text(entry.cityName)
@@ -212,7 +203,7 @@ struct MeteoBlueWidgetEntryView: View {
                         .padding(.leading, 12)
 
                     if let current = entry.hours.first {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 4) {
                             SymbolView(symbol: current.symbol)
                                 .font(.system(size: 32))
                                 .frame(height: 32)
@@ -252,7 +243,7 @@ struct MeteoBlueWidget: Widget {
     let kind: String = "MeteoBlueWidget"
 
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: kind, provider: NextHoursProvider()) { entry in
+        AppIntentConfiguration(kind: kind, intent: SelectProviderIntent.self, provider: NextHoursProvider()) { entry in
             MeteoBlueWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("Next Hours")

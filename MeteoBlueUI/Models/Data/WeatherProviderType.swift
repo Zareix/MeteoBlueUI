@@ -16,6 +16,14 @@ enum WeatherProviderType: String, CaseIterable, Identifiable {
         rawValue
     }
 
+    func makeService() -> WeatherProviderService {
+        switch self {
+        case .meteoblue: MeteoBlueProviderService()
+        case .weatherkit: WeatherKitProviderService()
+        case .openmeteo: OpenMeteoProviderService()
+        }
+    }
+
     static let storageKey = "weather.provider"
     private static let userDefaults = UserDefaults(suiteName: "group.com.raphaelgc.MeteoBlueUI") ?? .standard
     static let didChangeNotification = Notification.Name("WeatherProviderTypeDidChange")
@@ -27,7 +35,7 @@ enum WeatherProviderType: String, CaseIterable, Identifiable {
             {
                 return value
             }
-            return .weatherkit
+            return .openmeteo
         }
         set {
             userDefaults.set(newValue.rawValue, forKey: storageKey)

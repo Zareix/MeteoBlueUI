@@ -26,8 +26,9 @@ struct OpenMeteoHourly: Codable {
     let time: [String]
     // Some fields can be null depending on which underlying model Open-Meteo selects for a point.
     let temperature2M: [Double?]
-    let apparentTemperature: [Double?]
-    let precipitation: [Double?]
+    // Absent entirely from the widget's slimmer request (fetchWidgetData doesn't ask for these).
+    let apparentTemperature: [Double?]?
+    let precipitation: [Double?]?
     let precipitationProbability: [Int?]
     let weathercode: [Int?]
     let isDay: [Int?]

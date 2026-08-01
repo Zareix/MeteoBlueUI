@@ -25,11 +25,7 @@ class MeteoData: ObservableObject {
     }
 
     static func makeDefaultProvider() -> WeatherProviderService {
-        switch WeatherProviderType.current {
-        case .meteoblue: return MeteoBlueProviderService()
-        case .weatherkit: return WeatherKitProviderService()
-        case .openmeteo: return OpenMeteoProviderService()
-        }
+        WeatherProviderType.current.makeService()
     }
 
     func setProvider(_ provider: WeatherProviderService) {
