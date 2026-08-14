@@ -33,7 +33,17 @@ struct NextHoursProvider: AppIntentTimelineProvider {
 
     func snapshot(for configuration: SelectProviderIntent, in context: Context) async -> NextHoursEntry {
         let providerType = configuration.provider.resolvedType
-        if let data = WidgetDataService.loadFromCache(providerType: providerType) {
+
+        // Pas d'appel GPS ici (l'aperçu doit rester rapide) : si un favori est choisi on lit son
+        // cache directement, sinon on prend la dernière localisation connue pour ce provider.
+        let data: WidgetData?
+        if configuration.locationSource == .favorite, let favorite = configuration.favorite?.weatherLocation {
+            data = WidgetDataService.loadFromCache(providerType: providerType, locationID: favorite.id)
+        } else {
+            data = WidgetDataService.mostRecentCache(providerType: providerType)
+        }
+
+        if let data {
             let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
             let freshHours = data.hours.filter { $0.time >= currentHourStart }
             return NextHoursEntry(date: .now, cityName: data.location.city, hours: freshHours)
@@ -45,19 +55,21 @@ struct NextHoursProvider: AppIntentTimelineProvider {
     func timeline(for configuration: SelectProviderIntent, in context: Context) async -> Timeline<NextHoursEntry> {
         let providerType = configuration.provider.resolvedType
 
-        // Si le cache est encore frais (< 1h), on l'utilise — évite de spammer l'API
-        // quand iOS recharge la timeline plusieurs fois dans la même heure.
-        if !WidgetDataService.isStale(providerType: providerType),
-           let cached = WidgetDataService.loadFromCache(providerType: providerType)
+        // Localisation résolue AVANT de consulter le cache : le cache est propre à chaque ville,
+        // donc changer le favori du widget doit invalider l'ancien cache immédiatement plutôt
+        // que de continuer à servir les données (fraîches mais fausses) de l'ancienne ville.
+        let preferredFavorite = configuration.locationSource == .favorite ? configuration.favorite?.weatherLocation : nil
+        let location = await WidgetDataService.resolveLocation(preferredFavorite: preferredFavorite)
+
+        // Si le cache pour CETTE localisation est encore frais (< 1h), on l'utilise — évite de
+        // spammer l'API quand iOS recharge la timeline plusieurs fois dans la même heure.
+        if !WidgetDataService.isStale(providerType: providerType, locationID: location.id),
+           let cached = WidgetDataService.loadFromCache(providerType: providerType, locationID: location.id)
         {
             let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
             let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
             return Timeline(entries: entries, policy: .after(nextUpdate))
         }
-
-        // Localisation conservée du cache même s'il est périmé ; sinon favoris > historique > Cupertino.
-        let location = WidgetDataService.loadFromCache(providerType: providerType)?.location
-            ?? WidgetDataService.fetchCurrentLocation()
 
         do {
             let widgetData = try await WidgetDataService.fetchWidgetData(for: location, providerType: providerType)
@@ -71,7 +83,7 @@ struct NextHoursProvider: AppIntentTimelineProvider {
                 "Failed to fetch weather data [\(providerType.rawValue)]: \(error.localizedDescription) — domain=\(nsError.domain) code=\(nsError.code) userInfo=\(nsError.userInfo)"
             )
 
-            if let cached = WidgetDataService.loadFromCache(providerType: providerType) {
+            if let cached = WidgetDataService.loadFromCache(providerType: providerType, locationID: location.id) {
                 let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
                 let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
                 return Timeline(entries: entries, policy: .after(nextUpdate))
