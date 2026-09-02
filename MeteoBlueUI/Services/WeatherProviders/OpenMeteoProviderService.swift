@@ -73,6 +73,10 @@ actor OpenMeteoProviderService: WeatherProviderService {
                 value: "weathercode,temperature_2m_max,temperature_2m_min,precipitation_sum,precipitation_probability_max,sunrise,sunset"
             ),
             URLQueryItem(name: "forecast_days", value: "7"),
+            // 15-minute precipitation nowcast (radar-based in Central Europe and North America,
+            // interpolated from hourly data elsewhere). Used for the next-two-hours chart.
+            URLQueryItem(name: "minutely_15", value: "precipitation"),
+            URLQueryItem(name: "forecast_minutely_15", value: "12"),
         ])
         guard let url = components.url else { throw URLError(.badURL) }
 
@@ -157,8 +161,29 @@ actor OpenMeteoProviderService: WeatherProviderService {
             )
         }
 
-        // ponytail: Open-Meteo has no 5-minute nowcast; leave empty, same as WeatherKitProviderService
-        // does when WeatherKit's minute forecast is unavailable.
-        return WeatherForecast(dayByDay: days, nextHour: [])
+        return WeatherForecast(dayByDay: days, nextHour: Self.buildNextHour(minutely15: data.minutely15))
+    }
+
+    /// Maps Open-Meteo's 15-minute precipitation buckets to `MeteoData5Min` entries.
+    /// A bucket labeled `end` holds the precipitation sum of the 15 minutes *preceding* `end`
+    /// (verified against the hourly sums), while the app's domain model expects `time` to be
+    /// the start of the interval — hence the 15-minute shift back. The view infers the 15-minute
+    /// step from these timestamps and switches to a two-hours window.
+    private static func buildNextHour(minutely15: OpenMeteoMinutely15?) -> [MeteoData5Min] {
+        guard let minutely15 else { return [] }
+
+        let now = Date()
+        var nextHour: [MeteoData5Min] = []
+        for (index, timeStr) in minutely15.time.enumerated() {
+            let end = DateTimeConverter.convertISODayHourToTime(input: timeStr)
+            guard end > now,
+                let amount = minutely15.precipitation?[index]
+            else { continue }
+
+            nextHour.append(
+                MeteoData5Min(time: end.addingTimeInterval(-15 * 60), precipitation: amount)
+            )
+        }
+        return nextHour
     }
 }

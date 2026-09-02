@@ -12,6 +12,7 @@
       }
     },
     "%.1f mm" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -20,6 +21,9 @@
           }
         }
       }
+    },
+    "%.2g mm" : {
+
     },
     "%@" : {
       "localizations" : {
@@ -460,6 +464,23 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Prochaine Heure"
+          }
+        }
+      }
+    },
+    "nexthour.title2h" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Next 2 Hours"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Prochaines 2 Heures"
           }
         }
       }

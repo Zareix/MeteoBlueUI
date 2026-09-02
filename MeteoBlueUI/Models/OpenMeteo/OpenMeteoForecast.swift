@@ -12,6 +12,20 @@ import Foundation
 struct OpenMeteoForecast: Codable {
     let hourly: OpenMeteoHourly
     let daily: OpenMeteoDaily
+    // Only present when minutely_15 variables are requested.
+    let minutely15: OpenMeteoMinutely15?
+
+    enum CodingKeys: String, CodingKey {
+        case hourly, daily
+        case minutely15 = "minutely_15"
+    }
+}
+
+// MARK: - OpenMeteoMinutely15
+
+struct OpenMeteoMinutely15: Codable {
+    let time: [String]
+    let precipitation: [Double?]?
 }
 
 // MARK: - OpenMeteoHourlyForecast

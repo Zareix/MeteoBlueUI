@@ -11,8 +11,21 @@ import SwiftUI
 struct NextHourView: View {
     let nextHour: [MeteoData5Min]
 
+    /// Timestep between entries, inferred from the data: 5 min (MeteoBlue, WeatherKit)
+    /// or 15 min (Open-Meteo's nowcast).
+    private var stepSeconds: TimeInterval {
+        guard nextHour.count > 1 else { return 5 * 60 }
+        let diff = nextHour[1].time.timeIntervalSince(nextHour[0].time)
+        return diff > 0 ? diff : 5 * 60
+    }
+
+    /// 15-minute buckets (radar nowcast) cover two hours; 5-minute data covers one.
+    private var windowSeconds: TimeInterval {
+        stepSeconds > 5 * 60 ? 2 * 60 * 60 : 60 * 60
+    }
+
     private var thisNextHour: [MeteoData5Min] {
-        Array(nextHour.prefix(12))
+        Array(nextHour.prefix(Int(windowSeconds / stepSeconds)))
     }
 
     private var maxPrecipitation: Double {
@@ -20,7 +33,16 @@ struct NextHourView: View {
     }
 
     private var yMax: Double {
-        max(maxPrecipitation * 1.2, 2)
+        max(maxPrecipitation * 1.2, 0.5)
+    }
+
+    private var yStride: Double {
+        switch yMax {
+        case ..<1: 0.25
+        case ..<2.5: 0.5
+        case ..<6: 1
+        default: 2
+        }
     }
 
     private var hasPrecipitation: Bool {
@@ -31,21 +53,36 @@ struct NextHourView: View {
         thisNextHour.first?.time ?? Date()
     }
 
+    private var axisStrideMinutes: Int {
+        windowSeconds > 60 * 60 ? 30 : 10
+    }
+
     private var axisDates: [Date] {
-        stride(from: 0, through: 50, by: 10).map {
-            startTime.addingTimeInterval(TimeInterval($0 * 60))
-        }
+        stride(
+            from: 0,
+            through: Int(windowSeconds / 60) - axisStrideMinutes,
+            by: axisStrideMinutes
+        )
+        .map { startTime.addingTimeInterval(TimeInterval($0 * 60)) }
     }
 
     private func axisLabel(for date: Date) -> String {
         let minutes = Int(date.timeIntervalSince(startTime).rounded() / 60)
-        return minutes == 0 ? "" : "\(minutes)min"
+        switch minutes {
+        case ...0: return ""
+        case ..<60: return "\(minutes)min"
+        default:
+            let hours = minutes / 60
+            let remainder = minutes % 60
+            return remainder == 0 ? "\(hours)h" : "\(hours)h\(remainder)"
+        }
     }
 
     var body: some View {
         if hasPrecipitation {
+            let titleKey: LocalizedStringKey = stepSeconds > 5 * 60 ? "nexthour.title2h" : "nexthour.title"
             VStack(alignment: .leading, spacing: 12) {
-                Text("nexthour.title")
+                Text(titleKey)
                     .font(.title.bold())
                     .fontDesign(.serif)
                     .frame(maxWidth: .infinity, alignment: .leading)
@@ -56,7 +93,7 @@ struct NextHourView: View {
                             xStart: .value("hour", hourData.time, unit: .minute),
                             xEnd: .value(
                                 "hour-end",
-                                hourData.time.addingTimeInterval(5 * 60 - 61),
+                                hourData.time.addingTimeInterval(stepSeconds - 61),
                                 unit: .minute
                             ),
                             yStart: .value("precipitation", 0),
@@ -71,19 +108,19 @@ struct NextHourView: View {
                     AxisMarks(values: axisDates) { value in
                         AxisGridLine()
                         if let date = value.as(Date.self) {
-                            AxisValueLabel(axisLabel(for: date))
+                            AxisValueLabel(axisLabel(for: date), anchor: .top)
                         }
                     }
                 }
                 .chartXScale(
-                    domain: startTime ... startTime.addingTimeInterval(60 * 60)
+                    domain: startTime ... startTime.addingTimeInterval(windowSeconds)
                 )
                 .chartYAxis {
-                    AxisMarks(values: Array(stride(from: 0, to: yMax, by: 0.5))) { value in
+                    AxisMarks(values: Array(stride(from: 0, through: yMax, by: yStride))) { value in
                         AxisGridLine()
                         AxisTick()
                         if let y = value.as(Double.self) {
-                            AxisValueLabel("\(y, specifier: "%.1f") mm")
+                            AxisValueLabel("\(y, specifier: "%.2g") mm")
                         }
                     }
                 }
@@ -94,17 +131,50 @@ struct NextHourView: View {
     }
 }
 
-#Preview {
-    @Previewable @StateObject var mockData = MockMeteoData()
-    let defaultLocation = LocationManager.defaultLocation()
+// MARK: - Preview
 
+private func previewNextHour(stepMinutes: Int, amounts: [Double]) -> [MeteoData5Min] {
+    let now = Date()
+    let calendar = Calendar.current
+    let currentMinute = calendar.component(.minute, from: now)
+    let alignedMinute = currentMinute - (currentMinute % stepMinutes)
+    let start = calendar.date(
+        bySettingHour: calendar.component(.hour, from: now),
+        minute: alignedMinute,
+        second: 0,
+        of: now
+    ) ?? now
+
+    return amounts.enumerated().map { index, amount in
+        MeteoData5Min(
+            time: start.addingTimeInterval(TimeInterval(index * stepMinutes * 60)),
+            precipitation: amount
+        )
+    }
+}
+
+#Preview("15 min · 2 h (OpenMeteo)") {
     VStack {
         NextHourView(
-            nextHour: mockData.nextHour
+            nextHour: previewNextHour(
+                stepMinutes: 15,
+                amounts: [0, 0.1, 0.4, 0.9, 0.7, 0.2, 0, 0]
+            )
         )
         .padding(16)
         .appBackground()
-    }.task {
-        await mockData.loadMeteoData(location: defaultLocation, isCurrentLocation: true)
+    }
+}
+
+#Preview("5 min · 1 h (MeteoBlue / WeatherKit)") {
+    VStack {
+        NextHourView(
+            nextHour: previewNextHour(
+                stepMinutes: 5,
+                amounts: [0.1, 0.15, 0.25, 0.4, 0.3, 0.1, 0, 0.05, 0.2, 0.3, 0.15, 0.05]
+            )
+        )
+        .padding(16)
+        .appBackground()
     }
 }
