@@ -121,8 +121,6 @@ struct NextHoursProvider: AppIntentTimelineProvider {
         }
     }
 
-    // MARK: Placeholder helpers
-
     private static func placeholderHours() -> [WidgetHourEntry] {
         (0..<6).map { offset in
             WidgetHourEntry(
@@ -133,34 +131,6 @@ struct NextHoursProvider: AppIntentTimelineProvider {
                 precipitationProbability: offset * 5
             )
         }
-    }
-}
-
-// MARK: - Hour Cell View
-
-struct HourCellView: View {
-    let entry: WidgetHourEntry
-
-    private var timeString: String {
-        let f = DateFormatter()
-        f.dateFormat = "HH'h'"
-        return f.string(from: entry.time)
-    }
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(timeString)
-                .font(.caption2)
-                .foregroundStyle(.secondary)
-            SymbolView(symbol: entry.symbol)
-                .font(.title3)
-                .frame(width: 24, height: 24)
-            Text("\(Int(entry.temperature.rounded()))°")
-                .font(.caption)
-                .fontWeight(.semibold)
-        }
-        .frame(maxWidth: .infinity)
-        .frame(maxHeight: .infinity, alignment: .top)
     }
 }
 
@@ -239,7 +209,15 @@ struct MeteoBlueWidgetEntryView: View {
 
                     HStack(spacing: 0) {
                         ForEach(hoursToDisplay, id: \.time) { hour in
-                            HourCellView(entry: hour)
+                            HourCellView(
+                                time: hour.time,
+                                symbol: hour.symbol,
+                                temperature: hour.temperature,
+                                precipitationProbability: hour.precipitationProbability,
+                                style: .compact
+                            )
+                            .frame(maxWidth: .infinity)
+                            .frame(maxHeight: .infinity, alignment: .top)
                         }
                     }
                 }
@@ -278,7 +256,7 @@ struct MeteoBlueWidget: Widget {
                 symbol: offset % 2 == 0 ? "sun.max.fill" : "cloud.sun.fill",
                 description: "Sunny",
                 temperature: 18 + Double(offset),
-                precipitationProbability: 0 // offset * 5
+                precipitationProbability: offset * 5
             )
         }
     )
@@ -296,7 +274,7 @@ struct MeteoBlueWidget: Widget {
                 symbol: offset % 2 == 0 ? "sun.max.fill" : "cloud.sun.fill",
                 description: "Sunny",
                 temperature: 18 + Double(offset),
-                precipitationProbability: 0 // offset * 5
+                precipitationProbability: offset * 5
             )
         }
     )

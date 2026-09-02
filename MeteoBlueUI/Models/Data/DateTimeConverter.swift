@@ -45,4 +45,10 @@ enum DateTimeConverter {
             of: day
         ) ?? day
     }
+
+    static func convertTimeToHourString(input: Date) -> String {
+        let outputFormatter = DateFormatter()
+        outputFormatter.dateFormat = "HH' h'"
+        return outputFormatter.string(from: input)
+    }
 }

@@ -56,6 +56,7 @@
 		5691EE902F58CEA100F06FCC /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
+				Localizable.xcstrings,
 				Models/AppError.swift,
 				Models/Data/DateTimeConverter.swift,
 				Models/Data/FavoriteCities.swift,
@@ -77,7 +78,9 @@
 				Services/WeatherProviders/WeatherKitProviderService.swift,
 				Services/WeatherProviders/WeatherProviderService.swift,
 				Services/WidgetDataService.swift,
+				View/Components/HourCellView.swift,
 				View/Components/SymbolView.swift,
+				View/Components/TemperatureView.swift,
 			);
 			target = 5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */;
 		};

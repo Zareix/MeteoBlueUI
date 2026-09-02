@@ -11,9 +11,6 @@ struct HourByHourView: View {
 
     private let symbolBlockHeight: CGFloat = 40
 
-    /// meteoblue's ensemble often reports 20-30% on days with no real rain risk, so only surface it past that noise floor.
-    private let significantPrecipitationProbability = 20
-
     private enum HourItem: Identifiable {
         case hour(MeteoData1H)
         case sunrise(Date)
@@ -69,12 +66,6 @@ struct HourByHourView: View {
         Calendar.current.component(.hour, from: date) == 0
     }
 
-    private func formattedHour(from date: Date) -> String {
-        let outputFormatter = DateFormatter()
-        outputFormatter.dateFormat = "HH' h'"
-        return outputFormatter.string(from: date)
-    }
-
     private func formattedTime(from date: Date) -> String {
         let outputFormatter = DateFormatter()
         outputFormatter.dateFormat = "HH:mm"
@@ -104,34 +95,15 @@ struct HourByHourView: View {
         .frame(maxWidth: .infinity)
     }
 
-    private func hourCell(_ item: MeteoData1H) -> some View {
-        VStack(spacing: 10) {
-            Text(
-                item == hourByHour.first
-                    ? String(localized: "hour-by-hour.now")
-                    : formattedHour(from: item.time)
-            )
-            .font(.body)
-            .fontWeight(.medium)
-            .foregroundColor(.secondary)
-
-            VStack(spacing: 4) {
-                SymbolView(symbol: item.symbol, description: item.description)
-                    .font(.system(size: 24))
-                    .frame(width: 24, height: 24)
-
-                if item.precipitationProbability >= significantPrecipitationProbability {
-                    Text("\(item.precipitationProbability)%")
-                        .font(.caption2)
-                        .foregroundColor(.cyan)
-                }
-            }
-            .frame(height: symbolBlockHeight)
-
-            TemperatureView(temperature: item.temperature)
-                .font(.body)
-                .foregroundColor(.primary)
-        }
+    private func hourCell(_ item: MeteoData1H) -> HourCellView {
+        HourCellView(
+            time: item.time,
+            isNow: item == hourByHour.first,
+            symbol: item.symbol,
+            description: item.description,
+            temperature: item.temperature,
+            precipitationProbability: item.precipitationProbability
+        )
     }
 
     private func sunCell(date: Date, symbol: String, label: LocalizedStringKey) -> some View {
