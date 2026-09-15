@@ -14,6 +14,7 @@ struct SymbolView: View {
 
     @State var selected: Bool = false
 
+    #if os(iOS)
     var body: some View {
         Image(systemName: symbol)
             .symbolRenderingMode(.multicolor)
@@ -39,10 +40,22 @@ struct SymbolView: View {
                     }
             }
     }
+    #else
+    var body: some View {
+        Image(systemName: symbol)
+            .symbolRenderingMode(.multicolor)
+            .contentTransition(transition)
+            .animation(
+                animationEnabled ? .easeInOut : nil,
+                value: symbol
+            )
+    }
+    #endif
 }
 
 // MARK: - Preview
 
+#if os(iOS)
 #Preview {
     @Previewable @State var symbol = "cloud.sun.fill"
     @Previewable @State var description =
@@ -98,3 +111,5 @@ struct SymbolView: View {
         }
     }.appBackground()
 }
+
+#endif

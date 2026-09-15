@@ -11,6 +11,8 @@ struct HourCellView: View {
     enum Style {
         case regular
         case compact
+        // Format réduit pour le widget rectangulaire de l'Apple Watch.
+        case mini
     }
 
     static let significantPrecipitationThreshold = 20
@@ -23,7 +25,13 @@ struct HourCellView: View {
     let precipitationProbability: Int
     var style: Style = .regular
 
-    private let symbolBlockHeight: CGFloat = 40
+    private var symbolBlockHeight: CGFloat {
+        style == .mini ? 15 : 40
+    }
+
+    private var symbolSize: CGFloat {
+        style == .mini ? 13 : 24
+    }
 
     private var timeText: String {
         isNow
@@ -32,30 +40,42 @@ struct HourCellView: View {
     }
 
     private var cellSpacing: CGFloat {
-        style == .compact ? 4 : 10
+        switch style {
+        case .compact: 4
+        case .mini: 2
+        default: 10
+        }
     }
 
     private var timeFont: Font {
-        style == .compact ? .caption2 : .body
+        switch style {
+        case .regular: .body
+        case .compact: .caption2
+        case .mini: .system(size: 9)
+        }
     }
 
     private var temperatureFont: Font {
-        style == .compact ? .caption : .body
+        switch style {
+        case .compact: .caption
+        case .mini: .system(size: 10)
+        default: .body
+        }
     }
 
     var body: some View {
         VStack(spacing: cellSpacing) {
             Text(timeText)
                 .font(timeFont)
-                .fontWeight(style == .compact ? nil : .medium)
+                .fontWeight(style == .regular ? .medium : nil)
                 .foregroundColor(.secondary)
 
             VStack(spacing: 4) {
                 SymbolView(symbol: symbol, description: description)
-                    .font(.system(size: 24))
-                    .frame(width: 24, height: 24)
+                    .font(.system(size: symbolSize))
+                    .frame(width: symbolSize, height: symbolSize)
 
-                if precipitationProbability >= Self.significantPrecipitationThreshold {
+                if style != .mini && precipitationProbability >= Self.significantPrecipitationThreshold {
                     Text("\(precipitationProbability)%")
                         .font(.caption2)
                         .foregroundColor(.cyan)
@@ -65,7 +85,7 @@ struct HourCellView: View {
 
             TemperatureView(temperature: temperature)
                 .font(temperatureFont)
-                .fontWeight(style == .compact ? .semibold : nil)
+                .fontWeight(style == .regular ? nil : .semibold)
         }
     }
 }

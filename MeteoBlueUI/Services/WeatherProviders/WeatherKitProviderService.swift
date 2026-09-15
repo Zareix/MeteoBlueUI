@@ -14,8 +14,13 @@ import WeatherKit
 private let logger = Logger(subsystem: "com.raphaelgc.MeteoBlueUI", category: "WeatherKitProviderService")
 
 private func filledSymbol(_ symbolName: String) -> String {
+    #if canImport(UIKit)
     let filled = "\(symbolName).fill"
     return UIImage(systemName: filled) != nil ? filled : symbolName
+    #else
+    // watchOS : pas d'UIImage pour vérifier l'existence de la variante .fill.
+    return "\(symbolName).fill"
+    #endif
 }
 
 actor WeatherKitProviderService: WeatherProviderService {

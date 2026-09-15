@@ -18,7 +18,7 @@ struct MeteoBlueLockscreenForecastWidgetEntryView: View {
             VStack(alignment: .leading, spacing: 2) {
                 if let current = entry.hours.first {
                     HStack(alignment: .center, spacing: 4) {
-                        Image(systemName: current.symbol)
+                        SymbolView(symbol: current.symbol)
                             .font(.system(size: 24))
                         
                         Text("\(Int(current.temperature.rounded()))°")

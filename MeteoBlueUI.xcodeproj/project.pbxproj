@@ -7,14 +7,33 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5613CD8A3059ADAE005F8E1C /* MeteoBlueUIWatch.app in Embed Watch Content */ = {isa = PBXBuildFile; fileRef = 5613CD803059ADAD005F8E1C /* MeteoBlueUIWatch.app */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5613CD943059ADF6005F8E1C /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */; };
+		5613CD953059ADF6005F8E1C /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */; };
+		5613CDA43059ADF7005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5613CD933059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		562878A12DD22A09005268C6 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 562878A02DD22A09005268C6 /* KeychainAccess */; };
 		5691EE7A2F58CE6600F06FCC /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */; };
 		5691EE7B2F58CE6600F06FCC /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */; };
 		5691EEF72F58D41E00F06FCC /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 5691EEF62F58D41E00F06FCC /* KeychainAccess */; };
 		5691EEFD2F58DB7600F06FCC /* MeteoBlueWidgetExtension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		56A1A0000000000000000024 /* KeychainAccess in Frameworks */ = {isa = PBXBuildFile; productRef = 56A1A0000000000000000023 /* KeychainAccess */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5613CD883059ADAE005F8E1C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5611DA5D2DCB9CCB00F6A76A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5613CD7F3059ADAD005F8E1C;
+			remoteInfo = "MeteoBlueUIWatch Watch App";
+		};
+		5613CDA23059ADF7005F8E1C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5611DA5D2DCB9CCB00F6A76A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5613CD923059ADF6005F8E1C;
+			remoteInfo = MeteoBlueUIWatchWidgetExtension;
+		};
 		5691EEFA2F58D9BA00F06FCC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5611DA5D2DCB9CCB00F6A76A /* Project object */;
@@ -25,6 +44,28 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		5613CD8B3059ADAE005F8E1C /* Embed Watch Content */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
+			dstSubfolderSpec = 16;
+			files = (
+				5613CD8A3059ADAE005F8E1C /* MeteoBlueUIWatch.app in Embed Watch Content */,
+			);
+			name = "Embed Watch Content";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5613CDA93059ADF7005F8E1C /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5613CDA43059ADF7005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5691EEFC2F58D9BA00F06FCC /* Embed Foundation Extensions */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -40,12 +81,21 @@
 
 /* Begin PBXFileReference section */
 		5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeteoBlueUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5613CD803059ADAD005F8E1C /* MeteoBlueUIWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeteoBlueUIWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		5613CD933059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeteoBlueUIWatchWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeteoBlueWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5613CDA53059ADF7005F8E1C /* Exceptions for "MeteoBlueUIWatchWidget" folder in "MeteoBlueUIWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 5613CD923059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension */;
+		};
 		5691EE8B2F58CE6600F06FCC /* Exceptions for "MeteoBlueWidget" folder in "MeteoBlueWidgetExtension" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
@@ -84,6 +134,43 @@
 			);
 			target = 5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */;
 		};
+		56A1A0000000000000000020 /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueUIWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Models/AppError.swift,
+				Models/Data/DateTimeConverter.swift,
+				Models/Data/FavoriteCities.swift,
+				Models/Data/MeteoDataStructs.swift,
+				Models/Data/SearchHistory.swift,
+				Models/Data/WeatherProviderType.swift,
+				Models/Data/WidgetData.swift,
+				Models/MeteoBlueAPI/MeteoBlueAPICurrentData.swift,
+				Models/MeteoBlueAPI/MeteoBlueAPIForecast.swift,
+				Models/MeteoBlueAPI/PictoMapper.swift,
+				Models/OpenMeteo/OpenMeteoForecast.swift,
+				Models/OpenMeteo/WMOWeatherMapper.swift,
+				Models/WeatherLocation.swift,
+				Modifiers/AppBackground.swift,
+				Modifiers/IfModifier.swift,
+				Services/KeychainService.swift,
+				Services/WeatherProviders/MeteoBlueProviderService.swift,
+				Services/WeatherProviders/OpenMeteoProviderService.swift,
+				Services/WeatherProviders/WeatherKitProviderService.swift,
+				Services/WeatherProviders/WeatherProviderService.swift,
+				Services/WidgetDataService.swift,
+				View/Components/HourCellView.swift,
+				View/Components/SymbolView.swift,
+				View/Components/TemperatureView.swift,
+			);
+			target = 5613CD923059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension */;
+		};
+		56A1A0000000000000000022 /* Exceptions for "MeteoBlueWidget" folder in "MeteoBlueUIWatchWidgetExtension" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				ProviderSelectionIntent.swift,
+			);
+			target = 5613CD923059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -91,14 +178,29 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				5691EE902F58CEA100F06FCC /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueWidgetExtension" target */,
+				56A1A0000000000000000020 /* Exceptions for "MeteoBlueUI" folder in "MeteoBlueUIWatchWidgetExtension" target */,
 			);
 			path = MeteoBlueUI;
+			sourceTree = "<group>";
+		};
+		5613CD813059ADAD005F8E1C /* MeteoBlueUIWatch */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = MeteoBlueUIWatch;
+			sourceTree = "<group>";
+		};
+		5613CD963059ADF6005F8E1C /* MeteoBlueUIWatchWidget */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5613CDA53059ADF7005F8E1C /* Exceptions for "MeteoBlueUIWatchWidget" folder in "MeteoBlueUIWatchWidgetExtension" target */,
+			);
+			path = MeteoBlueUIWatchWidget;
 			sourceTree = "<group>";
 		};
 		5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				5691EE8B2F58CE6600F06FCC /* Exceptions for "MeteoBlueWidget" folder in "MeteoBlueWidgetExtension" target */,
+				56A1A0000000000000000022 /* Exceptions for "MeteoBlueWidget" folder in "MeteoBlueUIWatchWidgetExtension" target */,
 			);
 			path = MeteoBlueWidget;
 			sourceTree = "<group>";
@@ -111,6 +213,23 @@
 			buildActionMask = 2147483647;
 			files = (
 				562878A12DD22A09005268C6 /* KeychainAccess in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5613CD7D3059ADAD005F8E1C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5613CD903059ADF6005F8E1C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				56A1A0000000000000000024 /* KeychainAccess in Frameworks */,
+				5613CD953059ADF6005F8E1C /* SwiftUI.framework in Frameworks */,
+				5613CD943059ADF6005F8E1C /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -132,6 +251,8 @@
 			children = (
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
 				5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */,
+				5613CD813059ADAD005F8E1C /* MeteoBlueUIWatch */,
+				5613CD963059ADF6005F8E1C /* MeteoBlueUIWatchWidget */,
 				56F9F1D32F58CDAE0051D51D /* Frameworks */,
 				5611DA662DCB9CCB00F6A76A /* Products */,
 			);
@@ -142,6 +263,8 @@
 			children = (
 				5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */,
 				5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */,
+				5613CD803059ADAD005F8E1C /* MeteoBlueUIWatch.app */,
+				5613CD933059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -166,11 +289,13 @@
 				5611DA622DCB9CCB00F6A76A /* Frameworks */,
 				5611DA632DCB9CCB00F6A76A /* Resources */,
 				5691EEFC2F58D9BA00F06FCC /* Embed Foundation Extensions */,
+				5613CD8B3059ADAE005F8E1C /* Embed Watch Content */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				5691EEFB2F58D9BA00F06FCC /* PBXTargetDependency */,
+				5613CD893059ADAE005F8E1C /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
@@ -182,6 +307,53 @@
 			productName = MeteoBlueUI;
 			productReference = 5611DA652DCB9CCB00F6A76A /* MeteoBlueUI.app */;
 			productType = "com.apple.product-type.application";
+		};
+		5613CD7F3059ADAD005F8E1C /* MeteoBlueUIWatch */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5613CD8E3059ADAE005F8E1C /* Build configuration list for PBXNativeTarget "MeteoBlueUIWatch" */;
+			buildPhases = (
+				5613CD7C3059ADAD005F8E1C /* Sources */,
+				5613CD7D3059ADAD005F8E1C /* Frameworks */,
+				5613CD7E3059ADAD005F8E1C /* Resources */,
+				5613CDA93059ADF7005F8E1C /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				5613CDA33059ADF7005F8E1C /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				5613CD813059ADAD005F8E1C /* MeteoBlueUIWatch */,
+			);
+			name = MeteoBlueUIWatch;
+			packageProductDependencies = (
+			);
+			productName = "MeteoBlueUIWatch Watch App";
+			productReference = 5613CD803059ADAD005F8E1C /* MeteoBlueUIWatch.app */;
+			productType = "com.apple.product-type.application";
+		};
+		5613CD923059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5613CDA63059ADF7005F8E1C /* Build configuration list for PBXNativeTarget "MeteoBlueUIWatchWidgetExtension" */;
+			buildPhases = (
+				5613CD8F3059ADF6005F8E1C /* Sources */,
+				5613CD903059ADF6005F8E1C /* Frameworks */,
+				5613CD913059ADF6005F8E1C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				5613CD963059ADF6005F8E1C /* MeteoBlueUIWatchWidget */,
+			);
+			name = MeteoBlueUIWatchWidgetExtension;
+			packageProductDependencies = (
+				56A1A0000000000000000023 /* KeychainAccess */,
+			);
+			productName = MeteoBlueUIWatchWidgetExtension;
+			productReference = 5613CD933059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 		5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */ = {
 			isa = PBXNativeTarget;
@@ -213,11 +385,17 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 2630;
+				LastSwiftUpdateCheck = 2660;
 				LastUpgradeCheck = 2640;
 				TargetAttributes = {
 					5611DA642DCB9CCB00F6A76A = {
 						CreatedOnToolsVersion = 16.3;
+					};
+					5613CD7F3059ADAD005F8E1C = {
+						CreatedOnToolsVersion = 26.6;
+					};
+					5613CD923059ADF6005F8E1C = {
+						CreatedOnToolsVersion = 26.6;
 					};
 					5691EE782F58CE6600F06FCC = {
 						CreatedOnToolsVersion = 26.3;
@@ -244,12 +422,28 @@
 			targets = (
 				5611DA642DCB9CCB00F6A76A /* MeteoBlueUI */,
 				5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */,
+				5613CD7F3059ADAD005F8E1C /* MeteoBlueUIWatch */,
+				5613CD923059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
 		5611DA632DCB9CCB00F6A76A /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5613CD7E3059ADAD005F8E1C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5613CD913059ADF6005F8E1C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -273,6 +467,20 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		5613CD7C3059ADAD005F8E1C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5613CD8F3059ADF6005F8E1C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5691EE752F58CE6600F06FCC /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -283,6 +491,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5613CD893059ADAE005F8E1C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5613CD7F3059ADAD005F8E1C /* MeteoBlueUIWatch */;
+			targetProxy = 5613CD883059ADAE005F8E1C /* PBXContainerItemProxy */;
+		};
+		5613CDA33059ADF7005F8E1C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5613CD923059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension */;
+			targetProxy = 5613CDA23059ADF7005F8E1C /* PBXContainerItemProxy */;
+		};
 		5691EEFB2F58D9BA00F06FCC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5691EE782F58CE6600F06FCC /* MeteoBlueWidgetExtension */;
@@ -480,6 +698,136 @@
 			};
 			name = Release;
 		};
+		5613CD8C3059ADAE005F8E1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.raphaelgc.MeteoBlueUI;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Debug;
+		};
+		5613CD8D3059ADAE005F8E1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatch;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.raphaelgc.MeteoBlueUI;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.watchkitapp;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Release;
+		};
+		5613CDA73059ADF7005F8E1C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MeteoBlueUIWatchWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatchWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to display local weather in the widget.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.watchkitapp.MeteoBlueUIWatchWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Debug;
+		};
+		5613CDA83059ADF7005F8E1C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = MeteoBlueUIWatchWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatchWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your location is used to display local weather in the widget.";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MARKETING_VERSION = 1.17.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.watchkitapp.MeteoBlueUIWatchWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = watchos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 4;
+				WATCHOS_DEPLOYMENT_TARGET = 26.5;
+			};
+			name = Release;
+		};
 		5691EE8D2F58CE6600F06FCC /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -565,6 +913,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		5613CD8E3059ADAE005F8E1C /* Build configuration list for PBXNativeTarget "MeteoBlueUIWatch" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5613CD8C3059ADAE005F8E1C /* Debug */,
+				5613CD8D3059ADAE005F8E1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5613CDA63059ADF7005F8E1C /* Build configuration list for PBXNativeTarget "MeteoBlueUIWatchWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5613CDA73059ADF7005F8E1C /* Debug */,
+				5613CDA83059ADF7005F8E1C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5691EE8C2F58CE6600F06FCC /* Build configuration list for PBXNativeTarget "MeteoBlueWidgetExtension" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -594,6 +960,11 @@
 			productName = KeychainAccess;
 		};
 		5691EEF62F58D41E00F06FCC /* KeychainAccess */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5628789F2DD229E4005268C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
+			productName = KeychainAccess;
+		};
+		56A1A0000000000000000023 /* KeychainAccess */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5628789F2DD229E4005268C6 /* XCRemoteSwiftPackageReference "KeychainAccess" */;
 			productName = KeychainAccess;
