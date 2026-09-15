@@ -11,6 +11,9 @@
         }
       }
     },
+    "…" : {
+
+    },
     "%.1f mm" : {
       "extractionState" : "stale",
       "localizations" : {
@@ -31,6 +34,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%@"
+          }
+        }
+      }
+    },
+    "%@ %lld°" : {
+      "localizations" : {
+        "fr" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "%1$@ %2$lld°"
           }
         }
       }
@@ -92,6 +105,12 @@
         }
       }
     },
+    "Apple Weather" : {
+
+    },
+    "Choose which weather source and location power this widget." : {
+
+    },
     "common.error %@" : {
       "localizations" : {
         "en" : {
@@ -140,6 +159,12 @@
           }
         }
       }
+    },
+    "Current Location" : {
+
+    },
+    "Current Weather" : {
+
     },
     "day-by-day.title" : {
       "extractionState" : "manual",
@@ -271,6 +296,12 @@
         }
       }
     },
+    "Favorite" : {
+
+    },
+    "Favorite City" : {
+
+    },
     "favorites.add-current" : {
       "localizations" : {
         "en" : {
@@ -400,6 +431,9 @@
         }
       }
     },
+    "Hourly Weather" : {
+
+    },
     "loading" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -417,6 +451,12 @@
         }
       }
     },
+    "Loading data…" : {
+
+    },
+    "Location" : {
+
+    },
     "maps.title" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -433,6 +473,12 @@
           }
         }
       }
+    },
+    "MeteoBlue" : {
+
+    },
+    "Next Hours" : {
+
     },
     "nexthour.now" : {
       "extractionState" : "manual",
@@ -484,6 +530,9 @@
           }
         }
       }
+    },
+    "Open-Meteo" : {
+
     },
     "precipitation" : {
       "localizations" : {
@@ -562,6 +611,12 @@
           }
         }
       }
+    },
+    "Provider" : {
+
+    },
+    "Same as App" : {
+
     },
     "search.cancel" : {
       "extractionState" : "manual",
@@ -664,6 +719,9 @@
           }
         }
       }
+    },
+    "See the weather for the next few hours." : {
+
     },
     "Series" : {
       "localizations" : {
@@ -827,6 +885,21 @@
         }
       }
     },
+    "Show ${provider} for ${locationSource}" : {
+
+    },
+    "Show ${provider} for ${locationSource}: ${favorite}" : {
+
+    },
+    "Show the current weather symbol and temperature next to the lock screen date." : {
+
+    },
+    "Show the current weather with the day's high and low below the lock screen clock." : {
+
+    },
+    "Weather Provider" : {
+
+    },
     "weather.title" : {
       "localizations" : {
         "en" : {
@@ -842,6 +915,9 @@
           }
         }
       }
+    },
+    "Widget Settings" : {
+
     }
   },
   "version" : "1.0"

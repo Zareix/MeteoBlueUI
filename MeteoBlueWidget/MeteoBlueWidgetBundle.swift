@@ -12,5 +12,7 @@ import SwiftUI
 struct MeteoBlueWidgetBundle: WidgetBundle {
     var body: some Widget {
         MeteoBlueWidget()
+        MeteoBlueLockscreenWidget()
+        MeteoBlueLockscreenForecastWidget()
     }
 }

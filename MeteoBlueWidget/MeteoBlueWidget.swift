@@ -18,6 +18,8 @@ struct NextHoursEntry: TimelineEntry {
     let date: Date
     let cityName: String
     let hours: [WidgetHourEntry]
+    var dailyTemperatureMax: Double?
+    var dailyTemperatureMin: Double?
 }
 
 // MARK: - Provider
@@ -46,7 +48,13 @@ struct NextHoursProvider: AppIntentTimelineProvider {
         if let data {
             let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
             let freshHours = data.hours.filter { $0.time >= currentHourStart }
-            return NextHoursEntry(date: .now, cityName: data.location.city, hours: freshHours)
+            return NextHoursEntry(
+                date: .now,
+                cityName: data.location.city,
+                hours: freshHours,
+                dailyTemperatureMax: data.dailyTemperatureMax,
+                dailyTemperatureMin: data.dailyTemperatureMin
+            )
         } else {
             return NextHoursEntry(date: .now, cityName: "Loading...", hours: Self.placeholderHours())
         }
@@ -66,14 +74,24 @@ struct NextHoursProvider: AppIntentTimelineProvider {
         if !WidgetDataService.isStale(providerType: providerType, locationID: location.id),
            let cached = WidgetDataService.loadFromCache(providerType: providerType, locationID: location.id)
         {
-            let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
+            let entries = Self.makeEntries(
+                cityName: cached.location.city,
+                hours: cached.hours,
+                dailyTemperatureMax: cached.dailyTemperatureMax,
+                dailyTemperatureMin: cached.dailyTemperatureMin
+            )
             let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
             return Timeline(entries: entries, policy: .after(nextUpdate))
         }
 
         do {
             let widgetData = try await WidgetDataService.fetchWidgetData(for: location, providerType: providerType)
-            let entries = Self.makeEntries(cityName: location.city, hours: widgetData.hours)
+            let entries = Self.makeEntries(
+                cityName: location.city,
+                hours: widgetData.hours,
+                dailyTemperatureMax: widgetData.dailyTemperatureMax,
+                dailyTemperatureMin: widgetData.dailyTemperatureMin
+            )
             let nextUpdate = Calendar.current.date(byAdding: .hour, value: 1, to: .now) ?? .now
             return Timeline(entries: entries, policy: .after(nextUpdate))
 
@@ -84,7 +102,12 @@ struct NextHoursProvider: AppIntentTimelineProvider {
             )
 
             if let cached = WidgetDataService.loadFromCache(providerType: providerType, locationID: location.id) {
-                let entries = Self.makeEntries(cityName: cached.location.city, hours: cached.hours)
+                let entries = Self.makeEntries(
+                cityName: cached.location.city,
+                hours: cached.hours,
+                dailyTemperatureMax: cached.dailyTemperatureMax,
+                dailyTemperatureMin: cached.dailyTemperatureMin
+            )
                 let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
                 return Timeline(entries: entries, policy: .after(nextUpdate))
             } else {
@@ -104,12 +127,23 @@ struct NextHoursProvider: AppIntentTimelineProvider {
     /// Crée une entrée par heure pour que le widget affiche la bonne heure
     /// même si iOS ne recharge pas la timeline (budget de rafraîchissement limité).
     /// Filtre les heures du passé pour éviter d'afficher un cache périmé.
-    private static func makeEntries(cityName: String, hours: [WidgetHourEntry]) -> [NextHoursEntry] {
+    private static func makeEntries(
+        cityName: String,
+        hours: [WidgetHourEntry],
+        dailyTemperatureMax: Double? = nil,
+        dailyTemperatureMin: Double? = nil
+    ) -> [NextHoursEntry] {
         let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
         let freshHours = hours.filter { $0.time >= currentHourStart }
 
         guard !freshHours.isEmpty else {
-            return [NextHoursEntry(date: .now, cityName: cityName, hours: [])]
+            return [NextHoursEntry(
+                date: .now,
+                cityName: cityName,
+                hours: [],
+                dailyTemperatureMax: dailyTemperatureMax,
+                dailyTemperatureMin: dailyTemperatureMin
+            )]
         }
 
         let maxEntries = min(freshHours.count, 24)
@@ -117,7 +151,13 @@ struct NextHoursProvider: AppIntentTimelineProvider {
             let slice = Array(freshHours[offset...])
             // La première entrée prend effet immédiatement, les suivantes à l'heure correspondante
             let date = offset == 0 ? Date() : slice[0].time
-            return NextHoursEntry(date: date, cityName: cityName, hours: slice)
+            return NextHoursEntry(
+                date: date,
+                cityName: cityName,
+                hours: slice,
+                dailyTemperatureMax: dailyTemperatureMax,
+                dailyTemperatureMin: dailyTemperatureMin
+            )
         }
     }
 

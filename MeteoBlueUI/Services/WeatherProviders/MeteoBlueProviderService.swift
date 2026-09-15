@@ -42,7 +42,7 @@ actor MeteoBlueProviderService: WeatherProviderService {
         var components = URLComponents()
         components.scheme = "https"
         components.host = "my.meteoblue.com"
-        components.path = "/packages/basic-1h"
+        components.path = "/packages/basic-1h,basic-day"
         components.queryItems = [
             URLQueryItem(name: "lat", value: String(location.latitude)),
             URLQueryItem(name: "lon", value: String(location.longitude)),
@@ -65,7 +65,7 @@ actor MeteoBlueProviderService: WeatherProviderService {
             }
         }
 
-        let forecast = try JSONDecoder().decode(MeteoBlueAPI1HForecast.self, from: data)
+        let forecast = try JSONDecoder().decode(MeteoBlueAPIWidgetForecast.self, from: data)
 
         let formatter = DateFormatter()
         formatter.dateFormat = "yyyy-MM-dd HH:mm"
@@ -88,7 +88,28 @@ actor MeteoBlueProviderService: WeatherProviderService {
             )
         }
 
-        return WidgetData(location: location, hours: hours, savedAt: Date())
+        // Min/max du jour courant, récupérés du package basic-day.
+        let dayFormatter = DateFormatter()
+        dayFormatter.dateFormat = "yyyy-MM-dd"
+        dayFormatter.locale = Locale(identifier: "en_US_POSIX")
+        let todayString = dayFormatter.string(from: Date())
+
+        var dailyMax: Double?
+        var dailyMin: Double?
+        if let todayIndex = forecast.dataDay.time.firstIndex(where: { $0.hasPrefix(todayString) }),
+           todayIndex < forecast.dataDay.temperatureMax.count,
+           todayIndex < forecast.dataDay.temperatureMin.count {
+            dailyMax = forecast.dataDay.temperatureMax[todayIndex]
+            dailyMin = forecast.dataDay.temperatureMin[todayIndex]
+        }
+
+        return WidgetData(
+            location: location,
+            hours: hours,
+            dailyTemperatureMax: dailyMax,
+            dailyTemperatureMin: dailyMin,
+            savedAt: Date()
+        )
     }
 
     private func fetchRawForecast(location: WeatherLocation) async throws -> MeteoBlueAPIForecast {

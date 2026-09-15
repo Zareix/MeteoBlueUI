@@ -40,7 +40,7 @@ actor WeatherKitProviderService: WeatherProviderService {
 
     func fetchWidgetData(location: WeatherLocation) async throws -> WidgetData {
         let cl = CLLocation(latitude: location.latitude, longitude: location.longitude)
-        let hourly = try await WeatherService.shared.weather(for: cl, including: .hourly)
+        let (hourly, daily) = try await WeatherService.shared.weather(for: cl, including: .hourly, .daily)
 
         let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
 
@@ -56,7 +56,14 @@ actor WeatherKitProviderService: WeatherProviderService {
                 )
             }
 
-        return WidgetData(location: location, hours: hours, savedAt: Date())
+        let today = daily.forecast.first
+        return WidgetData(
+            location: location,
+            hours: hours,
+            dailyTemperatureMax: today?.highTemperature.converted(to: .celsius).value,
+            dailyTemperatureMin: today?.lowTemperature.converted(to: .celsius).value,
+            savedAt: Date()
+        )
     }
 
     private static func mapToDomain(weather: Weather) -> WeatherForecast {

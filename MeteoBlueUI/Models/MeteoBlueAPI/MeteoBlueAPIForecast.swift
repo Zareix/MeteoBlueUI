@@ -42,6 +42,19 @@ struct MeteoBlueAPI1HForecast: Codable {
     }
 }
 
+// MARK: - MeteoBlueAPIWidgetForecast
+
+/// Réponse combinée `basic-1h,basic-day` du widget : heures + températures min/max du jour.
+struct MeteoBlueAPIWidgetForecast: Codable {
+    let data1H: Data1H
+    let dataDay: DataDay
+
+    enum CodingKeys: String, CodingKey {
+        case data1H = "data_1h"
+        case dataDay = "data_day"
+    }
+}
+
 // MARK: - Data1H
 
 struct Data1H: Codable {

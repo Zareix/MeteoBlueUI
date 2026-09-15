@@ -30,6 +30,7 @@ actor OpenMeteoProviderService: WeatherProviderService {
         var components = Self.baseComponents(location: location)
         components.queryItems?.append(contentsOf: [
             URLQueryItem(name: "hourly", value: "temperature_2m,precipitation_probability,weathercode,is_day"),
+            URLQueryItem(name: "daily", value: "temperature_2m_max,temperature_2m_min"),
             URLQueryItem(name: "forecast_days", value: "2"),
         ])
         guard let url = components.url else { throw URLError(.badURL) }
@@ -37,7 +38,7 @@ actor OpenMeteoProviderService: WeatherProviderService {
         let (data, response) = try await URLSession.shared.data(from: url)
         try Self.checkResponse(response)
 
-        let forecast = try JSONDecoder().decode(OpenMeteoHourlyForecast.self, from: data)
+        let forecast = try JSONDecoder().decode(OpenMeteoWidgetForecast.self, from: data)
         let currentHourStart = Calendar.current.dateInterval(of: .hour, for: Date())?.start ?? Date()
 
         let hours: [WidgetHourEntry] = forecast.hourly.time.enumerated().compactMap { index, timeStr in
@@ -56,7 +57,28 @@ actor OpenMeteoProviderService: WeatherProviderService {
             )
         }
 
-        return WidgetData(location: location, hours: hours, savedAt: Date())
+        // Min/max du jour courant, repérés par préfixe de date dans les timestamps ISO.
+        let dayFormatter = DateFormatter()
+        dayFormatter.dateFormat = "yyyy-MM-dd"
+        dayFormatter.locale = Locale(identifier: "en_US_POSIX")
+        let todayString = dayFormatter.string(from: Date())
+
+        var dailyMax: Double?
+        var dailyMin: Double?
+        if let todayIndex = forecast.daily.time.firstIndex(where: { $0.hasPrefix(todayString) }),
+           todayIndex < forecast.daily.temperature2MMax.count,
+           todayIndex < forecast.daily.temperature2MMin.count {
+            dailyMax = forecast.daily.temperature2MMax[todayIndex] ?? nil
+            dailyMin = forecast.daily.temperature2MMin[todayIndex] ?? nil
+        }
+
+        return WidgetData(
+            location: location,
+            hours: hours,
+            dailyTemperatureMax: dailyMax,
+            dailyTemperatureMin: dailyMin,
+            savedAt: Date()
+        )
     }
 
     private func fetchRawForecast(location: WeatherLocation) async throws -> OpenMeteoForecast {

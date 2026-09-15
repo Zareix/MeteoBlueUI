@@ -34,6 +34,28 @@ struct OpenMeteoHourlyForecast: Codable {
     let hourly: OpenMeteoHourly
 }
 
+// MARK: - OpenMeteoWidgetForecast
+
+/// Réponse allégée du widget : heures + températures min/max du jour.
+struct OpenMeteoWidgetForecast: Codable {
+    let hourly: OpenMeteoHourly
+    let daily: OpenMeteoWidgetDaily
+}
+
+// MARK: - OpenMeteoWidgetDaily
+
+struct OpenMeteoWidgetDaily: Codable {
+    let time: [String]
+    let temperature2MMax: [Double?]
+    let temperature2MMin: [Double?]
+
+    enum CodingKeys: String, CodingKey {
+        case time
+        case temperature2MMax = "temperature_2m_max"
+        case temperature2MMin = "temperature_2m_min"
+    }
+}
+
 // MARK: - OpenMeteoHourly
 
 struct OpenMeteoHourly: Codable {
