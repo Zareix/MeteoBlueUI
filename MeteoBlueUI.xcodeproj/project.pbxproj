@@ -84,6 +84,7 @@
 		5613CD803059ADAD005F8E1C /* MeteoBlueUIWatch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MeteoBlueUIWatch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5613CD933059ADF6005F8E1C /* MeteoBlueUIWatchWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeteoBlueUIWatchWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		5691EE792F58CE6600F06FCC /* MeteoBlueWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = MeteoBlueWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		56A17704305ACF200098BEBC /* MeteoBlueUIWatchWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MeteoBlueUIWatchWidgetExtension.entitlements; sourceTree = "<group>"; };
 		56F9F1D42F58CDAE0051D51D /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		56F9F1D62F58CDAF0051D51D /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
@@ -249,6 +250,7 @@
 		5611DA5C2DCB9CCB00F6A76A = {
 			isa = PBXGroup;
 			children = (
+				56A17704305ACF200098BEBC /* MeteoBlueUIWatchWidgetExtension.entitlements */,
 				5611DA672DCB9CCB00F6A76A /* MeteoBlueUI */,
 				5691EE7C2F58CE6600F06FCC /* MeteoBlueWidget */,
 				5613CD813059ADAD005F8E1C /* MeteoBlueUIWatch */,
@@ -703,8 +705,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueUIWatch/MeteoBlueUIWatch.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KC74NH6SS8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatch;
@@ -717,6 +722,7 @@
 				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -735,8 +741,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueUIWatch/MeteoBlueUIWatch.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KC74NH6SS8;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatch;
@@ -749,6 +758,7 @@
 				MARKETING_VERSION = 1.18.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.raphaelgc.MeteoBlueUI.watchkitapp;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = watchos;
 				SKIP_INSTALL = YES;
 				STRING_CATALOG_GENERATE_SYMBOLS = YES;
@@ -767,8 +777,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueUIWatchWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KC74NH6SS8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MeteoBlueUIWatchWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatchWidget;
@@ -800,8 +812,10 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CODE_SIGN_ENTITLEMENTS = MeteoBlueUIWatchWidgetExtension.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = KC74NH6SS8;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = MeteoBlueUIWatchWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = MeteoBlueUIWatchWidget;
