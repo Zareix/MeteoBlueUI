@@ -113,8 +113,7 @@ struct HourByHourView: View {
                 .fontWeight(.medium)
                 .foregroundColor(.secondary)
 
-            Image(systemName: symbol)
-                .symbolRenderingMode(.multicolor)
+            SymbolView(symbol: symbol, animationEnabled: false)
                 .font(.system(size: 24))
                 .frame(width: 24, height: symbolBlockHeight)
 
