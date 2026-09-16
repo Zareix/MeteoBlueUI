@@ -59,12 +59,8 @@ class WeatherSummaryService {
             self.session = session
             let response = try await session.respond(to: prompt)
             return response.content.trimmingCharacters(in: .whitespacesAndNewlines)
-        } catch let error as LanguageModelSession.GenerationError {
-            print("WeatherSummaryService generation error: \(error)")
-            return nil
         } catch {
-            // Covers ModelManagerError (model not downloaded, simulator, etc.)
-            print("WeatherSummaryService unavailable: \(error.localizedDescription)")
+            print("WeatherSummaryService generation error: \(error)")
             return nil
         }
     }

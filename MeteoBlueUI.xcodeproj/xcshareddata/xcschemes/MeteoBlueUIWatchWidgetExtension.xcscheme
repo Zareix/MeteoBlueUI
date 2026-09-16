@@ -77,7 +77,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5613CD7F3059ADAD005F8E1C"
             BuildableName = "MeteoBlueUIWatch.app"
-            BlueprintName = "MeteoBlueUIWatch"
             ReferencedContainer = "container:MeteoBlueUI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -111,7 +110,6 @@
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "5613CD923059ADF6005F8E1C"
             BuildableName = "MeteoBlueUIWatchWidgetExtension.appex"
-            BlueprintName = "MeteoBlueUIWatchWidgetExtension"
             ReferencedContainer = "container:MeteoBlueUI.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

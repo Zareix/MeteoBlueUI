@@ -18,12 +18,16 @@ struct SearchCityView: View {
     func handleSearch(title: String, subtitle: String) {
         isSearchActive = false
         Task {
-            let foundLocation = try await CityGeocoder.resolve(title: title, subtitle: subtitle)
-            guard let foundLocation else { return }
-            await meteoData.loadMeteoData(location: foundLocation)
+            do {
+                let foundLocation = try await CityGeocoder.resolve(title: title, subtitle: subtitle)
+                guard let foundLocation else { return }
+                await meteoData.loadMeteoData(location: foundLocation)
 
-            searchHistory.add(foundLocation)
-            locationSearchService.searchQuery = ""
+                searchHistory.add(foundLocation)
+                locationSearchService.searchQuery = ""
+            } catch {
+                print("SearchCityView: failed to resolve city \(title): \(error)")
+            }
         }
     }
 

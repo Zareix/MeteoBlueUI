@@ -1,0 +1,9 @@
+{
+  "id" : "e8c58a53-f029-4d9b-a144-73bd52d95544",
+  "targets" : [
+    {
+      "id" : "3AB73185-C212-4444-A741-EFB2C9C6D507",
+      "name" : "MeteoBlueUI"
+    }
+  ]
+}
