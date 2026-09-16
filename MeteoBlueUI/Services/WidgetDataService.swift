@@ -71,10 +71,39 @@ enum WidgetDataService {
         }
 
         if let location = await WidgetLocationFetcher.fetchCurrentLocation() {
+            saveLastKnownLocation(location)
             return location
         }
 
+        // Le GPS n'a rien donné : on réutilise la dernière position résolue
+        // (mieux vaut des données d'un endroit légèrement daté que le fallback).
+        if let last = loadLastKnownLocation() {
+            return last
+        }
+
         return fallbackLocation()
+    }
+
+    // MARK: Last resolved location cache
+
+    /// La dernière position résolue, pour éviter d'afficher un fallback quand
+    /// le GPS n'a pas le temps de répondre pendant le court cycle de vie du widget.
+    private static let lastLocationKey = "widget_last_resolved_location"
+
+    private static func saveLastKnownLocation(_ location: WeatherLocation) {
+        guard let encoded = try? JSONEncoder().encode(location) else { return }
+        let userDefaults = UserDefaults(suiteName: appGroupID) ?? .standard
+        userDefaults.set(encoded, forKey: lastLocationKey)
+    }
+
+    private static func loadLastKnownLocation() -> WeatherLocation? {
+        let userDefaults = UserDefaults(suiteName: appGroupID) ?? .standard
+        guard let data = userDefaults.data(forKey: lastLocationKey),
+              let location = try? JSONDecoder().decode(WeatherLocation.self, from: data)
+        else {
+            return nil
+        }
+        return location
     }
 
     private static func fallbackLocation() -> WeatherLocation {
@@ -111,8 +140,21 @@ private final class WidgetLocationFetcher: NSObject, CLLocationManagerDelegate, 
         return await Self.reverseGeocode(clLocation)
     }
 
+    /// Au-delà de cet âge, la dernière position connue est considérée trop vieille
+    /// et on demande une nouvelle correction GPS.
+    private static let cachedLocationMaxAge: TimeInterval = 15 * 60
+
     private func requestLocation() async -> CLLocation? {
-        await withCheckedContinuation { continuation in
+        // Chemin rapide : la dernière position connue du système (fix de l'app
+        // principale ou d'un reload précédent) est quasi instantanée à lire,
+        // alors qu'un `requestLocation()` dans un processus widget froid peut
+        // mettre plusieurs secondes — ou tomber dans le timeout.
+        if let last = manager.location,
+           Date().timeIntervalSince(last.timestamp) < Self.cachedLocationMaxAge {
+            return last
+        }
+
+        return await withCheckedContinuation { continuation in
             self.continuation = continuation
             manager.delegate = self
 
