@@ -103,11 +103,11 @@ struct NextHoursProvider: AppIntentTimelineProvider {
 
             if let cached = WidgetDataService.loadFromCache(providerType: providerType, locationID: location.id) {
                 let entries = Self.makeEntries(
-                cityName: cached.location.city,
-                hours: cached.hours,
-                dailyTemperatureMax: cached.dailyTemperatureMax,
-                dailyTemperatureMin: cached.dailyTemperatureMin
-            )
+                    cityName: cached.location.city,
+                    hours: cached.hours,
+                    dailyTemperatureMax: cached.dailyTemperatureMax,
+                    dailyTemperatureMin: cached.dailyTemperatureMin
+                )
                 let nextUpdate = Calendar.current.date(byAdding: .minute, value: 15, to: .now) ?? .now
                 return Timeline(entries: entries, policy: .after(nextUpdate))
             } else {
@@ -221,6 +221,7 @@ struct MeteoBlueWidgetEntryView: View {
                         .foregroundStyle(.primary)
                         .fontDesign(.serif)
                         .lineLimit(1)
+                        .minimumScaleFactor(0.4)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 12)
 
